@@ -1,0 +1,6 @@
+==============
+plone.registry
+==============
+
+This package provides debconf-like (or about:config-like) settings registries
+for Zope applications.
