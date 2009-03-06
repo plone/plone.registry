@@ -61,6 +61,9 @@ class Registry(Persistent):
         field.validate(value)
         field.set(record, value)
     
+    def __contains__(self, name):
+        return name in self.records
+    
     # Records - make this a property so that it's readonly
     
     @property
@@ -81,10 +84,13 @@ class Registry(Persistent):
     def register_interface(self, interface):
         prefix = interface.__identifier__ + '.'
         for name, field in getFieldsInOrder(interface):
+            if field.readonly:
+                continue
             record_name = prefix + name
             persistent_field = queryAdapter(field, IPersistentField)
             if persistent_field is None:
                 raise TypeError("There is no persistent field equivalent for "
                                 "the field %s of type %s." % (name, field.__class__.__name__))
             value = persistent_field.default
-            self.records[record_name] = Record(persistent_field, value)
+            self.records[record_name] = Record(persistent_field, value, 
+                                               interface=interface, field_name=name)

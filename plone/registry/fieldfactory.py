@@ -4,9 +4,9 @@ import zope.component
 import plone.registry.field
 
 from zope.schema.interfaces import IField
-from plone.registry import IPersistentField
+from plone.registry.interfaces import IPersistentField
 
-@zope.component.implementer(IPersistentField)
+@zope.interface.implementer(IPersistentField)
 @zope.component.adapter(IField)
 def persistent_field_adapter(context):
     """Turn a non-persistent field into a persistent one

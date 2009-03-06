@@ -1,4 +1,6 @@
 from zope.interface import Interface
+from zope.interface.interfaces import IInterface
+
 from zope import schema
 
 from zope.schema.interfaces import IField
@@ -11,9 +13,10 @@ class IPersistentField(IField):
     supported by the registry.
     """
     
-    @classmethod
     def fromSibling(sibling):
         """Create a persistent field form a non-persistent sibling field.
+        
+        This is a class method.
         """
 
 class IRecord(Interface):
@@ -25,6 +28,20 @@ class IRecord(Interface):
     
     value = schema.Field(title=u"The value of this record",
                          description=u"Must be valid according to the record's field")
+
+class IInterfaceAwareRecord(Interface):
+    """A record will be marked with this interface if it knows which
+    interface its field came from.
+    """
+    
+    interface_name = schema.DottedName(title=u"Dotted name to interface")
+    
+    interface = schema.Object(title=u"Interface that provided the record",
+                              description=u"May raise ImportError if the " \
+                                            "interface is no longer available",
+                              schema=IInterface)
+    
+    field_name = schema.ASCIILine(title=u"Name of the field in the original interface")
 
 class IRecordsProxy(Interface):
     """This object is returned by IRegistry.by_interface(). It will be
@@ -54,6 +71,10 @@ class IRegistry(Interface):
         installed for this key for this to be valid. Otherwise, a KeyError is
         raised. If value is not of a type that's allowed by the record, a
         ValidationError is raised.
+        """
+        
+    def __contains__(key):
+        """Determine if the registry contains a record for the given key.
         """
         
     records = schema.Dict(

@@ -12,7 +12,7 @@ import zope.interface
 import zope.schema
 import zope.schema._field
 
-__missing_value_marker = object()
+_missing_value_marker = object()
 
 class PersistentField(persistent.Persistent, zope.schema.Field):
     """Base class for persistent field definitions.
@@ -20,7 +20,7 @@ class PersistentField(persistent.Persistent, zope.schema.Field):
     
     def __init__(self, title=u'', description=u'', __name__='',
                  required=True, readonly=False, constraint=None, default=None,
-                 missing_value=__missing_value_marker):
+                 missing_value=_missing_value_marker):
         
         # We need to override the constructor, because we don't want this to
         # change the Field.order class variable
@@ -46,16 +46,17 @@ class PersistentField(persistent.Persistent, zope.schema.Field):
 
         self.order = -1
 
-        if missing_value is not __missing_value_marker:
+        if missing_value is not _missing_value_marker:
             self.missing_value = missing_value
     
     @classmethod
     def fromSibling(cls, sibling):
         if not issubclass(cls, sibling.__class__):
             raise ValueError("Can only clone a field of an equivalent type.")
+        
         inst = cls.__new__(cls)
         ignored = {'order': -1}
-        
+        import pdb; pdb.set_trace( )
         for k, v in sibling.__dict__.items():
             if k in ignored:
                 v = ignored[k]
