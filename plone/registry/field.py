@@ -9,66 +9,78 @@ are.
 import persistent
 
 import zope.interface
+
 import zope.schema
 import zope.schema._field
 
 _missing_value_marker = object()
 
-class PersistentField(persistent.Persistent, zope.schema.Field):
+from plone.registry.interfaces import IPersistentField
+
+class DisallowedProperty(object):
+
+    def __set__(self, inst, value):
+        raise ValueError(u"Persistent fields does not support setting the %s property" % self._name)
+
+class StubbornProperty(object):
+
+    def __init__(self, name, value):
+        self._name = name
+        self._value = value
+
+    def __set__(self, inst, value):
+        if value != inst.missing_value:
+            value = self._value
+        inst.__dict__[self._name] = value
+
+class PersistentFieldProperty(object):
+    
+    def __init__(self, name):
+        self._name = name
+        
+    def __set__(self, inst, value):
+        if value != inst.missing_value:
+            if not IPersistentField.providedBy(value):
+                raise ValueError(u"The property %s may only contain persistent fields." % self._name)
+        inst.__dict__[self._name] = value
+
+class PersistentField(persistent.Persistent):
     """Base class for persistent field definitions.
     """
     
-    def __init__(self, title=u'', description=u'', __name__='',
-                 required=True, readonly=False, constraint=None, default=None,
-                 missing_value=_missing_value_marker):
-        
-        # We need to override the constructor, because we don't want this to
-        # change the Field.order class variable
-        
-        __doc__ = ''
-        if title:
-            if description:
-                __doc__ = "%s\n\n%s" % (title, description)
-            else:
-                __doc__ = title
-        elif description:
-            __doc__ = description
-
-        zope.interface.Attribute.__init__(self, __name__, __doc__)
-        
-        self.title = title
-        self.description = description
-        self.required = required
-        self.readonly = readonly
-        if constraint is not None:
-            self.constraint = constraint
-        self.default = default
-
-        self.order = -1
-
-        if missing_value is not _missing_value_marker:
-            self.missing_value = missing_value
+    zope.interface.implements(IPersistentField)
+    
+    _ignored_properties = set(['order', 'constraint'])
+    
+    # Persistent fields do not have an order
+    order = StubbornProperty('order', -1)
+    
+    # We don't allow setting a custom constraint, as this would introduce a
+    # dependency on a symbol such as a function that may go away
+    constraint = DisallowedProperty()
     
     @classmethod
     def fromSibling(cls, sibling):
         if not issubclass(cls, sibling.__class__):
             raise ValueError("Can only clone a field of an equivalent type.")
         
+        # TODO: Need to test for Stubborn, Disallowed and PersistentField properties
+        
         inst = cls.__new__(cls)
-        ignored = {'order': -1}
-        import pdb; pdb.set_trace( )
-        for k, v in sibling.__dict__.items():
-            if k in ignored:
-                v = ignored[k]
-            setattr(inst, k, v)
-            
-        return inst
-    
-# class PersistentCollectionField(PersistentField, zope.schema._field.AbstractCollection):
-#     pass
-#     
-#     # TODO: make sure value_type is persistent too
+        
+        sibling_dict = dict([(k,v) for k,v in sibling.__dict__.items() 
+                                if k not in cls._ignored_properties])
 
+        inst.__dict__.update(sibling_dict)
+        return inst
+
+class PersistentCollectionField(PersistentField, zope.schema._field.AbstractCollection):
+    """Ensure that value_type is a persistent field
+    """
+    
+    value_type = PersistentFieldProperty('value_type')
+    
+    
 class Bytes(PersistentField, zope.schema.Bytes):
     pass
 
@@ -93,25 +105,25 @@ class Bool(PersistentField, zope.schema.Bool):
 class Int(PersistentField, zope.schema.Int):
     pass
     
-# class Tuple(PersistentCollectionField, zope.schema.Tuplie):
-#     pass
-#     
-# class List(PersistentCollectionField, zope.schema.List):
-#     pass
-# 
-# class Set(PersistentCollectionField, zope.schema.Set):
-#     pass
-#     
-# class FrozenSet(PersistentCollectionField, zope.schema.FrozenSet):
-#     pass
+class Tuple(PersistentCollectionField, zope.schema.Tuple):
+    pass
+    
+class List(PersistentCollectionField, zope.schema.List):
+    pass
+
+class Set(PersistentCollectionField, zope.schema.Set):
+    pass
+    
+class FrozenSet(PersistentCollectionField, zope.schema.FrozenSet):
+    pass
 
 class Password(PersistentField, zope.schema.Password):
     pass
 
-# class Dict(PersistentField, zope.schema.Dict):
-#     pass
-#     
-#     # TODO: Ensure key_type and value_type are persistent
+class Dict(PersistentField, zope.schema.Dict):
+    
+    key_type = PersistentFieldProperty('key_type')
+    value_type = PersistentFieldProperty('value_type')
     
 class Datetime(PersistentField, zope.schema.Datetime):
     pass
