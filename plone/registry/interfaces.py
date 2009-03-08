@@ -29,6 +29,29 @@ class IRecord(Interface):
     value = schema.Field(title=u"The value of this record",
                          description=u"Must be valid according to the record's field")
 
+class IRecordEvent(Interface):
+    """Base interface for record level events
+    """
+    
+    record = schema.Object(title=u"The record that was added.",
+                           description=u"Both __name__ and __parent__ will be set before the event is fired",
+                           schema=IRecord)
+
+class IRecordAddedEvent(IRecordEvent):
+    """Event fired when a record is added to a registry.
+    """
+    
+class IRecordRemovedEvent(IRecordEvent):
+    """Event fired when a record is removed from a registry.
+    """
+    
+class IRecordModifiedEvent(IRecordEvent):
+    """Event fired when a record's value is modified.
+    """
+
+    old_value = schema.Field(title=u"The record's previous value")
+    new_value = schema.Field(title=u"The record's new value")
+
 class IInterfaceAwareRecord(Interface):
     """A record will be marked with this interface if it knows which
     interface its field came from.

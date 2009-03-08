@@ -30,6 +30,10 @@ def test_suite():
             optionflags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
             setUp=testing.setUp, tearDown=testing.tearDown),
         doctestunit.DocFileSuite(
+            'events.txt', package='plone.registry',
+            optionflags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
+            setUp=testing.setUp, tearDown=testing.tearDown),
+        doctestunit.DocFileSuite(
             'field.txt', package='plone.registry',
             optionflags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
             setUp=testing.setUp, tearDown=testing.tearDown),

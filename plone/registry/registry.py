@@ -3,6 +3,7 @@ from BTrees.OOBTree import OOBTree
 
 from zope.interface import implements
 from zope.component import queryAdapter
+from zope.event import notify
 
 from zope.schema import getFieldNames, getFieldsInOrder
 from zope.schema.interfaces import InvalidDottedName
@@ -11,6 +12,7 @@ from zope.schema._field import _isdotted
 from plone.registry.interfaces import IRegistry, IRecord, IPersistentField
 from plone.registry.record import Record
 from plone.registry.recordsproxy import RecordsProxy
+from plone.registry.events import RecordAddedEvent, RecordRemovedEvent
 
 class Records(OOBTree):
     """The records stored in the registry
@@ -27,7 +29,13 @@ class Records(OOBTree):
         record.__name__ = name
         record.__parent__ = self.__parent__
         super(Records, self).__setitem__(name, record)
-        
+        notify(RecordAddedEvent(record))
+    
+    def __delitem__(self, name):
+        record = self[name]
+        super(Records, self).__delitem__(name)
+        notify(RecordRemovedEvent(record))
+    
 class Registry(Persistent):
     """The persistent registry
     """
@@ -83,6 +91,4 @@ class Registry(Persistent):
             if persistent_field is None:
                 raise TypeError("There is no persistent field equivalent for "
                                 "the field `%s` of type `%s`." % (name, field.__class__.__name__))
-            value = persistent_field.default
-            self.records[record_name] = Record(persistent_field, value, 
-                                               interface=interface, field_name=name)
+            self.records[record_name] = Record(persistent_field, interface=interface, field_name=name)

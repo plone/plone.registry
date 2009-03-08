@@ -29,6 +29,8 @@ setup(name='plone.registry',
           'zope.schema',
           'zope.interface',
           'zope.component',
+          'zope.event',
+          'zope.testing',
       ],
       entry_points="""
       # -*- Entry points: -*-
