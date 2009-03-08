@@ -71,7 +71,7 @@ class Registry(Persistent):
                     raise KeyError("Interface `%s` defines a field `%s`, "
                                    "for which there is no record." % (interface.__identifier__, name))
         
-        return RecordsProxy(self, interface)
+        return RecordsProxy(self, interface, omitted=omit)
 
     def register_interface(self, interface, omit=()):
         prefix = interface.__identifier__ + '.'

@@ -278,7 +278,14 @@ It does, however, provide the requisite interface.
 
     >>> IMailSettings.providedBy(proxy)
     True
-    
+
+You can distinguish between the proxy and a 'norma' object by checking for the
+IRecordsProxy marker interface:
+
+    >>> from plone.registry.interfaces import IRecordsProxy
+    >>> IRecordsProxy.providedBy(proxy)
+    True
+
 When we set a value, it is stored in the registry:
 
     >>> proxy.smtp_host = 'http://mail.server.com'
@@ -317,7 +324,7 @@ efficient:
     >>> registry.for_interface(IMailPreferences, check=False)
     <plone.registry.recordsproxy.RecordsProxy object at ...>
 
-A bette way, however, is to explicitly declare that some fields are omitted:
+A better way, however, is to explicitly declare that some fields are omitted:
 
     >>> pref_proxy = registry.for_interface(IMailPreferences, omit=('settings',))
 
@@ -326,9 +333,9 @@ In this case, the omitted fields will default to their 'missing' value:
     >>> pref_proxy.settings ==  IMailPreferences['settings'].missing_value
     True
     
-However, trying to set the value will result in a KeyError:
+However, trying to set the value will result in a AttributeError:
 
     >>> pref_proxy.settings = None
     Traceback (most recent call last):
     ...
-    KeyError: 'plone.registry.tests.IMailPreferences.settings'
+    AttributeError: settings

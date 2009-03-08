@@ -37,19 +37,11 @@ class IInterfaceAwareRecord(Interface):
     interface_name = schema.DottedName(title=u"Dotted name to interface")
     
     interface = schema.Object(title=u"Interface that provided the record",
-                              description=u"May raise ImportError if the " \
-                                            "interface is no longer available",
+                              description=u"May be None if the interface is no longer available",
                               schema=IInterface,
                               readonly=True)
     
     field_name = schema.ASCIILine(title=u"Name of the field in the original interface")
-
-class IRecordsProxy(Interface):
-    """This object is returned by IRegistry.by_interface(). It will be
-    made to provide the relevant interface, i.e. it will have the
-    attributes that the interface promises. Those attributes will be retrieved
-    from or written to the underlying IRegistry.
-    """
 
 class IRegistry(Interface):
     """The configuration registry
@@ -109,3 +101,22 @@ class IRegistry(Interface):
         listed in `omit`, or with the `readonly` property set to True, will
         be ignored.
         """
+class IRecordsProxy(Interface):
+    """This object is returned by IRegistry.by_interface(). It will be
+    made to provide the relevant interface, i.e. it will have the
+    attributes that the interface promises. Those attributes will be retrieved
+    from or written to the underlying IRegistry.
+    """
+
+    __schema__ = schema.Object(title=u"Interface providing records",
+                               schema=IInterface,
+                               readonly=True)
+
+    __registry__ = schema.Object(title=u"Registry where records will be looked up",
+                                 schema=IRegistry,
+                                 readonly=True)
+
+    __omitted__ = schema.Tuple(title=u"Fields that are not stored in the registry",
+                               description=u"If any of these are accessed, you will get an AttributeError",
+                               value_type=schema.Id(title=u"Fieldname"),
+                               readonly=True)
