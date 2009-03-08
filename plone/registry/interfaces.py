@@ -39,7 +39,8 @@ class IInterfaceAwareRecord(Interface):
     interface = schema.Object(title=u"Interface that provided the record",
                               description=u"May raise ImportError if the " \
                                             "interface is no longer available",
-                              schema=IInterface)
+                              schema=IInterface,
+                              readonly=True)
     
     field_name = schema.ASCIILine(title=u"Name of the field in the original interface")
 
@@ -94,13 +95,17 @@ class IRegistry(Interface):
                 ),
         )
         
-    def for_interface(interface):
-        """Get an IRecordsProxy for the given interface.
+    def for_interface(interface, check=True, omit=()):
+        """Get an IRecordsProxy for the given interface. If `check` is True,
+        an error will be raised if one or more fields in the interface does
+        not have an equivalent setting.
         """
 
-    def register_interface(interface):
+    def register_interface(interface, omit=()):
         """Create a set of records based on the given interface. For each
         schema field in the interface, a record will be inserted with a
         name like `${interface.__identifier__}.${field.__name__}`, and a
-        value equal to default value of that field.
+        value equal to default value of that field. Any field with a name
+        listed in `omit`, or with the `readonly` property set to True, will
+        be ignored.
         """

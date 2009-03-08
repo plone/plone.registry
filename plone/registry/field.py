@@ -18,30 +18,62 @@ _missing_value_marker = object()
 from plone.registry.interfaces import IPersistentField
 
 class DisallowedProperty(object):
+    """A property that may not be set on an instance. It may still be set
+    defined in a base class.
+    """
 
+    uses = []
+    
+    def __init__(self, name):
+        self.name = name
+        DisallowedProperty.uses.append(name)
+    
+    def __get__(self, inst, type_=None):
+        # look for the object in bases
+        if type_ is not None:
+            for c in type_.__mro__:
+                if self.name in c.__dict__ and not \
+                        isinstance(c.__dict__[self.name], DisallowedProperty):
+                    function = c.__dict__[self.name]
+                    return function.__get__(inst, type_)
+        raise AttributeError(self.name)
+        
     def __set__(self, inst, value):
-        raise ValueError(u"Persistent fields does not support setting the %s property" % self._name)
+        raise ValueError(u"Persistent fields does not support setting the `%s` property" % self._name)
 
 class StubbornProperty(object):
+    """A property that stays stubbornly at a single, pre-defined value.
+    """
+
+    uses = []
 
     def __init__(self, name, value):
+        StubbornProperty.uses.append(name)
         self._name = name
         self._value = value
 
     def __set__(self, inst, value):
-        if value != inst.missing_value:
-            value = self._value
-        inst.__dict__[self._name] = value
+        pass
+        
+    def __get__(self):
+        return self._value
 
-class PersistentFieldProperty(object):
+class InterfaceConstrainedProperty(object):
+    """A property that may only contain values providing a certain interface.
+    """
     
-    def __init__(self, name):
+    uses = []
+    
+    def __init__(self, name, interface):
+        InterfaceConstrainedProperty.uses.append((name, interface))
         self._name = name
+        self._interface = interface
         
     def __set__(self, inst, value):
         if value != inst.missing_value:
-            if not IPersistentField.providedBy(value):
-                raise ValueError(u"The property %s may only contain persistent fields." % self._name)
+            if not self._interface.providedBy(value):
+                raise ValueError(u"The property `%s` may only contain objects providing `%s`." % 
+                                    (self._name, self._interface.__identifier__,))
         inst.__dict__[self._name] = value
 
 class PersistentField(persistent.Persistent):
@@ -50,26 +82,32 @@ class PersistentField(persistent.Persistent):
     
     zope.interface.implements(IPersistentField)
     
-    _ignored_properties = set(['order', 'constraint'])
-    
     # Persistent fields do not have an order
     order = StubbornProperty('order', -1)
     
     # We don't allow setting a custom constraint, as this would introduce a
     # dependency on a symbol such as a function that may go away
-    constraint = DisallowedProperty()
+    constraint = DisallowedProperty('constraint')
     
     @classmethod
     def fromSibling(cls, sibling):
         if not issubclass(cls, sibling.__class__):
             raise ValueError("Can only clone a field of an equivalent type.")
         
-        # TODO: Need to test for Stubborn, Disallowed and PersistentField properties
+        ignored = list(DisallowedProperty.uses + StubbornProperty.uses)
+        persistent = list(InterfaceConstrainedProperty.uses)
         
         inst = cls.__new__(cls)
         
         sibling_dict = dict([(k,v) for k,v in sibling.__dict__.items() 
-                                if k not in cls._ignored_properties])
+                                if k not in ignored])
+
+        for k in persistent:
+            v = sibling_dict.get(k, None)
+            if v is not None and v != sibling.missing_value:
+                v = IPersistentField(v, None)
+                if v is None:
+                    raise ValueError(u"The property %s may only contain persistable fields." % k)
 
         inst.__dict__.update(sibling_dict)
         return inst
@@ -78,8 +116,7 @@ class PersistentCollectionField(PersistentField, zope.schema._field.AbstractColl
     """Ensure that value_type is a persistent field
     """
     
-    value_type = PersistentFieldProperty('value_type')
-    
+    value_type = InterfaceConstrainedProperty('value_type', IPersistentField)
     
 class Bytes(PersistentField, zope.schema.Bytes):
     pass
@@ -122,8 +159,8 @@ class Password(PersistentField, zope.schema.Password):
 
 class Dict(PersistentField, zope.schema.Dict):
     
-    key_type = PersistentFieldProperty('key_type')
-    value_type = PersistentFieldProperty('value_type')
+    key_type = InterfaceConstrainedProperty('key_type', IPersistentField)
+    value_type = InterfaceConstrainedProperty('value_type', IPersistentField)
     
 class Datetime(PersistentField, zope.schema.Datetime):
     pass

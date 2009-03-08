@@ -21,18 +21,12 @@ class Records(OOBTree):
             raise InvalidDottedName(record)
         if not IRecord.providedBy(record):
             raise ValueError("Value must be a record")
-        if not IPersistentField.providedBy(record):
+        if not IPersistentField.providedBy(record.field):
             raise ValueError("The record's field must be an IPersistentField.")
         
-        # Make sure we have a valid value
-        field = record.field.bind(record)
-        if record.value != field.missing_value:
-            field.validate(record.value)
-        
         record.__name__ = name
-        record.__parent__ = self
+        record.__parent__ = self.__parent__
         super(Records, self).__setitem__(name, record)
-        
         
 class Registry(Persistent):
     """The persistent registry
@@ -56,10 +50,7 @@ class Registry(Persistent):
         return record.value
     
     def __setitem__(self, name, value):
-        record = self.records[name]
-        field = record.field.bind(record)
-        field.validate(value)
-        field.set(record, value)
+        self.records[name].value = value
     
     def __contains__(self, name):
         return name in self.records
@@ -72,25 +63,26 @@ class Registry(Persistent):
     
     # Schema interface API
     
-    def for_interface(self, interface):
+    def for_interface(self, interface, check=True, omit=()):
         prefix = interface.__identifier__ + '.'
-        for name in getFieldNames(interface):
-            if not prefix + name in self.records:
-                raise KeyError("Interface %s defines a field %s, "
-                               "for which there is no record." % (interface.__identifier__, name))
+        if check:
+            for name in getFieldNames(interface):
+                if name not in omit and prefix + name not in self.records:
+                    raise KeyError("Interface `%s` defines a field `%s`, "
+                                   "for which there is no record." % (interface.__identifier__, name))
         
         return RecordsProxy(self, interface)
 
-    def register_interface(self, interface):
+    def register_interface(self, interface, omit=()):
         prefix = interface.__identifier__ + '.'
         for name, field in getFieldsInOrder(interface):
-            if field.readonly:
+            if name in omit or field.readonly:
                 continue
             record_name = prefix + name
             persistent_field = queryAdapter(field, IPersistentField)
             if persistent_field is None:
                 raise TypeError("There is no persistent field equivalent for "
-                                "the field %s of type %s." % (name, field.__class__.__name__))
+                                "the field `%s` of type `%s`." % (name, field.__class__.__name__))
             value = persistent_field.default
             self.records[record_name] = Record(persistent_field, value, 
                                                interface=interface, field_name=name)
