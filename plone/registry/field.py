@@ -12,10 +12,16 @@ import zope.interface
 
 import zope.schema
 import zope.schema._field
+import zope.schema.vocabulary
 
 _missing_value_marker = object()
 
 from plone.registry.interfaces import IPersistentField
+
+def is_primitive(value):
+    return value is None or \
+            isinstance(value, (int, long, bool, str, unicode, tuple, list,
+                                set, frozenset, dict, float))
 
 class DisallowedProperty(object):
     """A property that may not be set on an instance. It may still be set
@@ -25,18 +31,18 @@ class DisallowedProperty(object):
     uses = []
     
     def __init__(self, name):
-        self.name = name
+        self._name = name
         DisallowedProperty.uses.append(name)
     
     def __get__(self, inst, type_=None):
         # look for the object in bases
         if type_ is not None:
             for c in type_.__mro__:
-                if self.name in c.__dict__ and not \
-                        isinstance(c.__dict__[self.name], DisallowedProperty):
-                    function = c.__dict__[self.name]
+                if self._name in c.__dict__ and not \
+                        isinstance(c.__dict__[self._name], DisallowedProperty):
+                    function = c.__dict__[self._name]
                     return function.__get__(inst, type_)
-        raise AttributeError(self.name)
+        raise AttributeError(self._name)
         
     def __set__(self, inst, value):
         raise ValueError(u"Persistent fields does not support setting the `%s` property" % self._name)
@@ -55,7 +61,7 @@ class StubbornProperty(object):
     def __set__(self, inst, value):
         pass
         
-    def __get__(self):
+    def __get__(self, inst, type_=None):
         return self._value
 
 class InterfaceConstrainedProperty(object):
@@ -88,29 +94,6 @@ class PersistentField(persistent.Persistent):
     # We don't allow setting a custom constraint, as this would introduce a
     # dependency on a symbol such as a function that may go away
     constraint = DisallowedProperty('constraint')
-    
-    @classmethod
-    def fromSibling(cls, sibling):
-        if not issubclass(cls, sibling.__class__):
-            raise ValueError("Can only clone a field of an equivalent type.")
-        
-        ignored = list(DisallowedProperty.uses + StubbornProperty.uses)
-        persistent = list(InterfaceConstrainedProperty.uses)
-        
-        inst = cls.__new__(cls)
-        
-        sibling_dict = dict([(k,v) for k,v in sibling.__dict__.items() 
-                                if k not in ignored])
-
-        for k in persistent:
-            v = sibling_dict.get(k, None)
-            if v is not None and v != sibling.missing_value:
-                v = IPersistentField(v, None)
-                if v is None:
-                    raise ValueError(u"The property %s may only contain persistable fields." % k)
-
-        inst.__dict__.update(sibling_dict)
-        return inst
 
 class PersistentCollectionField(PersistentField, zope.schema._field.AbstractCollection):
     """Ensure that value_type is a persistent field
@@ -183,7 +166,44 @@ class Id(PersistentField, zope.schema.Id):
 class DottedName(PersistentField, zope.schema.DottedName):
     pass
     
-# class Choice(PersistentField, zope.schema.Choice):
-#     pass
-#     
-#     # TODO: We can only support sources based on named vocabularies
+class Choice(PersistentField, zope.schema.Choice):
+    
+    # We can only support string name or primitive=list vocabularies
+    
+    _values = None
+    
+    def __init__(self, values=None, vocabulary=None, source=None, **kw):
+        
+        if vocabulary is not None and not isinstance(vocabulary, basestring):
+            raise ValueError("Persistent fields only support named vocabularies "
+                             "or vocabularies based on simple value sets.")
+        elif source is not None:
+            raise ValueError("Persistent fields do not support sources, only named "
+                             "vocabularies or vocabularies based on simple value sets.")
+
+        assert not (values is None and vocabulary is None), (
+               "You must specify either values or vocabulary.")
+        assert values is None or vocabulary is None, (
+               "You cannot specify both values and vocabulary.")
+
+        self.vocabularyName = None
+        
+        if values is not None:
+            
+            for value in values:
+                if not is_primitive(value):
+                    raise ValueError("Vocabulary values may only contain primitive values.")
+            
+            self._values = values
+        else:
+            self.vocabularyName = vocabulary            
+        
+        self._init_field = bool(self.vocabularyName)
+        super(zope.schema.Choice, self).__init__(**kw)
+        self._init_field = False
+
+    @property
+    def vocabulary(self):
+        if self._values is not None:
+            return zope.schema.vocabulary.SimpleVocabulary.fromValues(self._values)
+    DisallowedProperty.uses.append('vocabulary')

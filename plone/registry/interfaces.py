@@ -8,17 +8,10 @@ from zope.schema.interfaces import IField
 class IPersistentField(IField):
     """A field that can be persistent along with a record.
     
-    
     We provide our own implementation of the basic field types that are
     supported by the registry.
     """
     
-    def fromSibling(sibling):
-        """Create a persistent field form a non-persistent sibling field.
-        
-        This is a class method.
-        """
-
 class IRecord(Interface):
     """A record stored in the registry.
     """
@@ -141,5 +134,5 @@ class IRecordsProxy(Interface):
 
     __omitted__ = schema.Tuple(title=u"Fields that are not stored in the registry",
                                description=u"If any of these are accessed, you will get an AttributeError",
-                               value_type=schema.Id(title=u"Fieldname"),
+                               value_type=schema.ASCIILine(title=u"Fieldname"),
                                readonly=True)

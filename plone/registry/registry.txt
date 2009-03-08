@@ -1,28 +1,6 @@
-==============
-plone.registry
-==============
-
-This package provides debconf-like (or about:config-like) settings registries
-for Zope applications. A `registry`, with a dict-like API, is used to get and
-set values stored in `records`. Each record contains the actual value, as
-well as a `field` that describes the record in more detail. At a minimum, the
-field contains information about the type of value allowed, as well as a short
-title describing the record's purpose.
-
-Test setup
-==========
-
-To use this package, you must register the default adapter that can convert
-a standard zope.schema type field to the special persistent field type that
-plone.register requires. This is normally done in configure.zcml, but we do it
-manually here.
-
-    >>> from zope.component import provideAdapter
-    >>> from plone.registry.fieldfactory import persistent_field_adapter
-    >>> provideAdapter(persistent_field_adapter)
-
-Creating a registry
-===================
+================
+Using registries
+================
 
 You can create a new registry simply by instantiating the Registry class. The
 class and its data structures are persistent, so you can store them in the 

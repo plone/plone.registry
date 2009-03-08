@@ -3,5 +3,6 @@
     i18n_domain="plone.registry">
 
     <adapter factory=".fieldfactory.persistent_field_adapter" />
+    <adapter factory=".fieldfactory.choice_persistent_field_adapter" />
 
 </configure>

@@ -7,7 +7,10 @@ setup(name='plone.registry',
       version=version,
       description="A debconf-like (or about:config-like) registry for storing application settings",
       long_description=open("README.txt").read() + "\n" +
-                       open(os.path.join("docs", "HISTORY.txt")).read(),
+                       open(os.path.join("docs", "HISTORY.txt")).read() +
+                       open(os.path.join("plone", "registry", "registry.txt")).read() +
+                       open(os.path.join("plone", "registry", "events.txt")).read(),
+                       # we skip field.txt, as it's very low level
       # Get more strings from http://www.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
         "Framework :: Plone",

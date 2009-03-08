@@ -1,6 +1,6 @@
-==============
-plone.registry
-==============
+===============
+Registry events
+===============
 
 The registry fires certain events. These are:
 
@@ -13,21 +13,12 @@ The registry fires certain events. These are:
  * `plone.registry.interfaces.IRecordModifiedEvent`, when a record's value is
     modified.
 
-We can see them in action here. First, some test setup:
-
-    >>> from zope.component import eventtesting
-    >>> eventtesting.setUp()
-
-    >>> from zope.component import provideAdapter
-    >>> from plone.registry.fieldfactory import persistent_field_adapter
-    >>> provideAdapter(persistent_field_adapter)
-
-We'll then create a number of records, modify a few, and remove a few.
+To test these events, we will create, modify and remove a few records:
 
     >>> from plone.registry import Registry, Record, field
     >>> registry = Registry()
 
-These should fire IRecordAddedEvents:
+Adding a new record to the registry should fire IRecordAddedEvents:
 
     >>> registry.records['plone.registry.tests.age'] = \
     ...     Record(field.Int(title=u"Age", min=0, default=18))
@@ -35,25 +26,26 @@ These should fire IRecordAddedEvents:
     >>> registry.records['plone.registry.tests.cms'] = \
     ...     Record(field.TextLine(title=u"Preferred CMS"), value=u"Plone")
 
-This should fire an IRecordAddedEvent for each field in the IMailSettings:
+When creating records from an interface, one event is fired for each field
+in the interface.
 
     >>> from plone.registry.tests import IMailSettings
     >>> registry.register_interface(IMailSettings)
 
-This should fire an IRecordRemovedEvent:
+Deleting a record should fire an IRecordRemovedEvent:
 
     >>> del registry.records['plone.registry.tests.cms']
 
-This should fire an IRecordModifiedEvent
+Changing a record should fire an IRecordModifiedEvent:
 
     >>> registry['plone.registry.tests.age'] = 25
-
-as should this:
-
     >>> registry.records['plone.registry.tests.age'].value = 24
 
+Let's take a look at the events that were just fired:
+
     >>> from plone.registry.interfaces import IRecordEvent
-    >>> eventtesting.getEvents(IRecordEvent)
+    >>> from zope.component.eventtesting import getEvents
+    >>> getEvents(IRecordEvent)
     [<RecordAddedEvent for plone.registry.tests.age>,
      <RecordAddedEvent for plone.registry.tests.cms>,
      <RecordAddedEvent for plone.registry.tests.IMailSettings.sender>,
@@ -63,9 +55,9 @@ as should this:
      <RecordModifiedEvent for plone.registry.tests.age>]
 
 For the modified events, we can also check the value before and after the
-modification.
+change.
 
     >>> from plone.registry.interfaces import IRecordModifiedEvent
-    >>> [(repr(e), e.old_value, e.new_value,) for e in eventtesting.getEvents(IRecordModifiedEvent)]
+    >>> [(repr(e), e.old_value, e.new_value,) for e in getEvents(IRecordModifiedEvent)]
     [('<RecordModifiedEvent for plone.registry.tests.age>', 18, 25),
      ('<RecordModifiedEvent for plone.registry.tests.age>', 25, 24)]
