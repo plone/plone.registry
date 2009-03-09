@@ -241,6 +241,33 @@ The int field describes an integer or long.
     >>> f.constraint(123)
     True
 
+FLoat
+---
+
+The float field describes a float.
+
+    >>> f = field.Float(title=u"Test", min=-123.0, max=1234.0)
+    >>> isinstance(f, schema.Float)
+    True
+    >>> isinstance(f, Persistent)
+    True
+    
+    >>> f.order
+    -1
+
+    >>> field.Float(title=u"Test", constraint=lambda x: True)
+    Traceback (most recent call last):
+    ...
+    ValueError: Persistent fields does not support setting the `constraint` property
+    
+    >>> f.constraint = lambda x: False
+    Traceback (most recent call last):
+    ...
+    ValueError: Persistent fields does not support setting the `constraint` property
+
+    >>> f.constraint(123)
+    True
+
 Password
 --------
 

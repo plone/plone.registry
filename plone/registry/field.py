@@ -124,7 +124,10 @@ class Bool(PersistentField, zope.schema.Bool):
 
 class Int(PersistentField, zope.schema.Int):
     pass
-    
+
+class Float(PersistentField, zope.schema.Float):
+    pass
+
 class Tuple(PersistentCollectionField, zope.schema.Tuple):
     pass
     
