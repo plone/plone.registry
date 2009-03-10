@@ -43,8 +43,6 @@ class Record(Persistent):
     __name__ = u""
     __parent__ = None
 
-    _value = None
-
     field = None
     value = FieldValidatedProperty('value', None)
 
