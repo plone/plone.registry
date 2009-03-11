@@ -68,7 +68,21 @@ class Registry(Persistent):
             if persistent_field is None:
                 raise TypeError("There is no persistent field equivalent for "
                                 "the field `%s` of type `%s`." % (name, field.__class__.__name__))
-            self.records[record_name] = Record(persistent_field, interface=interface, field_name=name)
+            
+            value = persistent_field.default
+            
+            # Attempt to retain the exisiting value
+            if record_name in self.records:
+                existing_record = self.records[record_name]
+                value = existing_record.value
+                bound_field = persistent_field.bind(existing_record)
+                try:
+                    bound_field.validate(value)
+                except:
+                    value = persistent_field.default
+            
+            self.records[record_name] = Record(persistent_field, value, 
+                                               interface=interface, field_name=name)
 
 class Records(Persistent):
     """The records stored in the registry

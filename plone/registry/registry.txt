@@ -210,6 +210,43 @@ fields.
 
     >>> registry.register_interface(IMailPreferences, omit=('settings',))
 
+Once an interface's records have been registered, we can get and set their
+values as normal:
+
+    >>> registry['plone.registry.tests.IMailSettings.sender']
+    u'root@localhost'
+    
+    >>> registry['plone.registry.tests.IMailSettings.sender'] = u"webmaster@localhost"
+    >>> registry['plone.registry.tests.IMailSettings.sender']
+    u'webmaster@localhost'
+
+If we sub-sequently re-register the same interface, the value will be retained
+if possible:
+
+    >>> registry.register_interface(IMailSettings)
+    >>> registry['plone.registry.tests.IMailSettings.sender']
+    u'webmaster@localhost'
+
+However, if the value is no longer valid, we will revert to the default. To
+test that, let's sneakily modify the field for a while.
+
+    >>> old_field = IMailSettings['sender']
+    >>> IMailSettings._InterfaceClass__attrs['sender'] = field.Int(title=u"Definitely not a string", default=2)
+    >>> if hasattr(IMailSettings, '_v_attrs'):
+    ...     del IMailSettings._v_attrs['sender']
+    >>> registry.register_interface(IMailSettings)
+    >>> registry['plone.registry.tests.IMailSettings.sender']
+    2
+    
+But let's put it back the way it was.
+
+    >>> IMailSettings._InterfaceClass__attrs['sender'] = old_field
+    >>> if hasattr(IMailSettings, '_v_attrs'):
+    ...     del IMailSettings._v_attrs['sender']
+    >>> registry.register_interface(IMailSettings)
+    >>> registry['plone.registry.tests.IMailSettings.sender']
+    u'root@localhost'
+
 Accessing the original interface
 --------------------------------
 
