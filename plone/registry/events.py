@@ -1,9 +1,13 @@
 from zope.interface import implements
+from zope.component import subscribers, adapter
 
 from plone.registry.interfaces import IRecordEvent
 from plone.registry.interfaces import IRecordAddedEvent
 from plone.registry.interfaces import IRecordRemovedEvent
 from plone.registry.interfaces import IRecordModifiedEvent
+from plone.registry.interfaces import IInterfaceAwareRecord
+
+from plone.registry.recordsproxy import RecordsProxy
 
 class RecordEvent(object):
     implements(IRecordEvent)
@@ -27,3 +31,27 @@ class RecordModifiedEvent(RecordEvent):
         super(RecordModifiedEvent, self).__init__(record)
         self.old_value = old_value
         self.new_value = new_value
+
+@adapter(IRecordEvent)
+def redispatch_interface_aware_record_events(event):
+    """When an interface-aware record received a record event,
+    redispatch the event in a simlar manner to the IObjectEvent redispatcher.
+    
+    Note that this means one IRecordModifiedEvent will be fired for each
+    change to a record.
+    """
+    
+    record = event.record
+    
+    if not IInterfaceAwareRecord.providedBy(record):
+        return
+    
+    schema = record.interface
+    if schema is None:
+        return
+    
+    proxy = RecordsProxy(record.__parent__, schema)
+    
+    adapters = subscribers((proxy, event), None)
+    for adapter in adapters:
+        pass # getting them does the work

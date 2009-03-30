@@ -105,6 +105,12 @@ and assigning it to the registry in one go, like this:
     >>> registry.records['plone.records.tests.cms'] = \
     ...     Record(field.TextLine(title=u"CMS of choice"), u"Plone")
 
+The record can now be obtained. Note that it has a nice __repr__ to help
+debugging.
+
+    >>> registry.records['plone.records.tests.cms']
+    <Record plone.records.tests.cms>
+    
 Accessing and manipulating record values
 ----------------------------------------
 
@@ -281,7 +287,7 @@ related settings.
 
     >>> proxy = registry.for_interface(IMailSettings)
     >>> proxy
-    <plone.registry.recordsproxy.RecordsProxy object at ...>
+    <RecordsProxy for plone.registry.tests.IMailSettings>
     
 The proxy is not a persistent object on its own.
 
@@ -337,7 +343,7 @@ It is possible to disable this check, however. This will be a bit more
 efficient:
 
     >>> registry.for_interface(IMailPreferences, check=False)
-    <plone.registry.recordsproxy.RecordsProxy object at ...>
+    <RecordsProxy for plone.registry.tests.IMailPreferences>
 
 A better way, however, is to explicitly declare that some fields are omitted:
 

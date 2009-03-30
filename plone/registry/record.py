@@ -77,3 +77,6 @@ class Record(Persistent):
             return resolve(self.interface_name)
         except ImportError:
             return None
+    
+    def __repr__(self):
+        return "<Record %s>" % self.__name__

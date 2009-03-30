@@ -35,3 +35,6 @@ class RecordsProxy(object):
             self.__registry__[full_name] = value
         else:
             self.__dict__[name] = value
+    
+    def __repr__(self):
+        return "<RecordsProxy for %s>" % self.__schema__.__identifier__

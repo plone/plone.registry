@@ -5,4 +5,6 @@
     <adapter factory=".fieldfactory.persistent_field_adapter" />
     <adapter factory=".fieldfactory.choice_persistent_field_adapter" />
 
+    <subscriber handler=".events.redispatch_interface_aware_record_events" />
+
 </configure>
