@@ -42,22 +42,22 @@ class IRecordModifiedEvent(IRecordEvent):
     """Event fired when a record's value is modified.
     """
 
-    old_value = schema.Field(title=u"The record's previous value")
-    new_value = schema.Field(title=u"The record's new value")
+    oldValue = schema.Field(title=u"The record's previous value")
+    newValue = schema.Field(title=u"The record's new value")
 
 class IInterfaceAwareRecord(Interface):
     """A record will be marked with this interface if it knows which
     interface its field came from.
     """
     
-    interface_name = schema.DottedName(title=u"Dotted name to interface")
+    interfaceName = schema.DottedName(title=u"Dotted name to interface")
     
     interface = schema.Object(title=u"Interface that provided the record",
                               description=u"May be None if the interface is no longer available",
                               schema=IInterface,
                               readonly=True)
     
-    field_name = schema.ASCIILine(title=u"Name of the field in the original interface")
+    fieldName = schema.ASCIILine(title=u"Name of the field in the original interface")
 
 class IRegistry(Interface):
     """The configuration registry
@@ -94,7 +94,7 @@ class IRegistry(Interface):
                                  "package name and optionally an interface "
                                  "named, if the record can be described by a "
                                  "field in an interface (see also "
-                                 "register_interface() below), e.g. "
+                                 "registerInterface() below), e.g. "
                                  "my.package.interfaces.IMySettings.somefield.",
                 ),
             value_type=schema.Object(
@@ -103,13 +103,13 @@ class IRegistry(Interface):
                 ),
         )
         
-    def for_interface(interface, check=True, omit=()):
+    def forInterface(interface, check=True, omit=()):
         """Get an IRecordsProxy for the given interface. If `check` is True,
         an error will be raised if one or more fields in the interface does
         not have an equivalent setting.
         """
 
-    def register_interface(interface, omit=()):
+    def registerInterface(interface, omit=()):
         """Create a set of records based on the given interface. For each
         schema field in the interface, a record will be inserted with a
         name like `${interface.__identifier__}.${field.__name__}`, and a
@@ -117,6 +117,7 @@ class IRegistry(Interface):
         listed in `omit`, or with the `readonly` property set to True, will
         be ignored.
         """
+
 class IRecordsProxy(Interface):
     """This object is returned by IRegistry.by_interface(). It will be
     made to provide the relevant interface, i.e. it will have the

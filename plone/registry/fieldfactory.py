@@ -14,7 +14,7 @@ from plone.registry.field import is_primitive
 
 @zope.interface.implementer(IPersistentField)
 @zope.component.adapter(IField)
-def persistent_field_adapter(context):
+def persistentFieldAdapter(context):
     """Turn a non-persistent field into a persistent one
     """
     
@@ -54,11 +54,11 @@ def persistent_field_adapter(context):
 
 @zope.interface.implementer(IPersistentField)
 @zope.component.adapter(IChoice)
-def choice_persistent_field_adapter(context):
+def choicePersistentFieldAdapter(context):
     """Special handling for Choice fields.
     """
     
-    instance = persistent_field_adapter(context)
+    instance = persistentFieldAdapter(context)
     if instance is None:
         return None
     

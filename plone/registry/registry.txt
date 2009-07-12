@@ -172,7 +172,7 @@ Note that this contains standard fields.
 
 We can create records from this interface like this:
 
-    >>> registry.register_interface(IMailSettings)
+    >>> registry.registerInterface(IMailSettings)
 
 One record for each field in the interface has now been created. Their names
 are the full dotted names to those fields:
@@ -206,15 +206,15 @@ get an error:
     >>> IMailPreferences['settings']
     <zope.schema._field.Object object at ...>
 
-    >>> registry.register_interface(IMailPreferences)
+    >>> registry.registerInterface(IMailPreferences)
     Traceback (most recent call last):
     ...
     TypeError: There is no persistent field equivalent for the field `settings` of type `Object`.
 
-Whoops! We can, however, tell register_interface() to ignore one or more
+Whoops! We can, however, tell registerInterface() to ignore one or more
 fields.
 
-    >>> registry.register_interface(IMailPreferences, omit=('settings',))
+    >>> registry.registerInterface(IMailPreferences, omit=('settings',))
 
 Once an interface's records have been registered, we can get and set their
 values as normal:
@@ -229,7 +229,7 @@ values as normal:
 If we sub-sequently re-register the same interface, the value will be retained
 if possible:
 
-    >>> registry.register_interface(IMailSettings)
+    >>> registry.registerInterface(IMailSettings)
     >>> registry['plone.registry.tests.IMailSettings.sender']
     u'webmaster@localhost'
 
@@ -240,7 +240,7 @@ test that, let's sneakily modify the field for a while.
     >>> IMailSettings._InterfaceClass__attrs['sender'] = field.Int(title=u"Definitely not a string", default=2)
     >>> if hasattr(IMailSettings, '_v_attrs'):
     ...     del IMailSettings._v_attrs['sender']
-    >>> registry.register_interface(IMailSettings)
+    >>> registry.registerInterface(IMailSettings)
     >>> registry['plone.registry.tests.IMailSettings.sender']
     2
     
@@ -249,7 +249,7 @@ But let's put it back the way it was.
     >>> IMailSettings._InterfaceClass__attrs['sender'] = old_field
     >>> if hasattr(IMailSettings, '_v_attrs'):
     ...     del IMailSettings._v_attrs['sender']
-    >>> registry.register_interface(IMailSettings)
+    >>> registry.registerInterface(IMailSettings)
     >>> registry['plone.registry.tests.IMailSettings.sender']
     u'root@localhost'
 
@@ -261,7 +261,7 @@ does not break the golden rules: internally, we only store the name of the
 interface, and resolve it at runtime.
 
 Records that know about interfaces are marked with `IInterfaceAwareRecord` and
-have two additional properties: `interface` and `field_name`.
+have two additional properties: `interface` and `fieldName`.
 
     >>> from plone.registry.interfaces import IInterfaceAwareRecord
     >>> IInterfaceAwareRecord.providedBy(age_record)
@@ -269,7 +269,7 @@ have two additional properties: `interface` and `field_name`.
     >>> IInterfaceAwareRecord.providedBy(sender_record)
     True
     
-    >>> sender_record.interface_name
+    >>> sender_record.interfaceName
     'plone.registry.tests.IMailSettings'
     
     >>> sender_record.interface is IMailSettings
@@ -285,7 +285,7 @@ values to the registry. This is useful, for example, to create a form using
 interface, or simply as a more convenient API when working with multiple,
 related settings.
 
-    >>> proxy = registry.for_interface(IMailSettings)
+    >>> proxy = registry.forInterface(IMailSettings)
     >>> proxy
     <RecordsProxy for plone.registry.tests.IMailSettings>
     
@@ -324,17 +324,17 @@ Values not in the interface will raise an AttributeError:
     ...
     AttributeError: age
     
-Note that by default, the for_interface() method will check that the necessary
+Note that by default, the forInterface() method will check that the necessary
 records have been registered. For example, we cannot use any old interface:
 
-    >>> registry.for_interface(IInterfaceAwareRecord)
+    >>> registry.forInterface(IInterfaceAwareRecord)
     Traceback (most recent call last):
     ...
     KeyError: 'Interface `plone.registry.interfaces.IInterfaceAwareRecord` defines a field `interface`, for which there is no record.'
     
 By default, we also cannot use an interface for which only some records exist:
 
-    >>> registry.for_interface(IMailPreferences)
+    >>> registry.forInterface(IMailPreferences)
     Traceback (most recent call last):
     ...
     KeyError: 'Interface `plone.registry.tests.IMailPreferences` defines a field `settings`, for which there is no record.'
@@ -342,12 +342,12 @@ By default, we also cannot use an interface for which only some records exist:
 It is possible to disable this check, however. This will be a bit more
 efficient:
 
-    >>> registry.for_interface(IMailPreferences, check=False)
+    >>> registry.forInterface(IMailPreferences, check=False)
     <RecordsProxy for plone.registry.tests.IMailPreferences>
 
 A better way, however, is to explicitly declare that some fields are omitted:
 
-    >>> pref_proxy = registry.for_interface(IMailPreferences, omit=('settings',))
+    >>> pref_proxy = registry.forInterface(IMailPreferences, omit=('settings',))
 
 In this case, the omitted fields will default to their 'missing' value:
 

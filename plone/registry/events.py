@@ -27,13 +27,13 @@ class RecordRemovedEvent(RecordEvent):
 class RecordModifiedEvent(RecordEvent):
     implements(IRecordModifiedEvent)
     
-    def __init__(self, record, old_value, new_value):
+    def __init__(self, record, oldValue, newValue):
         super(RecordModifiedEvent, self).__init__(record)
-        self.old_value = old_value
-        self.new_value = new_value
+        self.oldValue = oldValue
+        self.newValue = newValue
 
 @adapter(IRecordEvent)
-def redispatch_interface_aware_record_events(event):
+def redispatchInterfaceAwareRecordEvents(event):
     """When an interface-aware record received a record event,
     redispatch the event in a simlar manner to the IObjectEvent redispatcher.
     

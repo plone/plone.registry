@@ -27,10 +27,10 @@ class FieldValidatedProperty(object):
         if value != field.missing_value:
             field.validate(value)
         
-        old_value = self.__get__(inst)
+        oldValue = self.__get__(inst)
         inst.__dict__[self._name] = value
         
-        notify(RecordModifiedEvent(inst, old_value, value))
+        notify(RecordModifiedEvent(inst, oldValue, value))
 
 _marker = object()
 
@@ -46,7 +46,7 @@ class Record(Persistent):
     field = None
     value = FieldValidatedProperty('value', None)
 
-    def __init__(self, field, value=_marker, interface=None, field_name=None):
+    def __init__(self, field, value=_marker, interface=None, fieldName=None):
         if not IPersistentField.providedBy(field):
             raise ValueError("Field is not persistent")
 
@@ -65,16 +65,16 @@ class Record(Persistent):
         # Bypass event notification
         self.__dict__['value'] = value
         
-        self.interface_name = None
+        self.interfaceName = None
         if interface is not None:
             alsoProvides(self, IInterfaceAwareRecord)
-            self.interface_name = interface.__identifier__
-        self.field_name = field_name
+            self.interfaceName = interface.__identifier__
+        self.fieldName = fieldName
     
     @property
     def interface(self):
         try:
-            return resolve(self.interface_name)
+            return resolve(self.interfaceName)
         except ImportError:
             return None
     

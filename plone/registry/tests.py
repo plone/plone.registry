@@ -4,8 +4,8 @@ import doctest
 from zope.testing import doctestunit
 from zope.component import provideAdapter, testing, eventtesting
 
-from plone.registry.fieldfactory import persistent_field_adapter
-from plone.registry.fieldfactory import choice_persistent_field_adapter
+from plone.registry.fieldfactory import persistentFieldAdapter
+from plone.registry.fieldfactory import choicePersistentFieldAdapter
 
 from zope.interface import Interface
 from zope import schema
@@ -28,8 +28,8 @@ def setUp(test=None):
     testing.setUp()
     eventtesting.setUp()
     
-    provideAdapter(persistent_field_adapter)
-    provideAdapter(choice_persistent_field_adapter)
+    provideAdapter(persistentFieldAdapter)
+    provideAdapter(choicePersistentFieldAdapter)
 
 def test_suite():
     return unittest.TestSuite([

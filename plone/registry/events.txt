@@ -30,7 +30,7 @@ When creating records from an interface, one event is fired for each field
 in the interface.
 
     >>> from plone.registry.tests import IMailSettings
-    >>> registry.register_interface(IMailSettings)
+    >>> registry.registerInterface(IMailSettings)
 
 Deleting a record should fire an IRecordRemovedEvent:
 
@@ -58,7 +58,7 @@ For the modified events, we can also check the value before and after the
 change.
 
     >>> from plone.registry.interfaces import IRecordModifiedEvent
-    >>> [(repr(e), e.old_value, e.new_value,) for e in getEvents(IRecordModifiedEvent)]
+    >>> [(repr(e), e.oldValue, e.newValue,) for e in getEvents(IRecordModifiedEvent)]
     [('<RecordModifiedEvent for plone.registry.tests.age>', 18, 25),
      ('<RecordModifiedEvent for plone.registry.tests.age>', 25, 24)]
      
@@ -74,14 +74,14 @@ package's ZCML.
 
     >>> from zope.component.eventtesting import clearEvents
     >>> from zope.component import provideHandler
-    >>> from plone.registry.events import redispatch_interface_aware_record_events
+    >>> from plone.registry.events import redispatchInterfaceAwareRecordEvents
     >>> clearEvents()
-    >>> provideHandler(redispatch_interface_aware_record_events)
+    >>> provideHandler(redispatchInterfaceAwareRecordEvents)
 
 We'll then register a schema interface.
 
     >>> from plone.registry.tests import IMailSettings
-    >>> registry.register_interface(IMailSettings)
+    >>> registry.registerInterface(IMailSettings)
 
 We could now register an event handler to print any record event occurring on
 an IMailSettings record. More specialised event handlers for e.g.

@@ -48,7 +48,7 @@ class Registry(Persistent):
     
     # Schema interface API
     
-    def for_interface(self, interface, check=True, omit=()):
+    def forInterface(self, interface, check=True, omit=()):
         prefix = interface.__identifier__ + '.'
         if check:
             for name in getFieldNames(interface):
@@ -58,7 +58,7 @@ class Registry(Persistent):
         
         return RecordsProxy(self, interface, omitted=omit)
 
-    def register_interface(self, interface, omit=()):
+    def registerInterface(self, interface, omit=()):
         prefix = interface.__identifier__ + '.'
         for name, field in getFieldsInOrder(interface):
             if name in omit or field.readonly:
@@ -82,7 +82,7 @@ class Registry(Persistent):
                     value = persistent_field.default
             
             self.records[record_name] = Record(persistent_field, value, 
-                                               interface=interface, field_name=name)
+                                               interface=interface, fieldName=name)
 
 class Records(Persistent):
     """The records stored in the registry
