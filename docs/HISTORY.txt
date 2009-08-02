@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.0b1 - 2009-08-02
+------------------
+
+* Fix a bug in bind() for Choice fields.
+  [optilude]
+
 1.0a2 - 2009-07-12
 ------------------
 

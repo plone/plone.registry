@@ -31,6 +31,40 @@ def setUp(test=None):
     provideAdapter(persistentFieldAdapter)
     provideAdapter(choicePersistentFieldAdapter)
 
+class TestBugs(unittest.TestCase):
+    """Regression tests for bugs that have been fixed
+    """
+    
+    def setUp(self):
+        setUp(self)
+        
+    def tearDown(self):
+        testing.tearDown(self)
+    
+    def test_bind_choice(self):
+        from plone.registry.field import Choice
+        
+        from zope.schema.vocabulary import getVocabularyRegistry
+        from zope.schema.vocabulary import SimpleVocabulary
+        
+        def vocabFactory(obj):
+            return SimpleVocabulary.fromValues(['one', 'two'])
+        
+        reg = getVocabularyRegistry()
+        reg.register('my.vocab', vocabFactory)
+        
+        class T(object):
+            f = None
+        
+        f = Choice(__name__='f', title=u"Test", vocabulary="my.vocab")
+        t = T()
+        
+        # Bug: this would give "AttributeError: can't set attribute" on
+        # clone.vocabulary
+        f.bind(t)
+
+        
+
 def test_suite():
     return unittest.TestSuite([
         doctestunit.DocFileSuite(
@@ -45,4 +79,5 @@ def test_suite():
             'field.txt', package='plone.registry',
             optionflags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
             setUp=setUp, tearDown=testing.tearDown),
+        unittest.makeSuite(TestBugs),
         ])

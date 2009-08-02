@@ -13,6 +13,7 @@ import zope.interface
 import zope.schema
 import zope.schema._field
 import zope.schema.vocabulary
+import zope.schema.interfaces
 
 _missing_value_marker = object()
 
@@ -174,6 +175,7 @@ class Choice(PersistentField, zope.schema.Choice):
     # We can only support string name or primitive=list vocabularies
     
     _values = None
+    _vocabulary = None
     
     def __init__(self, values=None, vocabulary=None, source=None, **kw):
         
@@ -207,6 +209,23 @@ class Choice(PersistentField, zope.schema.Choice):
 
     @property
     def vocabulary(self):
+        # may be set by bind()
+        if self._vocabulary is not None:
+            return self._vocabulary
         if self._values is not None:
             return zope.schema.vocabulary.SimpleVocabulary.fromValues(self._values)
     DisallowedProperty.uses.append('vocabulary')
+    
+    # override bind to allow us to keep constraints on the 'vocabulary'
+    # property
+    def bind(self, object):
+        clone = zope.schema.Field.bind(self, object)
+        # get registered vocabulary if needed:
+        if zope.schema.interfaces.IContextSourceBinder.providedBy(self.vocabulary):
+            clone._vocabulary = self.vocabulary(object)
+            assert zope.schema.interfaces.ISource.providedBy(clone.vocabulary)
+        elif clone.vocabulary is None and self.vocabularyName is not None:
+            vr = zope.schema.vocabulary.getVocabularyRegistry()
+            clone._vocabulary = vr.get(object, self.vocabularyName)
+            assert zope.schema.interfaces.ISource.providedBy(clone.vocabulary)
+        return clone
