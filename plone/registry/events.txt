@@ -63,7 +63,7 @@ change.
      ('<RecordModifiedEvent for plone.registry.tests.age>', 25, 24)]
      
 IObjectEvent-style redispatchers
---------------------------------
+================================
 
 There is a special event handler which takes care of re-dispatching registry
 events based on the schema interface prescribed by the record.
