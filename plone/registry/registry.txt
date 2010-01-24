@@ -130,7 +130,7 @@ Again, values are validated:
     >>> registry['plone.records.tests.cms'] = 'Joomla'
     Traceback (most recent call last):
     ...
-    WrongType: ('Joomla', <type 'unicode'>)
+    WrongType: ('Joomla', <type 'unicode'>...)
 
 There is also a get() method:
 
