@@ -129,6 +129,9 @@ class Int(PersistentField, zope.schema.Int):
 class Float(PersistentField, zope.schema.Float):
     pass
 
+class Decimal(PersistentField, zope.schema.Decimal):
+    pass
+
 class Tuple(PersistentCollectionField, zope.schema.Tuple):
     pass
     

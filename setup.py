@@ -9,8 +9,8 @@ setup(name='plone.registry',
       long_description=open("README.txt").read() + "\n" +
                        open(os.path.join("docs", "HISTORY.txt")).read() +
                        open(os.path.join("plone", "registry", "registry.txt")).read() +
-                       open(os.path.join("plone", "registry", "events.txt")).read(),
-                       # we skip field.txt, as it's very low level
+                       open(os.path.join("plone", "registry", "events.txt")).read() + 
+                       open(os.path.join("plone", "registry", "fields.txt")).read(),
       # Get more strings from http://www.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
         "Framework :: Plone",

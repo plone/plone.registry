@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.0b2 - unreleased
+------------------
+
+* Added support for Decimal fields
+  [optilude]
+
 1.0b1 - 2009-08-02
 ------------------
 
