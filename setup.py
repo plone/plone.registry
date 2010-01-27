@@ -10,7 +10,7 @@ setup(name='plone.registry',
                        open(os.path.join("docs", "HISTORY.txt")).read() +
                        open(os.path.join("plone", "registry", "registry.txt")).read() +
                        open(os.path.join("plone", "registry", "events.txt")).read() + 
-                       open(os.path.join("plone", "registry", "fields.txt")).read(),
+                       open(os.path.join("plone", "registry", "field.txt")).read(),
       # Get more strings from http://www.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
         "Framework :: Plone",
