@@ -253,6 +253,21 @@ But let's put it back the way it was.
     >>> registry['plone.registry.tests.IMailSettings.sender']
     u'root@localhost'
 
+Sometimes, you may want to use an interface as a template for multiple
+instances of a set of fields, rather than defining them all by hand. This is
+especially useful when you want to allow third-party packages to provide
+information. To accomplish this, we can provide a prefix with the
+`registerInterface' call. This will take precedence over the __identifier__
+that is usually used.
+
+    >>> registry.registerInterface(IMailSettings, prefix="plone.registry.tests.alternativesettings")
+
+These values are now available in the same way as the original settings:
+
+    >>> sender_record = registry.records['plone.registry.tests.alternativesettings.sender']
+    >>> smtp_host_record = registry.records['plone.registry.tests.alternativesettings.smtp_host']
+
+
 Accessing the original interface
 --------------------------------
 

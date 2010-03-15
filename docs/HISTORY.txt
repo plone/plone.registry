@@ -7,6 +7,10 @@ Changelog
 * Added support for Decimal fields
   [optilude]
 
+* Add a prefix option to registerInterface to allow an interface to be used as
+  a template for a series of values, rather than single use.
+  [MatthewWilkes]
+
 1.0b1 - 2009-08-02
 ------------------
 

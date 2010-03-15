@@ -58,8 +58,13 @@ class Registry(Persistent):
         
         return RecordsProxy(self, interface, omitted=omit)
 
-    def registerInterface(self, interface, omit=()):
-        prefix = interface.__identifier__ + '.'
+    def registerInterface(self, interface, omit=(), prefix=None):
+        if prefix is None:
+            prefix = interface.__identifier__
+        
+        if not prefix.endswith("."):
+             prefix += '.'
+        
         for name, field in getFieldsInOrder(interface):
             if name in omit or field.readonly:
                 continue
