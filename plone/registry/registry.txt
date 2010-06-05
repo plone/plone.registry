@@ -303,7 +303,21 @@ related settings.
     >>> proxy = registry.forInterface(IMailSettings)
     >>> proxy
     <RecordsProxy for plone.registry.tests.IMailSettings>
-    
+
+If you use your registry values in code
+which might be encountered on normal HTML rendering
+paths (e.g. in a viewlet) you need to be aware that records
+might not exist or they are invalid. ``forInterface()``
+will raise KeyError on this kind of situations::
+
+   try:
+       proxy = registry.forInterface(IMailSettings)
+   except KeyError:
+       # Gracefully handled cases
+       # when GenericSetup installer has not been run or rerun
+       # e.g. by returning or using some default values
+       pass
+       
 The proxy is not a persistent object on its own.
 
     >>> from persistent.interfaces import IPersistent
