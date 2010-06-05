@@ -307,7 +307,7 @@ related settings.
 If you use your registry values in code
 which might be encountered on normal HTML rendering
 paths (e.g. in a viewlet) you need to be aware that records
-might not exist or they are invalid. ``forInterface()``
+might not exist or they are invalid. `forInterface()`
 will raise KeyError on this kind of situations::
 
    try:
