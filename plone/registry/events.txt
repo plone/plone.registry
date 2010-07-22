@@ -71,7 +71,7 @@ events based on the schema interface prescribed by the record.
 Let's re-set the event testing framework and register the re-dispatching event
 subscriber. Normally, this would happen automatically by including this
 package's ZCML.
-
+    
     >>> from zope.component.eventtesting import clearEvents
     >>> from zope.component import provideHandler
     >>> from plone.registry.events import redispatchInterfaceAwareRecordEvents

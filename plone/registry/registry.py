@@ -74,6 +74,9 @@ class Registry(Persistent):
                 raise TypeError("There is no persistent field equivalent for "
                                 "the field `%s` of type `%s`." % (name, field.__class__.__name__))
             
+            persistent_field.interfaceName = interface.__identifier__
+            persistent_field.fieldName = name
+            
             value = persistent_field.default
             
             # Attempt to retain the exisiting value
@@ -86,10 +89,9 @@ class Registry(Persistent):
                 except:
                     value = persistent_field.default
             
-            self.records[record_name] = Record(persistent_field, value, 
-                                               interface=interface, fieldName=name)
+            self.records[record_name] = Record(persistent_field, value, _validate=False)
 
-class Records(Persistent):
+class Records(object):
     """The records stored in the registry
     """
     
@@ -97,6 +99,8 @@ class Records(Persistent):
     
     def __init__(self, parent):
         self.__parent__ = parent
+        
+        self.fields = OOBTree()
         self.data = OOBTree()
 
     def __setitem__(self, name, record):
@@ -107,24 +111,44 @@ class Records(Persistent):
         if not IPersistentField.providedBy(record.field):
             raise ValueError("The record's field must be an IPersistentField.")
         
+        self.fields[name] = record.field
+        self.data[name] = record.value
+        
         record.__name__ = name
         record.__parent__ = self.__parent__
-        self.data[name] = record
+        
         notify(RecordAddedEvent(record))
     
     def __delitem__(self, name):
         record = self[name]
+        
+        # unbind the record so that it won't attempt to look up values from
+        # the registry anymore
+        record.__parent__ = None
+        
+        del self.fields[name]
         del self.data[name]
+        
         notify(RecordRemovedEvent(record))
-
-    # Unfortunately, you can't just subclass an OOBTree if you want to
-    # persist it...
-
+    
+    # Basic dict API
+    
     def __getitem__(self, name):
-        return self.data.__getitem__(name)
+        
+        field = self.fields[name]
+        value = self.data[name]
+        
+        record = Record(field, value, _validate=False)
+        record.__name__ = name
+        record.__parent__ = self.__parent__
+        
+        return record
     
     def get(self, name, default=None):
-        return self.data.get(name, default)
+        try:
+            return self[name]
+        except KeyError:
+            return default
     
     def __nonzero__(self):
         return self.data.__nonzero__()
@@ -135,17 +159,14 @@ class Records(Persistent):
     def __iter__(self):
         return self.data.__iter__()
     
-    def __getslice__(self, index1, index2):
-        return self.data.__getslice__(index1, index2)
-        
     def has_key(self, name):
         return self.data.has_key(name)
         
     def __contains__(self, name):
         return self.data.__contains__(name)
         
-    def keys(self, min=None, max=None, excludemin=False, excludemax=False):
-        return self.data.keys(min, max, excludemin, excludemax)
+    def keys(self):
+        return self.data.keys()
         
     def maxKey(self, key=None):
         return self.data.maxKey(key)
@@ -153,35 +174,17 @@ class Records(Persistent):
     def minKey(self, key=None):
         return self.data.minKey(key)
         
-    def values(self, min=None, max=None, excludemin=False, excludemax=False):
-        return self.data.values(min, max, excludemin, excludemax)
+    def values(self):
+        return [self[name] for name in self.keys()]
         
-    def items(self, min=None, max=None, excludemin=False, excludemax=False):
-        return self.data.items(min, max, excludemin, excludemax)
+    def items(self):
+        return [(name, self[name],) for name in self.keys()]
     
-    def update(self, collection):
-        self.data.update(collection)
-        
-    def byValue(self, minValue):
-        self.data.byValue(minValue)
-        
-    def setdefault(self, key, d):
-        return self.data.setdefault(key, d)
-        
-    def pop(self, key, d):
-        return self.data.pop(key, d)
-        
-    def insert(self, key, value):
-        self.data.insert(key, value)
-        
-    def difference(self, c1, c2):
-        return self.data.difference(c1, c2)
-        
-    def union(self, c1, c2):
-        return self.data.union(c1, c2)
-    
-    def intersection(self, c1, c2):
-        return self.data.intersection(c1, c2)
-    
+    def setdefault(self, key, value):
+        if key not in self:
+            self[key] = value
+        return self[key]
+
     def clear(self):
+        self.fields.clear()
         self.data.clear()

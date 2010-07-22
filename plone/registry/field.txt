@@ -32,8 +32,6 @@ The bytes field describes a string of bytes.
     >>> f = field.Bytes(title=u"Test", min_length=0, max_length=10)
     >>> isinstance(f, schema.Bytes)
     True
-    >>> isinstance(f, Persistent)
-    True
     
     >>> f.order
     -1
@@ -59,8 +57,6 @@ The bytes field describes a string of bytes, disallowing newlines.
     >>> f = field.BytesLine(title=u"Test", min_length=0, max_length=10)
     >>> isinstance(f, schema.BytesLine)
     True
-    >>> isinstance(f, Persistent)
-    True
     
     >>> f.order
     -1
@@ -85,8 +81,6 @@ The ASCII field describes a string containing only ASCII characters.
 
     >>> f = field.ASCII(title=u"Test", min_length=0, max_length=10)
     >>> isinstance(f, schema.ASCII)
-    True
-    >>> isinstance(f, Persistent)
     True
     
     >>> f.order
@@ -114,8 +108,6 @@ disallowing newlines.
     >>> f = field.ASCIILine(title=u"Test", min_length=0, max_length=10)
     >>> isinstance(f, schema.ASCIILine)
     True
-    >>> isinstance(f, Persistent)
-    True
     
     >>> f.order
     -1
@@ -140,8 +132,6 @@ The text field describes a unicode string.
 
     >>> f = field.Text(title=u"Test", min_length=0, max_length=10)
     >>> isinstance(f, schema.Text)
-    True
-    >>> isinstance(f, Persistent)
     True
     
     >>> f.order
@@ -168,8 +158,6 @@ The text line field describes a unicode string, disallowing newlines
     >>> f = field.TextLine(title=u"Test", min_length=0, max_length=10)
     >>> isinstance(f, schema.TextLine)
     True
-    >>> isinstance(f, Persistent)
-    True
     
     >>> f.order
     -1
@@ -194,8 +182,6 @@ The bool field describes a boolean.
 
     >>> f = field.Bool(title=u"Test")
     >>> isinstance(f, schema.Bool)
-    True
-    >>> isinstance(f, Persistent)
     True
     
     >>> f.order
@@ -222,8 +208,6 @@ The int field describes an integer or long.
     >>> f = field.Int(title=u"Test", min=-123, max=1234)
     >>> isinstance(f, schema.Int)
     True
-    >>> isinstance(f, Persistent)
-    True
     
     >>> f.order
     -1
@@ -248,8 +232,6 @@ The float field describes a float.
 
     >>> f = field.Float(title=u"Test", min=-123.0, max=1234.0)
     >>> isinstance(f, schema.Float)
-    True
-    >>> isinstance(f, Persistent)
     True
     
     >>> f.order
@@ -277,8 +259,6 @@ The decimal field describes a decimal.
     >>> f = field.Decimal(title=u"Test", min=decimal.Decimal('-123.0'), max=decimal.Decimal('1234.0'))
     >>> isinstance(f, schema.Decimal)
     True
-    >>> isinstance(f, Persistent)
-    True
     
     >>> f.order
     -1
@@ -303,8 +283,6 @@ The password field describes a unicode string used for a password.
 
     >>> f = field.Password(title=u"Test", min_length=0, max_length=10)
     >>> isinstance(f, schema.Password)
-    True
-    >>> isinstance(f, Persistent)
     True
     
     >>> f.order
@@ -331,8 +309,6 @@ The source  text field describes a unicode string with source code.
     >>> f = field.SourceText(title=u"Test", min_length=0, max_length=10)
     >>> isinstance(f, schema.SourceText)
     True
-    >>> isinstance(f, Persistent)
-    True
     
     >>> f.order
     -1
@@ -357,8 +333,6 @@ The URI field describes a URI string.
 
     >>> f = field.URI(title=u"Test", min_length=0, max_length=10)
     >>> isinstance(f, schema.URI)
-    True
-    >>> isinstance(f, Persistent)
     True
     
     >>> f.order
@@ -385,8 +359,6 @@ The id field describes a URI string or a dotted name.
     >>> f = field.Id(title=u"Test", min_length=0, max_length=10)
     >>> isinstance(f, schema.Id)
     True
-    >>> isinstance(f, Persistent)
-    True
     
     >>> f.order
     -1
@@ -412,8 +384,6 @@ The dotted name field describes a dotted name.
     >>> f = field.DottedName(title=u"Test", min_length=0, max_length=10)
     >>> isinstance(f, schema.DottedName)
     True
-    >>> isinstance(f, Persistent)
-    True
     
     >>> f.order
     -1
@@ -438,8 +408,6 @@ The date/time field describes a Python datetime object.
 
     >>> f = field.Datetime(title=u"Test")
     >>> isinstance(f, schema.Datetime)
-    True
-    >>> isinstance(f, Persistent)
     True
     
     >>> f.order
@@ -467,8 +435,6 @@ The date field describes a Python date object.
     >>> f = field.Date(title=u"Test")
     >>> isinstance(f, schema.Date)
     True
-    >>> isinstance(f, Persistent)
-    True
     
     >>> f.order
     -1
@@ -494,8 +460,6 @@ The time-delta field describes a Python timedelta object.
 
     >>> f = field.Timedelta(title=u"Test")
     >>> isinstance(f, schema.Timedelta)
-    True
-    >>> isinstance(f, Persistent)
     True
     
     >>> f.order
@@ -523,8 +487,6 @@ The tuple field describes a tuple.
     >>> f = field.Tuple(title=u"Test", min_length=0, max_length=10, 
     ...     value_type=field.TextLine(title=u"Value"))
     >>> isinstance(f, schema.Tuple)
-    True
-    >>> isinstance(f, Persistent)
     True
     
     >>> f.order
@@ -563,8 +525,6 @@ The list field describes a tuple.
     ...     value_type=field.TextLine(title=u"Value"))
     >>> isinstance(f, schema.List)
     True
-    >>> isinstance(f, Persistent)
-    True
     
     >>> f.order
     -1
@@ -601,8 +561,6 @@ The set field describes a set.
     >>> f = field.Set(title=u"Test", min_length=0, max_length=10, 
     ...     value_type=field.TextLine(title=u"Value"))
     >>> isinstance(f, schema.Set)
-    True
-    >>> isinstance(f, Persistent)
     True
     
     >>> f.order
@@ -641,8 +599,6 @@ The set field describes a frozenset.
     ...     value_type=field.TextLine(title=u"Value"))
     >>> isinstance(f, schema.FrozenSet)
     True
-    >>> isinstance(f, Persistent)
-    True
     
     >>> f.order
     -1
@@ -680,8 +636,6 @@ The set field describes a dict.
     ...     key_type=field.ASCII(title=u"Key"),
     ...     value_type=field.TextLine(title=u"Value"))
     >>> isinstance(f, schema.Dict)
-    True
-    >>> isinstance(f, Persistent)
     True
     
     >>> f.order
@@ -733,8 +687,6 @@ either be a list of primitives, or a named vocabulary.
 
     >>> f = field.Choice(title=u"Test", values=[1,2,3])
     >>> isinstance(f, schema.Choice)
-    True
-    >>> isinstance(f, Persistent)
     True
     
     >>> f.order

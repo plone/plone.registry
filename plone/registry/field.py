@@ -6,8 +6,6 @@ persistent field. Note all field types are supported, but the common types
 are.
 """
 
-import persistent
-
 import zope.interface
 
 import zope.schema
@@ -83,7 +81,7 @@ class InterfaceConstrainedProperty(object):
                                     (self._name, self._interface.__identifier__,))
         inst.__dict__[self._name] = value
 
-class PersistentField(persistent.Persistent):
+class PersistentField(object):
     """Base class for persistent field definitions.
     """
     
@@ -95,6 +93,10 @@ class PersistentField(persistent.Persistent):
     # We don't allow setting a custom constraint, as this would introduce a
     # dependency on a symbol such as a function that may go away
     constraint = DisallowedProperty('constraint')
+    
+    # Details about which interface/field name we originally came form, if any
+    interfaceName = None
+    fieldName = None
 
 class PersistentCollectionField(PersistentField, zope.schema._field.AbstractCollection):
     """Ensure that value_type is a persistent field
