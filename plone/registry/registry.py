@@ -1,3 +1,5 @@
+import warnings
+
 from persistent import Persistent
 from BTrees.OOBTree import OOBTree
 
@@ -21,29 +23,34 @@ class Registry(Persistent):
     implements(IRegistry)
     
     def __init__(self):
-        self._records = Records(self)
+        self._records = _Records(self)
     
     # Basic value access API
     
     def __getitem__(self, name):
-        return self.records[name].value
+        # Fetch straight from records._values to avoid loading the field
+        # as a separate persistent object
+        return self.records._values[name]
     
     def get(self, name, default=None):
-        record = self.records.get(name, None)
-        if record is None:
-            return default
-        return record.value
+        # Fetch straight from records._values to avoid loading the field
+        # as a separate persistent object
+        return self.records._values.get(name, default)
     
     def __setitem__(self, name, value):
+        # make sure we get the Record class' validation
         self.records[name].value = value
     
     def __contains__(self, name):
-        return name in self.records
+        return name in self.records._values
     
     # Records - make this a property so that it's readonly
     
     @property
     def records(self):
+        # XXX: On-the-fly migration
+        if isinstance(self._records, Records):
+            self._migrateRecords()
         return self._records
     
     # Schema interface API
@@ -90,9 +97,29 @@ class Registry(Persistent):
                     value = persistent_field.default
             
             self.records[record_name] = Record(persistent_field, value, _validate=False)
-
-class Records(object):
-    """The records stored in the registry
+    
+    # BBB
+    
+    def _migrateRecords(self):
+        """BBB: Migrate from the old Records structure to the new. This is
+        done the first time the "old" structure is accessed.
+        """
+        records = _Records(self)
+        
+        oldData = getattr(self._records, 'data', None)
+        if oldData is not None:
+            for name, oldRecord in oldData.iteritems():
+                oldRecord._p_activate()
+                if 'field' in oldRecord.__dict__ and 'value' in oldRecord.__dict__:
+                    records._fields[name] = oldRecord.__dict__['field']
+                    records._values[name] = oldRecord.__dict__['value']
+        
+        self._records = records
+    
+class _Records(object):
+    """The records stored in the registry. This implements dict-like access
+    to records, where as the Registry object implements dict-like read-only
+    access to values.
     """
     
     __parent__ = None
@@ -100,8 +127,8 @@ class Records(object):
     def __init__(self, parent):
         self.__parent__ = parent
         
-        self.fields = OOBTree()
-        self.data = OOBTree()
+        self._fields = OOBTree()
+        self._values = OOBTree()
 
     def __setitem__(self, name, record):
         if not _isdotted(name):
@@ -111,8 +138,8 @@ class Records(object):
         if not IPersistentField.providedBy(record.field):
             raise ValueError("The record's field must be an IPersistentField.")
         
-        self.fields[name] = record.field
-        self.data[name] = record.value
+        self._fields[name] = record.field
+        self._values[name] = record.value
         
         record.__name__ = name
         record.__parent__ = self.__parent__
@@ -126,8 +153,8 @@ class Records(object):
         # the registry anymore
         record.__parent__ = None
         
-        del self.fields[name]
-        del self.data[name]
+        del self._fields[name]
+        del self._values[name]
         
         notify(RecordRemovedEvent(record))
     
@@ -135,8 +162,8 @@ class Records(object):
     
     def __getitem__(self, name):
         
-        field = self.fields[name]
-        value = self.data[name]
+        field = self._fields[name]
+        value = self._values[name]
         
         record = Record(field, value, _validate=False)
         record.__name__ = name
@@ -151,28 +178,28 @@ class Records(object):
             return default
     
     def __nonzero__(self):
-        return self.data.__nonzero__()
+        return self._values.__nonzero__()
     
     def __len__(self):
-        return self.data.__len__()
+        return self._values.__len__()
         
     def __iter__(self):
-        return self.data.__iter__()
+        return self._values.__iter__()
     
     def has_key(self, name):
-        return self.data.has_key(name)
+        return self._values.has_key(name)
         
     def __contains__(self, name):
-        return self.data.__contains__(name)
+        return self._values.__contains__(name)
         
     def keys(self):
-        return self.data.keys()
+        return self._values.keys()
         
     def maxKey(self, key=None):
-        return self.data.maxKey(key)
+        return self._values.maxKey(key)
         
     def minKey(self, key=None):
-        return self.data.minKey(key)
+        return self._values.minKey(key)
         
     def values(self):
         return [self[name] for name in self.keys()]
@@ -186,5 +213,16 @@ class Records(object):
         return self[key]
 
     def clear(self):
-        self.fields.clear()
-        self.data.clear()
+        self._fields.clear()
+        self._values.clear()
+
+class Records(_Records, Persistent):
+    """BBB: This used to be the class for the _records attribute of the
+    registry. Having this be a Persistent object was always a bad idea. We
+    keep it here so that we can migrate to the new structure, but it should
+    no longer be used.
+    """
+    
+    def __init__(self, parent):
+        warnings.warn("The Records persistent class is deprecated and should not be used.", DeprecationWarning)
+        super(Records, self).__init__(parent)

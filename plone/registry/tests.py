@@ -63,7 +63,48 @@ class TestBugs(unittest.TestCase):
         # clone.vocabulary
         f.bind(t)
 
+class TestMigration(unittest.TestCase):
+    
+    def setUp(self):
+        setUp(self)
         
+    def tearDown(self):
+        testing.tearDown(self)
+    
+    def test_auto_migration(self):
+        
+        from BTrees.OOBTree import OOBTree
+        
+        from plone.registry.registry import Registry, Records, _Records
+        from plone.registry.record import Record
+        from plone.registry import field
+        
+        # Create an "old-looking registry"
+        
+        registry = Registry()
+        registry._records = Records(registry)
+        registry._records.data = OOBTree()
+        
+        f = field.TextLine(title=u"Foo")
+        
+        record = Record(f, u"Bar")
+        record.__dict__['field'] = f
+        record.__dict__['value'] = u"Bar"
+        
+        registry._records.data['foo.bar'] = record
+        
+        # Attempt to access it
+        
+        value = registry['foo.bar']
+        
+        # Migration should have happened
+        
+        self.assertEqual(value, u"Bar")
+        self.assertEqual(registry.records['foo.bar'].field.title, u"Foo")
+        self.assertEqual(registry.records['foo.bar'].value, u"Bar")
+        
+        self.assertFalse(isinstance(registry._records, Records))
+        self.assertTrue(isinstance(registry._records, _Records))
 
 def test_suite():
     return unittest.TestSuite([
@@ -80,4 +121,5 @@ def test_suite():
             optionflags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
             setUp=setUp, tearDown=testing.tearDown),
         unittest.makeSuite(TestBugs),
+        unittest.makeSuite(TestMigration),
         ])

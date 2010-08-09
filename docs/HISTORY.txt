@@ -1,6 +1,15 @@
 Changelog
 =========
 
+1.0b3
+-----
+
+* Change the internal persistent structure around to make it more efficient.
+  The API remains the same. Old registries will be migrated when first
+  accessed. Warning: This may lead to a "write-on-read" situation for the
+  first request in which the registry is being used.
+  [optilude]
+
 1.0b2 - 2010-04-21
 ------------------
 

@@ -1,3 +1,5 @@
+from persistent import Persistent
+
 from zope.interface import implements, alsoProvides
 from zope.event import notify
 
@@ -10,11 +12,15 @@ from plone.registry.events import RecordModifiedEvent
 
 _marker = object()
 
-class Record(object):
+class Record(Persistent):
     """A record that is stored in the registry.
     
     If __parent__ is set, consider this a "bound" record. In this case, the
     field and value are read from and written to the parent registry.
+    
+    BBB: The current storage implementation does not actually store Record
+    objects directly. However, we keep the Persistent base class so that old
+    values may be loaded during automated migration.
     """
     
     implements(IRecord)
@@ -46,12 +52,12 @@ class Record(object):
     
     def _get_field(self):
         if self.__parent__ is not None:
-            return self.__parent__.records.fields[self.__name__]
+            return self.__parent__.records._fields[self.__name__]
         return self._field
         
     def _set_field(self, value):
         if self.__parent__ is not None:
-            self.__parent__.records.fields[self.__name__] = value
+            self.__parent__.records._fields[self.__name__] = value
         self._field = value
     
     _field = None
@@ -61,7 +67,7 @@ class Record(object):
     
     def _get_value(self):
         if self.__parent__ is not None:
-            return self.__parent__.records.data[self.__name__]
+            return self.__parent__.records._values[self.__name__]
         return self._value
     
     def _set_value(self, value):
@@ -76,7 +82,7 @@ class Record(object):
         self._value = value
         
         if self.__parent__ is not None:
-            self.__parent__.records.data[self.__name__] = value
+            self.__parent__.records._values[self.__name__] = value
         
         notify(RecordModifiedEvent(self, oldValue, value))
     
