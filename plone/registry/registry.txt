@@ -257,7 +257,7 @@ Sometimes, you may want to use an interface as a template for multiple
 instances of a set of fields, rather than defining them all by hand. This is
 especially useful when you want to allow third-party packages to provide
 information. To accomplish this, we can provide a prefix with the
-`registerInterface' call. This will take precedence over the __identifier__
+`registerInterface` call. This will take precedence over the __identifier__
 that is usually used.
 
     >>> registry.registerInterface(IMailSettings, prefix="plone.registry.tests.alternativesettings")
