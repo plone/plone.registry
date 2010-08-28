@@ -12,7 +12,9 @@ from zope.schema.interfaces import InvalidDottedName
 from zope.schema._field import _isdotted
 
 from plone.registry.interfaces import IRegistry, IRecord, IPersistentField
+from plone.registry.interfaces import IFieldRef
 from plone.registry.record import Record
+from plone.registry.fieldref import FieldRef
 from plone.registry.recordsproxy import RecordsProxy
 from plone.registry.events import RecordAddedEvent, RecordRemovedEvent
 
@@ -59,7 +61,7 @@ class Registry(Persistent):
         prefix = interface.__identifier__ + '.'
         if check:
             for name in getFieldNames(interface):
-                if name not in omit and prefix + name not in self.records:
+                if name not in omit and prefix + name not in self:
                     raise KeyError("Interface `%s` defines a field `%s`, "
                                    "for which there is no record." % (interface.__identifier__, name))
         
@@ -135,10 +137,8 @@ class _Records(object):
             raise InvalidDottedName(record)
         if not IRecord.providedBy(record):
             raise ValueError("Value must be a record")
-        if not IPersistentField.providedBy(record.field):
-            raise ValueError("The record's field must be an IPersistentField.")
         
-        self._fields[name] = record.field
+        self._setField(name, record.field)
         self._values[name] = record.value
         
         record.__name__ = name
@@ -158,11 +158,9 @@ class _Records(object):
         
         notify(RecordRemovedEvent(record))
     
-    # Basic dict API
-    
     def __getitem__(self, name):
         
-        field = self._fields[name]
+        field = self._getField(name)
         value = self._values[name]
         
         record = Record(field, value, _validate=False)
@@ -215,7 +213,33 @@ class _Records(object):
     def clear(self):
         self._fields.clear()
         self._values.clear()
-
+    
+    # Helper methods
+    
+    def _getField(self, name):
+        field = self._fields[name]
+        
+        # Handle field reference pointers
+        if isinstance(field, basestring):
+            recordName = field
+            while isinstance(field, basestring):
+                recordName = field
+                field = self._fields[recordName]
+            field = FieldRef(recordName, field)
+        
+        return field
+    
+    def _setField(self, name, field):
+        if not IPersistentField.providedBy(field):
+            raise ValueError("The record's field must be an IPersistentField.")
+        if IFieldRef.providedBy(field):
+            if field.recordName not in self._fields:
+                raise ValueError("Field reference points to non-existent record")
+            self._fields[name] = field.recordName # a pointer, of sorts
+        else:
+            field.__name__ = 'value'
+            self._fields[name] = field
+    
 class Records(_Records, Persistent):
     """BBB: This used to be the class for the _records attribute of the
     registry. Having this be a Persistent object was always a bad idea. We

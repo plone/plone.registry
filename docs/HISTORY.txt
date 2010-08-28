@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.0b4
+-----
+
+* Added support for field references, via the ``FieldRef`` class. See
+  ``registry.txt`` for details.
+  [optilude]
+
 1.0b3
 -----
 

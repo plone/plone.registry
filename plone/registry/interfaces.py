@@ -19,7 +19,18 @@ class IPersistentField(IField):
 
     interfaceName = schema.DottedName(title=u"Dotted name to an interface the field was constructed from", required=False)
     fieldName = schema.ASCIILine(title=u"Name of the field in the original interface, if any", required=False)
+
+class IFieldRef(IPersistentField):
+    """A reference to another field.
     
+    This allows a record to use a field that belongs to another record. Field
+    refs are allowed in the Record() constructor.
+    
+    Note that all attributes are read-only.
+    """
+    
+    recordName = schema.DottedName(title=u"Name of the record containing the reference field")
+
 class IRecord(Interface):
     """A record stored in the registry.
     

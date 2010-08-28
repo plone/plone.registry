@@ -6,7 +6,8 @@ from zope.event import notify
 from zope.dottedname.resolve import resolve
 
 from plone.registry.interfaces import IPersistentField
-from plone.registry.interfaces import IRecord, IInterfaceAwareRecord
+from plone.registry.interfaces import IRecord
+from plone.registry.interfaces import IInterfaceAwareRecord
 
 from plone.registry.events import RecordModifiedEvent
 
@@ -52,12 +53,12 @@ class Record(Persistent):
     
     def _get_field(self):
         if self.__parent__ is not None:
-            return self.__parent__.records._fields[self.__name__]
+            return self.__parent__.records._getField(self.__name__)
         return self._field
-        
+    
     def _set_field(self, value):
         if self.__parent__ is not None:
-            self.__parent__.records._fields[self.__name__] = value
+            self.__parent__.records._setField(self.__name__, value)
         self._field = value
     
     _field = None
@@ -71,10 +72,13 @@ class Record(Persistent):
         return self._value
     
     def _set_value(self, value):
-        if self.field is None:
+        
+        field = self.field
+        
+        if field is None:
             raise ValueError("The record's field must be set before its value")
         
-        field = self.field.bind(self)
+        field = field.bind(self)
         if value != field.missing_value:
             field.validate(value)
         

@@ -1,0 +1,15 @@
+from zope.interface import implements
+from plone.registry.interfaces import IFieldRef
+
+class FieldRef(object):
+    """Default field reference.
+    """
+    
+    implements(IFieldRef)
+    
+    def __init__(self, name, originalField):
+        self.recordName = name
+        self._field = originalField
+    
+    def __getattr__(self, name):
+        return getattr(self._field, name)
