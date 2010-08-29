@@ -62,7 +62,18 @@ class TestBugs(unittest.TestCase):
         # Bug: this would give "AttributeError: can't set attribute" on
         # clone.vocabulary
         f.bind(t)
-
+    
+    def test_fieldref_interfaces(self):
+        from plone.registry import field, FieldRef
+        from plone.registry.interfaces import IFieldRef
+        from zope.schema.interfaces import ICollection
+        
+        listField = field.List(value_type=field.ASCIILine())
+        ref = FieldRef('some.record', listField)
+        
+        self.assertTrue(ICollection.providedBy(ref))
+        self.assertTrue(IFieldRef.providedBy(ref))
+    
 class TestMigration(unittest.TestCase):
     
     def setUp(self):
