@@ -11,7 +11,7 @@ class FieldRef(object):
     
     def __init__(self, name, originalField):
         self.recordName = name
-        self._field = originalField
+        self.originalField = originalField
     
     @property
     def __providedBy__(self):
@@ -19,7 +19,7 @@ class FieldRef(object):
         if provided is None:
             provided = implementedBy(self.__class__)
             
-        return provided + self._field.__providedBy__
+        return provided + self.originalField.__providedBy__
     
     def __getattr__(self, name):
-        return getattr(self._field, name)
+        return getattr(self.originalField, name)

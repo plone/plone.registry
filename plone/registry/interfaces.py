@@ -20,7 +20,7 @@ class IPersistentField(IField):
     interfaceName = schema.DottedName(title=u"Dotted name to an interface the field was constructed from", required=False)
     fieldName = schema.ASCIILine(title=u"Name of the field in the original interface, if any", required=False)
 
-class IFieldRef(IPersistentField):
+class IFieldRef(Interface):
     """A reference to another field.
     
     This allows a record to use a field that belongs to another record. Field
@@ -30,6 +30,7 @@ class IFieldRef(IPersistentField):
     """
     
     recordName = schema.DottedName(title=u"Name of the record containing the reference field")
+    originalField = schema.Object(title=u"Referenced field", schema=IField)
 
 class IRecord(Interface):
     """A record stored in the registry.
