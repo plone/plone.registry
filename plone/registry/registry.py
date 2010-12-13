@@ -48,8 +48,13 @@ class Registry(Persistent):
     
     # Schema interface API
     
-    def forInterface(self, interface, check=True, omit=()):
-        prefix = interface.__identifier__ + '.'
+    def forInterface(self, interface, check=True, omit=(), prefix=None):
+        if prefix is None:
+            prefix = interface.__identifier__
+
+        if not prefix.endswith("."):
+             prefix += '.'
+
         if check:
             for name in getFieldNames(interface):
                 if name not in omit and prefix + name not in self.records:
