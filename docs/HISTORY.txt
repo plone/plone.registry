@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0b3 - YYYY-MM-DD
+1.0b3 - 2011-01-03
 ------------------
 
  * added prefix option to forInterface (as it was added to registerInterface)
