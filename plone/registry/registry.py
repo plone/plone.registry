@@ -1,3 +1,5 @@
+import warnings
+
 from persistent import Persistent
 from BTrees.OOBTree import OOBTree
 
@@ -10,7 +12,9 @@ from zope.schema.interfaces import InvalidDottedName
 from zope.schema._field import _isdotted
 
 from plone.registry.interfaces import IRegistry, IRecord, IPersistentField
+from plone.registry.interfaces import IFieldRef
 from plone.registry.record import Record
+from plone.registry.fieldref import FieldRef
 from plone.registry.recordsproxy import RecordsProxy
 from plone.registry.events import RecordAddedEvent, RecordRemovedEvent
 
@@ -21,29 +25,34 @@ class Registry(Persistent):
     implements(IRegistry)
     
     def __init__(self):
-        self._records = Records(self)
+        self._records = _Records(self)
     
     # Basic value access API
     
     def __getitem__(self, name):
-        return self.records[name].value
+        # Fetch straight from records._values to avoid loading the field
+        # as a separate persistent object
+        return self.records._values[name]
     
     def get(self, name, default=None):
-        record = self.records.get(name, None)
-        if record is None:
-            return default
-        return record.value
+        # Fetch straight from records._values to avoid loading the field
+        # as a separate persistent object
+        return self.records._values.get(name, default)
     
     def __setitem__(self, name, value):
+        # make sure we get the Record class' validation
         self.records[name].value = value
     
     def __contains__(self, name):
-        return name in self.records
+        return name in self.records._values
     
     # Records - make this a property so that it's readonly
     
     @property
     def records(self):
+        # XXX: On-the-fly migration
+        if isinstance(self._records, Records):
+            self._migrateRecords()
         return self._records
     
     # Schema interface API
@@ -57,7 +66,7 @@ class Registry(Persistent):
 
         if check:
             for name in getFieldNames(interface):
-                if name not in omit and prefix + name not in self.records:
+                if name not in omit and prefix + name not in self:
                     raise KeyError("Interface `%s` defines a field `%s`, "
                                    "for which there is no record." % (interface.__identifier__, name))
         
@@ -79,6 +88,9 @@ class Registry(Persistent):
                 raise TypeError("There is no persistent field equivalent for "
                                 "the field `%s` of type `%s`." % (name, field.__class__.__name__))
             
+            persistent_field.interfaceName = interface.__identifier__
+            persistent_field.fieldName = name
+            
             value = persistent_field.default
             
             # Attempt to retain the exisiting value
@@ -91,102 +103,155 @@ class Registry(Persistent):
                 except:
                     value = persistent_field.default
             
-            self.records[record_name] = Record(persistent_field, value, 
-                                               interface=interface, fieldName=name)
-
-class Records(Persistent):
-    """The records stored in the registry
+            self.records[record_name] = Record(persistent_field, value, _validate=False)
+    
+    # BBB
+    
+    def _migrateRecords(self):
+        """BBB: Migrate from the old Records structure to the new. This is
+        done the first time the "old" structure is accessed.
+        """
+        records = _Records(self)
+        
+        oldData = getattr(self._records, 'data', None)
+        if oldData is not None:
+            for name, oldRecord in oldData.iteritems():
+                oldRecord._p_activate()
+                if 'field' in oldRecord.__dict__ and 'value' in oldRecord.__dict__:
+                    records._fields[name] = oldRecord.__dict__['field']
+                    records._values[name] = oldRecord.__dict__['value']
+        
+        self._records = records
+    
+class _Records(object):
+    """The records stored in the registry. This implements dict-like access
+    to records, where as the Registry object implements dict-like read-only
+    access to values.
     """
     
     __parent__ = None
     
     def __init__(self, parent):
         self.__parent__ = parent
-        self.data = OOBTree()
+        
+        self._fields = OOBTree()
+        self._values = OOBTree()
 
     def __setitem__(self, name, record):
         if not _isdotted(name):
             raise InvalidDottedName(record)
         if not IRecord.providedBy(record):
             raise ValueError("Value must be a record")
-        if not IPersistentField.providedBy(record.field):
-            raise ValueError("The record's field must be an IPersistentField.")
+        
+        self._setField(name, record.field)
+        self._values[name] = record.value
         
         record.__name__ = name
         record.__parent__ = self.__parent__
-        self.data[name] = record
+        
         notify(RecordAddedEvent(record))
     
     def __delitem__(self, name):
         record = self[name]
-        del self.data[name]
+        
+        # unbind the record so that it won't attempt to look up values from
+        # the registry anymore
+        record.__parent__ = None
+        
+        del self._fields[name]
+        del self._values[name]
+        
         notify(RecordRemovedEvent(record))
-
-    # Unfortunately, you can't just subclass an OOBTree if you want to
-    # persist it...
-
+    
     def __getitem__(self, name):
-        return self.data.__getitem__(name)
+        
+        field = self._getField(name)
+        value = self._values[name]
+        
+        record = Record(field, value, _validate=False)
+        record.__name__ = name
+        record.__parent__ = self.__parent__
+        
+        return record
     
     def get(self, name, default=None):
-        return self.data.get(name, default)
+        try:
+            return self[name]
+        except KeyError:
+            return default
     
     def __nonzero__(self):
-        return self.data.__nonzero__()
+        return self._values.__nonzero__()
     
     def __len__(self):
-        return self.data.__len__()
+        return self._values.__len__()
         
     def __iter__(self):
-        return self.data.__iter__()
+        return self._values.__iter__()
     
-    def __getslice__(self, index1, index2):
-        return self.data.__getslice__(index1, index2)
-        
     def has_key(self, name):
-        return self.data.has_key(name)
+        return self._values.has_key(name)
         
     def __contains__(self, name):
-        return self.data.__contains__(name)
+        return self._values.__contains__(name)
         
-    def keys(self, min=None, max=None, excludemin=False, excludemax=False):
-        return self.data.keys(min, max, excludemin, excludemax)
+    def keys(self):
+        return self._values.keys()
         
     def maxKey(self, key=None):
-        return self.data.maxKey(key)
+        return self._values.maxKey(key)
         
     def minKey(self, key=None):
-        return self.data.minKey(key)
+        return self._values.minKey(key)
         
-    def values(self, min=None, max=None, excludemin=False, excludemax=False):
-        return self.data.values(min, max, excludemin, excludemax)
+    def values(self):
+        return [self[name] for name in self.keys()]
         
-    def items(self, min=None, max=None, excludemin=False, excludemax=False):
-        return self.data.items(min, max, excludemin, excludemax)
+    def items(self):
+        return [(name, self[name],) for name in self.keys()]
     
-    def update(self, collection):
-        self.data.update(collection)
-        
-    def byValue(self, minValue):
-        self.data.byValue(minValue)
-        
-    def setdefault(self, key, d):
-        return self.data.setdefault(key, d)
-        
-    def pop(self, key, d):
-        return self.data.pop(key, d)
-        
-    def insert(self, key, value):
-        self.data.insert(key, value)
-        
-    def difference(self, c1, c2):
-        return self.data.difference(c1, c2)
-        
-    def union(self, c1, c2):
-        return self.data.union(c1, c2)
-    
-    def intersection(self, c1, c2):
-        return self.data.intersection(c1, c2)
-    
+    def setdefault(self, key, value):
+        if key not in self:
+            self[key] = value
+        return self[key]
+
     def clear(self):
-        self.data.clear()
+        self._fields.clear()
+        self._values.clear()
+    
+    # Helper methods
+    
+    def _getField(self, name):
+        field = self._fields[name]
+        
+        # Handle field reference pointers
+        if isinstance(field, basestring):
+            recordName = field
+            while isinstance(field, basestring):
+                recordName = field
+                field = self._fields[recordName]
+            field = FieldRef(recordName, field)
+        
+        return field
+    
+    def _setField(self, name, field):
+        if not IPersistentField.providedBy(field):
+            raise ValueError("The record's field must be an IPersistentField.")
+        if IFieldRef.providedBy(field):
+            if field.recordName not in self._fields:
+                raise ValueError("Field reference points to non-existent record")
+            self._fields[name] = field.recordName # a pointer, of sorts
+        else:
+            field.__name__ = 'value'
+            self._fields[name] = field
+    
+class Records(_Records, Persistent):
+    """BBB: This used to be the class for the _records attribute of the
+    registry. Having this be a Persistent object was always a bad idea. We
+    keep it here so that we can migrate to the new structure, but it should
+    no longer be used.
+    """
+    
+    def __init__(self, parent):
+        warnings.warn("The Records persistent class is deprecated and should not be used.", DeprecationWarning)
+        super(Records, self).__init__(parent)

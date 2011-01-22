@@ -84,14 +84,14 @@ Note that the value is validated against the field:
 We can now add the field to the registry. This is done via the `record`
 dictionary.
 
-    >>> 'plone.records.tests.age' in registry
+    >>> 'plone.registry.tests.age' in registry
     False
-    >>> registry.records['plone.records.tests.age'] = age_record
+    >>> registry.records['plone.registry.tests.age'] = age_record
 
 At this point, the record will gain __name__ and __parent__ attributes.
 
     >>> age_record.__name__
-    'plone.records.tests.age'
+    'plone.registry.tests.age'
 
     >>> age_record.__parent__ is registry
     True
@@ -102,14 +102,14 @@ Creating a record with an initial value
 We can create records more succinctly by creating the field, setting the value
 and assigning it to the registry in one go, like this:
 
-    >>> registry.records['plone.records.tests.cms'] = \
+    >>> registry.records['plone.registry.tests.cms'] = \
     ...     Record(field.TextLine(title=u"CMS of choice"), u"Plone")
 
 The record can now be obtained. Note that it has a nice __repr__ to help
 debugging.
 
-    >>> registry.records['plone.records.tests.cms']
-    <Record plone.records.tests.cms>
+    >>> registry.records['plone.registry.tests.cms']
+    <Record plone.registry.tests.cms>
     
 Accessing and manipulating record values
 ----------------------------------------
@@ -117,24 +117,24 @@ Accessing and manipulating record values
 Once a record has been created and added to the registry, you can access
 its value through dict-like operations on the registry itself.
 
-    >>> 'plone.records.tests.cms' in registry
+    >>> 'plone.registry.tests.cms' in registry
     True
 
-    >>> registry['plone.records.tests.cms']
+    >>> registry['plone.registry.tests.cms']
     u'Plone'
 
-    >>> registry['plone.records.tests.cms'] = u"Plone 3.x"
+    >>> registry['plone.registry.tests.cms'] = u"Plone 3.x"
 
 Again, values are validated:
 
-    >>> registry['plone.records.tests.cms'] = 'Joomla'
+    >>> registry['plone.registry.tests.cms'] = 'Joomla'
     Traceback (most recent call last):
     ...
     WrongType: ('Joomla', <type 'unicode'>...)
 
 There is also a get() method:
 
-    >>> registry.get('plone.records.tests.cms')
+    >>> registry.get('plone.registry.tests.cms')
     u'Plone 3.x'
     >>> registry.get('non-existent-key') is None
     True
@@ -144,10 +144,10 @@ Deleting records
 
 Records may be deleted from the `records` property:
 
-    >>> del registry.records['plone.records.tests.cms']
-    >>> 'plone.records.tests.cms' in registry.records
+    >>> del registry.records['plone.registry.tests.cms']
+    >>> 'plone.registry.tests.cms' in registry.records
     False
-    >>> 'plone.records.tests.cms' in registry
+    >>> 'plone.registry.tests.cms' in registry
     False
 
 Creating records from interfaces
@@ -257,7 +257,7 @@ Sometimes, you may want to use an interface as a template for multiple
 instances of a set of fields, rather than defining them all by hand. This is
 especially useful when you want to allow third-party packages to provide
 information. To accomplish this, we can provide a prefix with the
-`registerInterface' call. This will take precedence over the __identifier__
+`registerInterface` call. This will take precedence over the __identifier__
 that is usually used.
 
     >>> registry.registerInterface(IMailSettings, prefix="plone.registry.tests.alternativesettings")
@@ -389,4 +389,62 @@ However, trying to set the value will result in a AttributeError:
     Traceback (most recent call last):
     ...
     AttributeError: settings
+
+Using field references
+======================
+
+It is possible for one record to refer to another record's field. This can be
+used to provide a simple "override" mechanism, for example, where one record
+defines the field and a default value, whilst another provides an override
+validated against the same field.
+
+Let us first create the base record and set its value:
+
+    >>> timeout_field = field.Int(title=u"Timeout", min=0)
+    >>> registry.records['plone.registry.tests.timeout'] = Record(timeout_field, 10)
+    
+    >>> timeout_record = registry.records['plone.registry.tests.timeout']
+    >>> timeout_record.value
+    10
+    
+Next, we create a field reference for this record:
+    
+    >>> from plone.registry import FieldRef
+    >>> timeout_override_field = FieldRef(timeout_record.__name__, timeout_record.field)
+    
+We can use this to create a new record:
+
+    >>> registry.records['plone.registry.tests.timeout.override'] = Record(timeout_override_field, 20)
+    >>> timeout_override_record = registry.records['plone.registry.tests.timeout.override']
+
+The two values are separate:
+
+    >>> timeout_record.value
+    10
+    >>> timeout_override_record.value
+    20
+    
+    >>> registry['plone.registry.tests.timeout']
+    10
+    >>> registry['plone.registry.tests.timeout.override']
+    20
+
+Validation uses the underlying field:
+
+    >>> registry['plone.registry.tests.timeout.override'] = -1
+    Traceback (most recent call last):
+    ...
+    TooSmall: (-1, 0)
+
+The reference field exposes the standard field properties, e.g.:
+
+    >>> timeout_override_record.field.title
+    u'Timeout'
+    >>> timeout_override_record.field.min
+    0
+    
+To look up the underlying record name, we can use the ``recordName`` property:
+    
+    >>> timeout_override_record.field.recordName
+    'plone.registry.tests.timeout'
 

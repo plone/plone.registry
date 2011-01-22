@@ -4,6 +4,16 @@ Changelog
 1.0b4 - Unreleased
 ------------------
 
+* Added support for field references, via the ``FieldRef`` class. See
+  ``registry.txt`` for details.
+  [optilude]
+
+* Change the internal persistent structure around to make it more efficient.
+  The API remains the same. Old registries will be migrated when first
+  accessed. Warning: This may lead to a "write-on-read" situation for the first
+  request in which the registry is being used. 
+  [optilude]
+
 1.0b3 - 2011-01-03
 ------------------
 

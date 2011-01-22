@@ -10,10 +10,38 @@ class IPersistentField(IField):
     
     We provide our own implementation of the basic field types that are
     supported by the registry.
+    
+    A persistent field may track which interface and field it originally
+    was constructed from. This is done by the registerInterface() method
+    on the IRegistry, for example. Only the interface/field names are stored,
+    not actual object references.
+    """
+
+    interfaceName = schema.DottedName(title=u"Dotted name to an interface the field was constructed from", required=False)
+    fieldName = schema.ASCIILine(title=u"Name of the field in the original interface, if any", required=False)
+
+class IFieldRef(Interface):
+    """A reference to another field.
+    
+    This allows a record to use a field that belongs to another record. Field
+    refs are allowed in the Record() constructor.
+    
+    Note that all attributes are read-only.
     """
     
+    recordName = schema.DottedName(title=u"Name of the record containing the reference field")
+    originalField = schema.Object(title=u"Referenced field", schema=IField)
+
 class IRecord(Interface):
     """A record stored in the registry.
+    
+    A record may be "bound" or "unbound". If bound, it will have a
+    __parent__ attribute giving the IRegistry it belongs to. It will then
+    get and set its field and value attributes from the internal storage in
+    the registry. If unbound, it will store its own values.
+    
+    A record becomes bound when added to the registry. Records retrieved from
+    the registry are always bound.
     """
     
     field = schema.Object(title=u"A field describing this record",
@@ -119,7 +147,7 @@ class IRegistry(Interface):
         """
 
 class IRecordsProxy(Interface):
-    """This object is returned by IRegistry.by_interface(). It will be
+    """This object is returned by IRegistry.forInterface(). It will be
     made to provide the relevant interface, i.e. it will have the
     attributes that the interface promises. Those attributes will be retrieved
     from or written to the underlying IRegistry.

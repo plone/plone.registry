@@ -2,11 +2,9 @@
 
 The idea is that when a record is created, we copy relevant field properties
 from the transient schema field from zope.schema, into the corresponding
-persistent field. Note all field types are supported, but the common types
+persistent field. Not all field types are supported, but the common types
 are.
 """
-
-import persistent
 
 import zope.interface
 
@@ -15,9 +13,11 @@ import zope.schema._field
 import zope.schema.vocabulary
 import zope.schema.interfaces
 
-_missing_value_marker = object()
+from persistent import Persistent
 
 from plone.registry.interfaces import IPersistentField
+
+_missing_value_marker = object()
 
 def is_primitive(value):
     return value is None or \
@@ -83,7 +83,7 @@ class InterfaceConstrainedProperty(object):
                                     (self._name, self._interface.__identifier__,))
         inst.__dict__[self._name] = value
 
-class PersistentField(persistent.Persistent):
+class PersistentField(Persistent):
     """Base class for persistent field definitions.
     """
     
@@ -95,6 +95,10 @@ class PersistentField(persistent.Persistent):
     # We don't allow setting a custom constraint, as this would introduce a
     # dependency on a symbol such as a function that may go away
     constraint = DisallowedProperty('constraint')
+    
+    # Details about which interface/field name we originally came form, if any
+    interfaceName = None
+    fieldName = None
 
 class PersistentCollectionField(PersistentField, zope.schema._field.AbstractCollection):
     """Ensure that value_type is a persistent field
