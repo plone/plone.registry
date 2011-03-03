@@ -266,7 +266,7 @@ These values are now available in the same way as the original settings:
 
     >>> sender_record = registry.records['plone.registry.tests.alternativesettings.sender']
     >>> smtp_host_record = registry.records['plone.registry.tests.alternativesettings.smtp_host']
-
+    >>> registry['plone.registry.tests.alternativesettings.sender'] = u'alt@example.org'
 
 Accessing the original interface
 --------------------------------
@@ -389,6 +389,13 @@ However, trying to set the value will result in a AttributeError:
     Traceback (most recent call last):
     ...
     AttributeError: settings
+
+To access another instance of the field, supply the prefix:
+
+    >>> alt_proxy = registry.forInterface(IMailSettings,
+    ...     prefix="plone.registry.tests.alternativesettings")
+    >>> alt_proxy.sender
+    u'alt@example.org'
 
 Using field references
 ======================

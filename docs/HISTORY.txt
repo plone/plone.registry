@@ -4,6 +4,9 @@ Changelog
 1.0b5 - unreleased
 ------------------
 
+* Fixed bug where prefix was ignored by registry.forInterface.
+  [elro]
+
 * Add optional min, max arguments for keys/values/items of _Records.
   [elro]
 

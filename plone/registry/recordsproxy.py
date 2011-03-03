@@ -9,13 +9,18 @@ class RecordsProxy(object):
     
     implements(IRecordsProxy)
     
-    def __init__(self, registry, schema, omitted=()):
+    def __init__(self, registry, schema, omitted=(), prefix=None):
+        if prefix is None:
+            prefix = schema.__identifier__
+
+        if not prefix.endswith("."):
+             prefix += '.'
         
         # skip __setattr__
         self.__dict__['__schema__'] = schema
         self.__dict__['__registry__'] = registry
         self.__dict__['__omitted__'] = omitted
-        self.__dict__['__prefix__'] = schema.__identifier__ + '.'
+        self.__dict__['__prefix__'] = prefix
         
         alsoProvides(self, schema)
         
