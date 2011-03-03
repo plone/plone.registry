@@ -4,6 +4,9 @@ Changelog
 1.0b5 - unreleased
 ------------------
 
+* Add optional min, max arguments for keys/values/items of _Records.
+  [elro]
+
 1.0b4 - 2011-02-04
 ------------------
 

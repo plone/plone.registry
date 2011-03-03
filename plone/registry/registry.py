@@ -195,8 +195,8 @@ class _Records(object):
     def __contains__(self, name):
         return self._values.__contains__(name)
         
-    def keys(self):
-        return self._values.keys()
+    def keys(self, min=None, max=None):
+        return self._values.keys(min, max)
         
     def maxKey(self, key=None):
         return self._values.maxKey(key)
@@ -204,11 +204,11 @@ class _Records(object):
     def minKey(self, key=None):
         return self._values.minKey(key)
         
-    def values(self):
-        return [self[name] for name in self.keys()]
+    def values(self, min=None, max=None):
+        return [self[name] for name in self.keys(min, max)]
         
-    def items(self):
-        return [(name, self[name],) for name in self.keys()]
+    def items(self, min=None, max=None):
+        return [(name, self[name],) for name in self.keys(min, max)]
     
     def setdefault(self, key, value):
         if key not in self:
