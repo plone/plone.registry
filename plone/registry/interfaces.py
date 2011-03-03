@@ -131,19 +131,19 @@ class IRegistry(Interface):
                 ),
         )
         
-    def forInterface(interface, check=True, omit=()):
+    def forInterface(interface, check=True, omit=(), prefix=None):
         """Get an IRecordsProxy for the given interface. If `check` is True,
         an error will be raised if one or more fields in the interface does
         not have an equivalent setting.
         """
 
-    def registerInterface(interface, omit=()):
+    def registerInterface(interface, omit=(), prefix=None):
         """Create a set of records based on the given interface. For each
         schema field in the interface, a record will be inserted with a
         name like `${interface.__identifier__}.${field.__name__}`, and a
         value equal to default value of that field. Any field with a name
         listed in `omit`, or with the `readonly` property set to True, will
-        be ignored.
+        be ignored. Supply an alternative identifier with `prefix`.
         """
 
 class IRecordsProxy(Interface):
