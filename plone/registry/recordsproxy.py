@@ -81,11 +81,11 @@ class RecordsProxyCollection(DictMixin):
         min = self.prefix
         max = self.prefix[:-1] + '0'
         keys = self.registry.records.keys(min, max)
-        len_prefix = len(self._prefix)
+        len_prefix = len(self.prefix)
         last = None
         for name in keys:
             name = name[len_prefix:]
-            key, extra = name.split('/', 1)
+            key, extra = name.split('.', 1)
             if key != last:
                 yield key
                 last = key

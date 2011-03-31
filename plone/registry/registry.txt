@@ -431,6 +431,12 @@ Records may be set from an existing object:
      <Record plone.registry.tests.IMailSettings/example_com.sender>,
      <Record plone.registry.tests.IMailSettings/example_com.smtp_host>]
 
+The collection may be iterated over:
+
+    >>> for name in collection: print name
+    example
+    example_com
+
 And may be deleted:
 
     >>> del collection['example_com']
