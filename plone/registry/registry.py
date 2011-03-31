@@ -1,3 +1,4 @@
+import re
 import warnings
 
 from persistent import Persistent
@@ -8,14 +9,16 @@ from zope.component import queryAdapter
 from zope.event import notify
 
 from zope.schema import getFieldNames, getFieldsInOrder
-from zope.schema.interfaces import InvalidDottedName
+
 from zope.schema._field import _isdotted
 
 from plone.registry.interfaces import IRegistry, IRecord, IPersistentField
 from plone.registry.interfaces import IFieldRef
+from plone.registry.interfaces import InvalidRegistryKey
 from plone.registry.record import Record
 from plone.registry.fieldref import FieldRef
 from plone.registry.recordsproxy import RecordsProxy
+from plone.registry.recordsproxy import RecordsProxyCollection
 from plone.registry.events import RecordAddedEvent, RecordRemovedEvent
 
 class Registry(Persistent):
@@ -104,7 +107,10 @@ class Registry(Persistent):
                     value = persistent_field.default
             
             self.records[record_name] = Record(persistent_field, value, _validate=False)
-    
+
+    def collectionOfInterface(self, interface, check=True, omit=(), prefix=None):
+        return RecordsProxyCollection(self, interface, check, omit, prefix)
+
     # BBB
     
     def _migrateRecords(self):
@@ -131,6 +137,15 @@ class _Records(object):
     
     __parent__ = None
     
+    # Similar to zope.schema._field._isdotted, but allows up to one '/'
+    _validkey = re.compile(
+        r"([a-zA-Z][a-zA-Z0-9_]*)"
+        r"([.][a-zA-Z][a-zA-Z0-9_]*)*"
+        r"([/][a-zA-Z][a-zA-Z0-9_]*)?"
+        r"([.][a-zA-Z][a-zA-Z0-9_]*)*"    
+        # use the whole line
+        r"$").match
+    
     def __init__(self, parent):
         self.__parent__ = parent
         
@@ -138,8 +153,8 @@ class _Records(object):
         self._values = OOBTree()
 
     def __setitem__(self, name, record):
-        if not _isdotted(name):
-            raise InvalidDottedName(record)
+        if not self._validkey(name):
+            raise InvalidRegistryKey(record)
         if not IRecord.providedBy(record):
             raise ValueError("Value must be a record")
         

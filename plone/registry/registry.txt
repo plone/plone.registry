@@ -397,6 +397,47 @@ To access another instance of the field, supply the prefix:
     >>> alt_proxy.sender
     u'alt@example.org'
 
+Collections of records proxies
+------------------------------
+
+A collection of record sets may be accessed using `collectionOfInterface`:
+
+    >>> collection = registry.collectionOfInterface(IMailSettings)
+
+You can create a new record set:
+
+    >>> proxy = collection.setdefault('example')
+    >>> proxy.sender = u'collection@example.org'
+    >>> proxy.smtp_host = 'smtp://mail.example.org'
+
+Record sets are stored based under the prefix:
+
+    >>> prefix = IMailSettings.__identifier__
+    >>> registry.records.values(prefix+'/', prefix+'0')
+    [<Record plone.registry.tests.IMailSettings/example.sender>,
+     <Record plone.registry.tests.IMailSettings/example.smtp_host>]
+    >>> registry['plone.registry.tests.IMailSettings/example.sender']
+    u'collection@example.org'
+
+Records may be set from an existing object:
+
+    >>> class MailSettings:
+    ...     sender = u'someone@example.com'
+    ...     smtp_host = 'smtp://mail.example.com'
+    >>> collection['example_com'] = MailSettings()
+    >>> registry.records.values(prefix+'/', prefix+'0')
+    [<Record plone.registry.tests.IMailSettings/example.sender>,
+     <Record plone.registry.tests.IMailSettings/example.smtp_host>,
+     <Record plone.registry.tests.IMailSettings/example_com.sender>,
+     <Record plone.registry.tests.IMailSettings/example_com.smtp_host>]
+
+And may be deleted:
+
+    >>> del collection['example_com']
+    >>> registry.records.values(prefix+'/', prefix+'0')
+    [<Record plone.registry.tests.IMailSettings/example.sender>,
+     <Record plone.registry.tests.IMailSettings/example.smtp_host>]
+
 Using field references
 ======================
 

@@ -4,6 +4,9 @@ Changelog
 1.0b5 - unreleased
 ------------------
 
+* Add ``collectionOfInterface`` support to registry.
+  [elro]
+
 * Fixed bug where prefix was ignored by registry.forInterface.
   [elro]
 

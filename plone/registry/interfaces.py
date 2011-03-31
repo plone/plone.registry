@@ -4,6 +4,11 @@ from zope.interface.interfaces import IInterface
 from zope import schema
 
 from zope.schema.interfaces import IField
+from zope.schema.interfaces import InvalidDottedName
+
+class InvalidRegistryKey(InvalidDottedName):
+    """A registry key is a dotted name with up to one '/'.
+    """
 
 class IPersistentField(IField):
     """A field that can be persistent along with a record.
