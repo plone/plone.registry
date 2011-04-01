@@ -46,7 +46,7 @@ class RecordsProxy(object):
             self.__dict__[name] = value
     
     def __repr__(self):
-        return "<RecordsProxy for %s>" % self.__schema__.__identifier__
+        return "<%s for %s>" % (self.__class__.__name__, self.__schema__.__identifier__)
 
 
 class RecordsProxyCollection(DictMixin):
@@ -57,7 +57,7 @@ class RecordsProxyCollection(DictMixin):
 
     # ord('.') == ord('/') - 1
 
-    def __init__(self, registry, schema, check=True, omitted=(), prefix=None):
+    def __init__(self, registry, schema, check=True, omitted=(), prefix=None, factory=None):
         if prefix is None:
             prefix = schema.__identifier__
 
@@ -69,11 +69,12 @@ class RecordsProxyCollection(DictMixin):
         self.check = check
         self.omitted = omitted
         self.prefix = prefix
+        self.factory = factory
 
     def __getitem__(self, key):
         if self.has_key(key):
             prefix = self.prefix + key
-            proxy = self.registry.forInterface(self.schema, self.check, self.omitted, prefix)
+            proxy = self.registry.forInterface(self.schema, self.check, self.omitted, prefix, self.factory)
             return proxy
         raise KeyError(key)
 

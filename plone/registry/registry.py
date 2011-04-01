@@ -60,7 +60,7 @@ class Registry(Persistent):
     
     # Schema interface API
     
-    def forInterface(self, interface, check=True, omit=(), prefix=None):
+    def forInterface(self, interface, check=True, omit=(), prefix=None, factory=None):
         if prefix is None:
             prefix = interface.__identifier__
 
@@ -73,7 +73,10 @@ class Registry(Persistent):
                     raise KeyError("Interface `%s` defines a field `%s`, "
                                    "for which there is no record." % (interface.__identifier__, name))
         
-        return RecordsProxy(self, interface, omitted=omit, prefix=prefix)
+        if factory is None:
+            factory = RecordsProxy
+        
+        return factory(self, interface, omitted=omit, prefix=prefix)
 
     def registerInterface(self, interface, omit=(), prefix=None):
         if prefix is None:
@@ -108,8 +111,8 @@ class Registry(Persistent):
             
             self.records[record_name] = Record(persistent_field, value, _validate=False)
 
-    def collectionOfInterface(self, interface, check=True, omit=(), prefix=None):
-        return RecordsProxyCollection(self, interface, check, omit, prefix)
+    def collectionOfInterface(self, interface, check=True, omit=(), prefix=None, factory=None):
+        return RecordsProxyCollection(self, interface, check, omit, prefix, factory)
 
     # BBB
     
