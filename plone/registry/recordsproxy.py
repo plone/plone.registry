@@ -91,6 +91,9 @@ class RecordsProxyCollection(DictMixin):
                 yield key
                 last = key
 
+    def keys(self):
+        return list(iter(self))
+
     def _validate(self, key):
         if not isinstance(key, basestring) or not self._validkey(key):
             raise TypeError('expected a valid key (alphanumeric or underscore, starting with alpha)')
