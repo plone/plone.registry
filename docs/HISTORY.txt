@@ -1,64 +1,74 @@
 Changelog
 =========
 
+
 1.0b6 - Unreleased
 ------------------
+
+- Add MANIFEST.in.
+  [WouterVH]
+
 
 1.0b5 - 2011-04-06
 ------------------
 
-* Make RecordsProxy type customizable through ``factory`` argument to
+- Make RecordsProxy type customizable through ``factory`` argument to
   ``forInterface`` and ``collectionOfInterface``.
   [elro]
 
-* Add ``collectionOfInterface`` support to registry.
+- Add ``collectionOfInterface`` support to registry.
   [elro]
 
-* Fixed bug where prefix was ignored by registry.forInterface.
+- Fixed bug where prefix was ignored by registry.forInterface.
   [elro]
 
-* Add optional min, max arguments for keys/values/items of _Records.
+- Add optional min, max arguments for keys/values/items of _Records.
   [elro]
+
 
 1.0b4 - 2011-02-04
 ------------------
 
-* Added support for field references, via the ``FieldRef`` class. See
+- Added support for field references, via the ``FieldRef`` class. See
   ``registry.txt`` for details.
   [optilude]
 
-* Change the internal persistent structure around to make it more efficient.
+- Change the internal persistent structure around to make it more efficient.
   The API remains the same. Old registries will be migrated when first
   accessed. Warning: This may lead to a "write-on-read" situation for the
   first request in which the registry is being used.
   [optilude]
 
+
 1.0b3 - 2011-01-03
 ------------------
 
- * added prefix option to forInterface (as it was added to registerInterface)
+ - Added prefix option to forInterface (as it was added to registerInterface)
    [garbas]
+
 
 1.0b2 - 2010-04-21
 ------------------
 
-* Added support for Decimal fields
+- Added support for Decimal fields
   [optilude]
 
-* Add a prefix option to registerInterface to allow an interface to be used as
+- Add a prefix option to registerInterface to allow an interface to be used as
   a template for a series of values, rather than single use.
   [MatthewWilkes]
+
 
 1.0b1 - 2009-08-02
 ------------------
 
-* Fix a bug in bind() for Choice fields.
+- Fix a bug in bind() for Choice fields.
   [optilude]
+
 
 1.0a2 - 2009-07-12
 ------------------
 
-* Changed API methods and arguments to mixedCase to be more consistent with
+- Changed API methods and arguments to mixedCase to be more consistent with
   the rest of Zope. This is a non-backwards-compatible change. Our profuse
   apologies, but it's now or never. :-/
 
@@ -67,8 +77,8 @@ Changelog
   becomes forInterface().
   [optilude]
 
+
 1.0a1 - 2009-04-17
 ------------------
 
-* Initial release
-
+- Initial release
