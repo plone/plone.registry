@@ -11,7 +11,6 @@ title describing the record's purpose.
 
 See the following doctests for more details: 
 
- * `registry.txt`, which demonstrates how registries and records work
- * `events.txt`, which shows the events that are fired from the registry
- * `field.txt`, which describes the behaviour of persistent fields
-
+* `registry.txt`, which demonstrates how registries and records work
+* `events.txt`, which shows the events that are fired from the registry
+* `field.txt`, which describes the behaviour of persistent fields
