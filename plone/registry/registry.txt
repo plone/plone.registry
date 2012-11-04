@@ -509,7 +509,7 @@ With a valid key
     ...     smtp_host = 'smtp://mail.example.com'
     >>> proxy.settings.append(MailSettings())
 
-The order is kept in a specual list of keys and the objects are stored prefixed by the key value
+The order is kept in a special list of keys and the objects are stored prefixed by the key value
 
     >>> registry.records.values(prefix, prefix+'0')
     [<Record plone.registry.tests.IAllMailSettings.settings.ordereddict_keys>,

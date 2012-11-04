@@ -1,6 +1,6 @@
 from zope.interface import implements, alsoProvides
 from zope.schema import getFieldsInOrder
-from zope.schema.interfaces import RequiredMissing, ISequence, IAbstractSet
+from zope.schema.interfaces import RequiredMissing, ISequence, IAbstractSet, IObject
 from plone.registry.interfaces import IRecordsProxy
 import plone.registry
 from listmixin import ListMixin
@@ -35,13 +35,13 @@ class RecordsProxy(object):
         if name not in self.__schema__:
             raise AttributeError(name)
         field = self.__schema__[name]
-        if ISequence.providedBy(field):
+        if ISequence.providedBy(field) and IObject.providedBy(field.value_type):
             prefix = self.__prefix__ + name
             factory = None
             key_name = self.__key_names__.get(name,None)
             return RecordsProxyList(self.__registry__, field.value_type.schema, False, self.__omitted__, prefix, factory,
                                     key_name=key_name)
-        elif IAbstractSet.providedBy(field):
+        elif IAbstractSet.providedBy(field) and IObject.providedBy(field.value_type):
             prefix = self.__prefix__ + name
             factory = None
             return RecordsProxyCollection(self.__registry__, field.value_type.schema, False, self.__omitted__, prefix, factory)
@@ -55,10 +55,10 @@ class RecordsProxy(object):
         if name in self.__schema__:
             full_name = self.__prefix__ + name
             field = self.__schema__[name]
-            if ISequence.providedBy(field):
+            if ISequence.providedBy(field) and IObject.providedBy(field.value_type):
                 proxy = self.__getattr__(name)
                 proxy[:] = value
-            elif IAbstractSet.providedBy(field):
+            elif IAbstractSet.providedBy(field) and IObject.providedBy(field.value_type):
                 proxy = self.__getattr__(name)
                 proxy[:] = value
             else:
