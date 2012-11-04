@@ -2,7 +2,7 @@ from zope.interface import implements, alsoProvides
 from zope.schema import getFieldsInOrder
 from zope.schema.interfaces import RequiredMissing, ISequence, IAbstractSet
 from plone.registry.interfaces import IRecordsProxy
-#from plone.registry import Record
+import plone.registry
 from listmixin import ListMixin
 
 from UserDict import DictMixin
@@ -186,7 +186,8 @@ class RecordsProxyList(ListMixin):
             # will store as ordereddict with items stored using key_name's value and order kept in special keys list
             keys_key = prefix+'.ordereddict_keys'
             if registry.get(keys_key) is None:
-                registry.records[keys_key] = Record(field.List(title=u"Keys of prefix"), [])
+                registry.records[keys_key] = plone.registry.record.Record(
+                    plone.registry.field.List(title=u"Keys of prefix"), [])
             self.keys = registry.records[keys_key]
 
     def _get_element(self, i):
