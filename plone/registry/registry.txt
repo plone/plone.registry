@@ -444,6 +444,63 @@ And may be deleted:
     [<Record plone.registry.tests.IMailSettings/example.sender>,
      <Record plone.registry.tests.IMailSettings/example.smtp_host>]
 
+Records Proxies for schemas with lists or dicts of Objects
+==========================================================
+
+
+To test this, we have created an interface, `IAllMailSettings`.
+
+    >>> from plone.registry.tests import IAllMailSettings
+
+Note that this contains a List of Objects field
+
+    >>> IAllMailSettings['settings']
+    <zope.schema._field.List object at ...>
+
+The same way we can create a records proxy for schemas before will still work.
+#TODO fix check so we don't need to turn it off
+
+    >>> proxy = registry.forInterface(IAllMailSettings, check=False)
+    >>> proxy
+    <RecordsProxy for plone.registry.tests.IAllMailSettings>
+
+
+Records may be set from an existing object:
+
+    >>> class MailSettings:
+    ...     sender = u'someone@example.com'
+    ...     smtp_host = 'smtp://mail.example.com'
+    >>> proxy.settings.append(MailSettings())
+    >>> prefix = IAllMailSettings.__identifier__
+    >>> registry.records.values(prefix, prefix+'0')
+    [<Record plone.registry.tests.IAllMailSettings.settings/i00000.sender>,
+     <Record plone.registry.tests.IAllMailSettings.settings/i00000.smtp_host>]
+
+
+The collection may be iterated over:
+
+    >>> for item in proxy.settings: print item.sender
+    someone@example.com
+
+And may be deleted:
+
+    >>> del proxy.settings[0]
+    >>> registry.records.values(prefix, prefix+'0')
+    []
+
+Optionally if your schema has a list which has a unique key we can store these in a nicer way
+
+    >>> proxy = registry.forInterface(IAllMailSettings, check=False, key_names={'settings':'smtp_host'})
+
+    >>> class MailSettings:
+    ...     sender = u'someone@example.com'
+    ...     smtp_host = 'smtp://mail.example.com'
+    >>> proxy.settings.append(MailSettings())
+    >>> registry.records.values(prefix, prefix+'0')
+    [<Record plone.registry.tests.IAllMailSettings.settings/i00000.sender>,
+     <Record plone.registry.tests.IAllMailSettings.settings/i00000.smtp_host>]
+
+
 Using field references
 ======================
 

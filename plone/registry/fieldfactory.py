@@ -17,7 +17,7 @@ from plone.registry.field import is_primitive
 def persistentFieldAdapter(context):
     """Turn a non-persistent field into a persistent one
     """
-    
+
     if IPersistentField.providedBy(context):
         return context
     
@@ -45,6 +45,7 @@ def persistentFieldAdapter(context):
         if v is not None and v != context.missing_value:
             v = iface(v, None)
             if v is None:
+
                 __traceback_info__ = "The property `%s` cannot be adapted to `%s`." % (k, iface.__identifier__,)
                 return None
             context_dict[k] = v

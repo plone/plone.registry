@@ -24,6 +24,19 @@ class IMailPreferences(Interface):
     max_daily = schema.Int(title=u"Maximum number of emails per day", min=0, default=3)
     settings = schema.Object(title=u"Mail setings to use", schema=IMailSettings)
 
+class IAllMailSettings(Interface):
+    """Settings for different email providers
+    """
+
+    settings = schema.List(
+        value_type=schema.Object(IMailSettings,
+            title=u"Mail Settings"),
+        required=False,
+        default=[],
+        missing_value=[],
+    )
+
+
 def setUp(test=None):
     testing.setUp()
     eventtesting.setUp()
