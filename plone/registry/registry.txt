@@ -444,9 +444,11 @@ And may be deleted:
     [<Record plone.registry.tests.IMailSettings/example.sender>,
      <Record plone.registry.tests.IMailSettings/example.smtp_host>]
 
-Records Proxies for schemas with lists or dicts of Objects
-==========================================================
+CRUD in the registry
+====================
 
+You can create more complex schemas with lists of Objects and have
+this automatically stored in the registry for you.
 
 To test this, we have created an interface, `IAllMailSettings`.
 
@@ -515,6 +517,19 @@ The order is kept in a special list of keys and the objects are stored prefixed 
     [<Record plone.registry.tests.IAllMailSettings.settings.ordereddict_keys>,
      <Record plone.registry.tests.IAllMailSettings.settings/someone.sender>,
      <Record plone.registry.tests.IAllMailSettings.settings/someone.smtp_host>]
+
+This allows you to quickly create CRUD like forms:
+
+    class AllMailControlPanelForm(controlpanel.RegistryEditForm):
+
+        schema = IAllMailSettings
+        label = _(u"Manage All Mail Settings")
+        description = _(u"""Add or remove mail settings""")
+
+        def getContent(self):
+            reg = getUtility(IRegistry)
+            return registry.forInterface(IAllMailSettings, check=False, key_names={'settings':'sender'})
+
 
 
 Using field references
