@@ -155,7 +155,7 @@ class Dict(PersistentField, zope.schema.Dict):
     
     key_type = InterfaceConstrainedProperty('key_type', IPersistentField)
     value_type = InterfaceConstrainedProperty('value_type', IPersistentField)
-    
+
 class Datetime(PersistentField, zope.schema.Datetime):
     pass
     

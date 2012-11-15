@@ -444,6 +444,115 @@ And may be deleted:
     [<Record plone.registry.tests.IMailSettings/example.sender>,
      <Record plone.registry.tests.IMailSettings/example.smtp_host>]
 
+CRUD in the registry
+====================
+
+You can create more complex schemas with lists of Objects and have
+this automatically stored in the registry for you.
+
+To test this, we have created an interface, `IAllMailSettings`.
+
+    >>> from plone.registry.tests import IAllMailSettings
+
+Note that this contains a List of Objects field
+
+    >>> IAllMailSettings['settings']
+    <zope.schema._field.List object at ...>
+
+The same way we can create a records proxy for schemas before will still work.
+#TODO fix check so we don't need to turn it off
+
+    >>> proxy = registry.forInterface(IAllMailSettings, check=False)
+    >>> proxy
+    <RecordsProxy for plone.registry.tests.IAllMailSettings>
+
+
+Records may be set from an existing object:
+
+    >>> class MailSettings:
+    ...     sender = u'someone@example.com'
+    ...     smtp_host = 'smtp://mail.example.com'
+    >>> proxy.settings.append(MailSettings())
+    >>> prefix = IAllMailSettings.__identifier__
+    >>> registry.records.values(prefix, prefix+'0')
+    [<Record plone.registry.tests.IAllMailSettings.settings/i00000.sender>,
+     <Record plone.registry.tests.IAllMailSettings.settings/i00000.smtp_host>]
+
+
+The collection may be iterated over:
+
+    >>> for item in proxy.settings: print item.sender
+    someone@example.com
+
+And may be deleted:
+
+    >>> del proxy.settings[0]
+    >>> registry.records.values(prefix, prefix+'0')
+    []
+
+Optionally if your schema has a list which has a unique key we can store these in a nicer way
+
+    >>> proxy = registry.forInterface(IAllMailSettings, check=False, key_names={'settings':'sender'})
+
+However the values have to be valid registry keys
+
+    >>> class MailSettings:
+    ...     sender = u'someone@example.com'
+    ...     smtp_host = 'smtp://mail.example.com'
+    >>> m1 = MailSettings()
+    >>> proxy.settings.append(m1)
+    Traceback (most recent call last):
+    ...
+    TypeError: expected a valid key (alphanumeric or underscore, starting with alpha)
+
+With a valid key
+
+    >>> m1.sender = u'someone'
+    >>> proxy.settings.append(m1)
+
+The order is kept in a special list of keys and the objects are stored prefixed by the key value
+
+    >>> registry.records.values(prefix, prefix+'0')
+    [<Record plone.registry.tests.IAllMailSettings.settings.ordereddict_keys>,
+     <Record plone.registry.tests.IAllMailSettings.settings/someone.sender>,
+     <Record plone.registry.tests.IAllMailSettings.settings/someone.smtp_host>]
+
+Adding more objects and then deleting them results in a clean empty list
+    >>> m2 = MailSettings()
+    >>> m2.sender=u'noone'
+    >>> proxy.settings.append(m2)
+    >>> del proxy.settings[0]
+    >>> del proxy.settings[0]
+
+Now the list is empty
+    >>> list(proxy.settings)
+    []
+
+The only record left is our keys list
+    >>> registry.records.values(prefix, prefix+'0')
+    [<Record plone.registry.tests.IAllMailSettings.settings.ordereddict_keys>]
+
+Which is an empty list
+    >>> proxy.settings.keys.value
+    []
+
+
+
+
+This allows you to quickly create CRUD like forms:
+
+    class AllMailControlPanelForm(controlpanel.RegistryEditForm):
+
+        schema = IAllMailSettings
+        label = _(u"Manage All Mail Settings")
+        description = _(u"""Add or remove mail settings""")
+
+        def getContent(self):
+            reg = getUtility(IRegistry)
+            return registry.forInterface(IAllMailSettings, check=False, key_names={'settings':'sender'})
+
+
+
 Using field references
 ======================
 

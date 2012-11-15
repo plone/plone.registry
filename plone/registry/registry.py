@@ -60,7 +60,7 @@ class Registry(Persistent):
     
     # Schema interface API
     
-    def forInterface(self, interface, check=True, omit=(), prefix=None, factory=None):
+    def forInterface(self, interface, check=True, omit=(), prefix=None, factory=None, key_names={}):
         if prefix is None:
             prefix = interface.__identifier__
 
@@ -76,7 +76,7 @@ class Registry(Persistent):
         if factory is None:
             factory = RecordsProxy
         
-        return factory(self, interface, omitted=omit, prefix=prefix)
+        return factory(self, interface, omitted=omit, prefix=prefix, key_names=key_names)
 
     def registerInterface(self, interface, omit=(), prefix=None):
         if prefix is None:
