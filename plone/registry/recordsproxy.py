@@ -195,37 +195,45 @@ class RecordsProxyList(ListMixin):
 
     def _set_element(self, index, value):
         if self.key_name is not None:
-            key = getattr(value, self.key_name)
-            # first we have to remove the old value if it's being overwritten
+            #First add it to the map to ensure it's a valid key
+            try:
+                key = getattr(value, self.key_name)
+                self.map[key] = value
+            except:
+                # our key list might be in an inconsistent state
+                if self.keys.value[index] is None:
+                    del self.keys.value[index]
+                raise
+
+            # we have to remove the old value if it's being overwritten
             oldkey = self.keys.value[index]
             if key != oldkey and oldkey is not None:
                 del self.map[oldkey]
             self.keys.value[index] = key
-        self.map[self.genKey(index)] = value
+
+        else:
+            self.map[self.genKey(index)] = value
 
     def __len__(self):
-        if self.key_name is None:
-            return len(self.map)
-        else:
-            return len(self.keys.value)
+        return len(self.map)
 
     def _resize_region(self, start, end, new_size):
-        #move everything along one
-        offset = new_size - (end - start)
-
-        # remove any additional at the end
-        for i in range(len(self.map)+offset, len(self.map)):
-            del self.map[self.genKey(i)]
 
         if self.key_name is None:
+            offset = new_size - (end - start)
+            #move everything along one
             if offset > 0:
-                moves = range(end-1, start, -1)
-            else:
-                moves = range(start, end, +1)
-            for i in moves:
-                if i < len(self.map):
+                for i in range(max(len(self.map)-1,0), start, -1):
                     self.map[self.genKey(i+offset)] = self.map[self.genKey(i)]
+            else:
+                for i in range(end, len(self.map), +1):
+                    self.map[self.genKey(i+offset)] = self.map[self.genKey(i)]
+                # remove any additional at the end
+                for i in range(len(self.map)+offset, len(self.map)):
+                    del self.map[self.genKey(i)]
         else:
+            for i in range(start, end):
+                del self.map[self.keys.value[i]]
             self.keys.value = self.keys.value[:start] + [None for i in range(new_size)] + self.keys.value[end:]
 
     def genKey(self, index):

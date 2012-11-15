@@ -499,17 +499,16 @@ However the values have to be valid registry keys
     >>> class MailSettings:
     ...     sender = u'someone@example.com'
     ...     smtp_host = 'smtp://mail.example.com'
-    >>> proxy.settings.append(MailSettings())
+    >>> m1 = MailSettings()
+    >>> proxy.settings.append(m1)
     Traceback (most recent call last):
     ...
     TypeError: expected a valid key (alphanumeric or underscore, starting with alpha)
 
 With a valid key
 
-    >>> class MailSettings:
-    ...     sender = u'someone'
-    ...     smtp_host = 'smtp://mail.example.com'
-    >>> proxy.settings.append(MailSettings())
+    >>> m1.sender = u'someone'
+    >>> proxy.settings.append(m1)
 
 The order is kept in a special list of keys and the objects are stored prefixed by the key value
 
@@ -517,6 +516,28 @@ The order is kept in a special list of keys and the objects are stored prefixed 
     [<Record plone.registry.tests.IAllMailSettings.settings.ordereddict_keys>,
      <Record plone.registry.tests.IAllMailSettings.settings/someone.sender>,
      <Record plone.registry.tests.IAllMailSettings.settings/someone.smtp_host>]
+
+Adding more objects and then deleting them results in a clean empty list
+    >>> m2 = MailSettings()
+    >>> m2.sender=u'noone'
+    >>> proxy.settings.append(m2)
+    >>> del proxy.settings[0]
+    >>> del proxy.settings[0]
+
+Now the list is empty
+    >>> list(proxy.settings)
+    []
+
+The only record left is our keys list
+    >>> registry.records.values(prefix, prefix+'0')
+    [<Record plone.registry.tests.IAllMailSettings.settings.ordereddict_keys>]
+
+Which is an empty list
+    >>> proxy.settings.keys.value
+    []
+
+
+
 
 This allows you to quickly create CRUD like forms:
 
