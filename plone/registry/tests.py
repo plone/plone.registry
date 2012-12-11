@@ -120,15 +120,15 @@ class TestMigration(unittest.TestCase):
 def test_suite():
     return unittest.TestSuite([
         doctestunit.DocFileSuite(
-            'registry.txt', package='plone.registry',
+            'registry.rst', package='plone.registry',
             optionflags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
             setUp=setUp, tearDown=testing.tearDown),
         doctestunit.DocFileSuite(
-            'events.txt', package='plone.registry',
+            'events.rst', package='plone.registry',
             optionflags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
             setUp=setUp, tearDown=testing.tearDown),
         doctestunit.DocFileSuite(
-            'field.txt', package='plone.registry',
+            'field.rst', package='plone.registry',
             optionflags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
             setUp=setUp, tearDown=testing.tearDown),
         unittest.makeSuite(TestBugs),
