@@ -12,5 +12,5 @@ title describing the record's purpose.
 See the following doctests for more details: 
 
 * ``registry.rst``, which demonstrates how registries and records work
-* ``events.rst`, which shows the events that are fired from the registry
+* ``events.rst``, which shows the events that are fired from the registry
 * ``field.rst``, which describes the behaviour of persistent fields
