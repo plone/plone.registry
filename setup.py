@@ -9,15 +9,15 @@ version = '1.0.1'
 
 
 long_description = (
-    read('README.txt')
+    read('README.rst')
     + '\n' +
-    read('plone', 'registry', 'registry.txt')
+    read('plone', 'registry', 'registry.rst')
     + '\n' +
-    read('plone', 'registry', 'events.txt')
+    read('plone', 'registry', 'events.rst')
     + '\n' +
-    read('plone', 'registry', 'field.txt')
+    read('plone', 'registry', 'field.rst')
     + '\n' +
-    read('CHANGES.txt')
+    read('CHANGES.rst')
     + '\n'
     )
 
