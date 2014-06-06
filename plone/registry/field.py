@@ -187,8 +187,13 @@ class Choice(PersistentField, zope.schema.Choice):
     def __init__(self, values=None, vocabulary=None, source=None, **kw):
         
         if vocabulary is not None and not isinstance(vocabulary, basestring):
-            raise ValueError("Persistent fields only support named vocabularies "
-                             "or vocabularies based on simple value sets.")
+            values = self._normalized_values(vocabulary)
+            if values is None:
+                raise ValueError(
+                    "Persistent fields only support named vocabularies or "
+                    "vocabularies based on simple value sets."
+                    )
+            vocabulary = None
         elif source is not None:
             raise ValueError("Persistent fields do not support sources, only named "
                              "vocabularies or vocabularies based on simple value sets.")
@@ -213,6 +218,12 @@ class Choice(PersistentField, zope.schema.Choice):
         self._init_field = bool(self.vocabularyName)
         super(zope.schema.Choice, self).__init__(**kw)
         self._init_field = False
+
+    def _normalized_values(self, vocabulary):
+        if getattr(vocabulary, '__iter__', None):
+            if all([isinstance(term.value, unicode) for term in vocabulary]):
+                return [term.value for term in vocabulary]
+        return None
 
     @property
     def vocabulary(self):

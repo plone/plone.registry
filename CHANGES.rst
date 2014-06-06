@@ -4,7 +4,11 @@ Changelog
 1.0.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Choice field construction compatible with a simple vocabulary of
+  string-based choices, which are converted to values on construction.
+  This provides compatibility for plone.registry/plone.app.registry
+  integration with plone.supermodel >= 1.2.5.
+  [seanupton]
 
 
 1.0.1 (2013-01-13)
