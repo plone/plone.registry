@@ -142,10 +142,10 @@ class _Records(object):
     
     # Similar to zope.schema._field._isdotted, but allows up to one '/'
     _validkey = re.compile(
-        r"([a-zA-Z][a-zA-Z0-9_]*)"
-        r"([.][a-zA-Z][a-zA-Z0-9_]*)*"
-        r"([/][a-zA-Z][a-zA-Z0-9_]*)?"
-        r"([.][a-zA-Z][a-zA-Z0-9_]*)*"    
+        r"([a-zA-Z][a-zA-Z0-9_-]*)"
+        r"([.][a-zA-Z][a-zA-Z0-9_-]*)*"
+        r"([/][a-zA-Z][a-zA-Z0-9_-]*)?"
+        r"([.][a-zA-Z][a-zA-Z0-9_-]*)*"
         # use the whole line
         r"$").match
     
