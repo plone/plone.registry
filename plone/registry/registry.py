@@ -70,6 +70,7 @@ class Registry(Persistent):
         if check:
             for name in getFieldNames(interface):
                 if name not in omit and prefix + name not in self:
+                    import pdb; pdb.set_trace()
                     raise KeyError("Interface `%s` defines a field `%s`, "
                                    "for which there is no record." % (interface.__identifier__, name))
         

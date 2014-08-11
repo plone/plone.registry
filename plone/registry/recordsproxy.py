@@ -53,7 +53,7 @@ class RecordsProxyCollection(DictMixin):
     """A proxy that maps a collection of RecordsProxy objects
     """
 
-    _validkey = re.compile(r"([a-zA-Z][a-zA-Z0-9_-]*)$").match
+    _validkey = re.compile(r"([a-zA-Z][a-zA-Z0-9_.-]*)$").match
 
     # ord('.') == ord('/') - 1
 
@@ -86,10 +86,13 @@ class RecordsProxyCollection(DictMixin):
         last = None
         for name in keys:
             name = name[len_prefix:]
-            key, extra = name.split('.', 1)
-            if key != last:
-                yield key
-                last = key
+            if '.' not in name:
+                yield name
+            else:
+                key = '.'.join(name.split('.')[:-1])
+                if key != last:
+                    yield key
+                    last = key
 
     def keys(self):
         return list(iter(self))
