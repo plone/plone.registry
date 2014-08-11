@@ -53,7 +53,7 @@ class RecordsProxyCollection(DictMixin):
     """A proxy that maps a collection of RecordsProxy objects
     """
 
-    _validkey = re.compile(r"([a-zA-Z][a-zA-Z0-9_]*)$").match
+    _validkey = re.compile(r"([a-zA-Z][a-zA-Z0-9_-]*)$").match
 
     # ord('.') == ord('/') - 1
 
