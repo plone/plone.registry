@@ -17,27 +17,27 @@ from plone.registry.field import is_primitive
 def persistentFieldAdapter(context):
     """Turn a non-persistent field into a persistent one
     """
-    
+
     if IPersistentField.providedBy(context):
         return context
-    
+
     # See if we have an equivalently-named field
-    
+
     class_name = context.__class__.__name__
     persistent_class = getattr(plone.registry.field, class_name, None)
     if persistent_class is None:
         return None
-    
+
     if not issubclass(persistent_class, context.__class__):
         __traceback_info__ = "Can only clone a field of an equivalent type."
         return None
-    
+
     ignored = list(DisallowedProperty.uses + StubbornProperty.uses)
     constrained = list(InterfaceConstrainedProperty.uses)
-    
+
     instance = persistent_class.__new__(persistent_class)
-    
-    context_dict = dict([(k,v) for k,v in context.__dict__.items() 
+
+    context_dict = dict([(k,v) for k,v in context.__dict__.items()
                             if k not in ignored])
 
     for k,iface in constrained:
@@ -57,16 +57,16 @@ def persistentFieldAdapter(context):
 def choicePersistentFieldAdapter(context):
     """Special handling for Choice fields.
     """
-    
+
     instance = persistentFieldAdapter(context)
     if instance is None:
         return None
-    
+
     if ISource.providedBy(context.vocabulary) or \
             IContextSourceBinder.providedBy(context.vocabulary):
-        
+
         safe = False
-        
+
         # Attempt to reverse engineer a 'values' argument
         if isinstance(context.vocabulary, SimpleVocabulary):
             values = []
@@ -79,7 +79,7 @@ def choicePersistentFieldAdapter(context):
                     break
             if safe:
                 instance._values = values
-        
+
         if not safe:
             __traceback_info__ = "Persistent fields only support named vocabularies " + \
                                     "or vocabularies based on simple value sets."

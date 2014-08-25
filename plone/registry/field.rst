@@ -32,7 +32,7 @@ The bytes field describes a string of bytes.
     >>> f = field.Bytes(title=u"Test", min_length=0, max_length=10)
     >>> isinstance(f, schema.Bytes)
     True
-    
+
     >>> f.order
     -1
 
@@ -40,7 +40,7 @@ The bytes field describes a string of bytes.
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields does not support setting the `constraint` property
-    
+
     >>> f.constraint = lambda x: False
     Traceback (most recent call last):
     ...
@@ -57,7 +57,7 @@ The bytes field describes a string of bytes, disallowing newlines.
     >>> f = field.BytesLine(title=u"Test", min_length=0, max_length=10)
     >>> isinstance(f, schema.BytesLine)
     True
-    
+
     >>> f.order
     -1
 
@@ -65,7 +65,7 @@ The bytes field describes a string of bytes, disallowing newlines.
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields does not support setting the `constraint` property
-    
+
     >>> f.constraint = lambda x: False
     Traceback (most recent call last):
     ...
@@ -82,7 +82,7 @@ The ASCII field describes a string containing only ASCII characters.
     >>> f = field.ASCII(title=u"Test", min_length=0, max_length=10)
     >>> isinstance(f, schema.ASCII)
     True
-    
+
     >>> f.order
     -1
 
@@ -90,7 +90,7 @@ The ASCII field describes a string containing only ASCII characters.
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields does not support setting the `constraint` property
-    
+
     >>> f.constraint = lambda x: False
     Traceback (most recent call last):
     ...
@@ -108,7 +108,7 @@ disallowing newlines.
     >>> f = field.ASCIILine(title=u"Test", min_length=0, max_length=10)
     >>> isinstance(f, schema.ASCIILine)
     True
-    
+
     >>> f.order
     -1
 
@@ -116,7 +116,7 @@ disallowing newlines.
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields does not support setting the `constraint` property
-    
+
     >>> f.constraint = lambda x: False
     Traceback (most recent call last):
     ...
@@ -133,7 +133,7 @@ The text field describes a unicode string.
     >>> f = field.Text(title=u"Test", min_length=0, max_length=10)
     >>> isinstance(f, schema.Text)
     True
-    
+
     >>> f.order
     -1
 
@@ -141,7 +141,7 @@ The text field describes a unicode string.
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields does not support setting the `constraint` property
-    
+
     >>> f.constraint = lambda x: False
     Traceback (most recent call last):
     ...
@@ -158,7 +158,7 @@ The text line field describes a unicode string, disallowing newlines
     >>> f = field.TextLine(title=u"Test", min_length=0, max_length=10)
     >>> isinstance(f, schema.TextLine)
     True
-    
+
     >>> f.order
     -1
 
@@ -166,7 +166,7 @@ The text line field describes a unicode string, disallowing newlines
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields does not support setting the `constraint` property
-    
+
     >>> f.constraint = lambda x: False
     Traceback (most recent call last):
     ...
@@ -183,7 +183,7 @@ The bool field describes a boolean.
     >>> f = field.Bool(title=u"Test")
     >>> isinstance(f, schema.Bool)
     True
-    
+
     >>> f.order
     -1
 
@@ -191,7 +191,7 @@ The bool field describes a boolean.
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields does not support setting the `constraint` property
-    
+
     >>> f.constraint = lambda x: False
     Traceback (most recent call last):
     ...
@@ -208,7 +208,7 @@ The int field describes an integer or long.
     >>> f = field.Int(title=u"Test", min=-123, max=1234)
     >>> isinstance(f, schema.Int)
     True
-    
+
     >>> f.order
     -1
 
@@ -216,7 +216,7 @@ The int field describes an integer or long.
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields does not support setting the `constraint` property
-    
+
     >>> f.constraint = lambda x: False
     Traceback (most recent call last):
     ...
@@ -233,7 +233,7 @@ The float field describes a float.
     >>> f = field.Float(title=u"Test", min=-123.0, max=1234.0)
     >>> isinstance(f, schema.Float)
     True
-    
+
     >>> f.order
     -1
 
@@ -241,7 +241,7 @@ The float field describes a float.
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields does not support setting the `constraint` property
-    
+
     >>> f.constraint = lambda x: False
     Traceback (most recent call last):
     ...
@@ -259,7 +259,7 @@ The decimal field describes a decimal.
     >>> f = field.Decimal(title=u"Test", min=decimal.Decimal('-123.0'), max=decimal.Decimal('1234.0'))
     >>> isinstance(f, schema.Decimal)
     True
-    
+
     >>> f.order
     -1
 
@@ -267,7 +267,7 @@ The decimal field describes a decimal.
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields does not support setting the `constraint` property
-    
+
     >>> f.constraint = lambda x: False
     Traceback (most recent call last):
     ...
@@ -284,7 +284,7 @@ The password field describes a unicode string used for a password.
     >>> f = field.Password(title=u"Test", min_length=0, max_length=10)
     >>> isinstance(f, schema.Password)
     True
-    
+
     >>> f.order
     -1
 
@@ -292,7 +292,7 @@ The password field describes a unicode string used for a password.
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields does not support setting the `constraint` property
-    
+
     >>> f.constraint = lambda x: False
     Traceback (most recent call last):
     ...
@@ -309,7 +309,7 @@ The source  text field describes a unicode string with source code.
     >>> f = field.SourceText(title=u"Test", min_length=0, max_length=10)
     >>> isinstance(f, schema.SourceText)
     True
-    
+
     >>> f.order
     -1
 
@@ -317,7 +317,7 @@ The source  text field describes a unicode string with source code.
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields does not support setting the `constraint` property
-    
+
     >>> f.constraint = lambda x: False
     Traceback (most recent call last):
     ...
@@ -334,7 +334,7 @@ The URI field describes a URI string.
     >>> f = field.URI(title=u"Test", min_length=0, max_length=10)
     >>> isinstance(f, schema.URI)
     True
-    
+
     >>> f.order
     -1
 
@@ -342,7 +342,7 @@ The URI field describes a URI string.
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields does not support setting the `constraint` property
-    
+
     >>> f.constraint = lambda x: False
     Traceback (most recent call last):
     ...
@@ -359,7 +359,7 @@ The id field describes a URI string or a dotted name.
     >>> f = field.Id(title=u"Test", min_length=0, max_length=10)
     >>> isinstance(f, schema.Id)
     True
-    
+
     >>> f.order
     -1
 
@@ -367,7 +367,7 @@ The id field describes a URI string or a dotted name.
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields does not support setting the `constraint` property
-    
+
     >>> f.constraint = lambda x: False
     Traceback (most recent call last):
     ...
@@ -384,7 +384,7 @@ The dotted name field describes a dotted name.
     >>> f = field.DottedName(title=u"Test", min_length=0, max_length=10)
     >>> isinstance(f, schema.DottedName)
     True
-    
+
     >>> f.order
     -1
 
@@ -392,7 +392,7 @@ The dotted name field describes a dotted name.
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields does not support setting the `constraint` property
-    
+
     >>> f.constraint = lambda x: False
     Traceback (most recent call last):
     ...
@@ -409,7 +409,7 @@ The date/time field describes a Python datetime object.
     >>> f = field.Datetime(title=u"Test")
     >>> isinstance(f, schema.Datetime)
     True
-    
+
     >>> f.order
     -1
 
@@ -417,7 +417,7 @@ The date/time field describes a Python datetime object.
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields does not support setting the `constraint` property
-    
+
     >>> f.constraint = lambda x: False
     Traceback (most recent call last):
     ...
@@ -435,7 +435,7 @@ The date field describes a Python date object.
     >>> f = field.Date(title=u"Test")
     >>> isinstance(f, schema.Date)
     True
-    
+
     >>> f.order
     -1
 
@@ -443,7 +443,7 @@ The date field describes a Python date object.
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields does not support setting the `constraint` property
-    
+
     >>> f.constraint = lambda x: False
     Traceback (most recent call last):
     ...
@@ -461,7 +461,7 @@ The time-delta field describes a Python timedelta object.
     >>> f = field.Timedelta(title=u"Test")
     >>> isinstance(f, schema.Timedelta)
     True
-    
+
     >>> f.order
     -1
 
@@ -469,7 +469,7 @@ The time-delta field describes a Python timedelta object.
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields does not support setting the `constraint` property
-    
+
     >>> f.constraint = lambda x: False
     Traceback (most recent call last):
     ...
@@ -484,20 +484,20 @@ Tuple
 
 The tuple field describes a tuple.
 
-    >>> f = field.Tuple(title=u"Test", min_length=0, max_length=10, 
+    >>> f = field.Tuple(title=u"Test", min_length=0, max_length=10,
     ...     value_type=field.TextLine(title=u"Value"))
     >>> isinstance(f, schema.Tuple)
     True
-    
+
     >>> f.order
     -1
 
-    >>> field.Tuple(title=u"Test", min_length=0, max_length=10, 
+    >>> field.Tuple(title=u"Test", min_length=0, max_length=10,
     ...     value_type=schema.TextLine(title=u"Value"))
     Traceback (most recent call last):
     ...
     ValueError: The property `value_type` may only contain objects providing `plone.registry.interfaces.IPersistentField`.
-    
+
     >>> f.value_type = schema.TextLine(title=u"Value")
     Traceback (most recent call last):
     ...
@@ -507,7 +507,7 @@ The tuple field describes a tuple.
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields does not support setting the `constraint` property
-    
+
     >>> f.constraint = lambda x: False
     Traceback (most recent call last):
     ...
@@ -521,20 +521,20 @@ List
 
 The list field describes a tuple.
 
-    >>> f = field.List(title=u"Test", min_length=0, max_length=10, 
+    >>> f = field.List(title=u"Test", min_length=0, max_length=10,
     ...     value_type=field.TextLine(title=u"Value"))
     >>> isinstance(f, schema.List)
     True
-    
+
     >>> f.order
     -1
 
-    >>> field.List(title=u"Test", min_length=0, max_length=10, 
+    >>> field.List(title=u"Test", min_length=0, max_length=10,
     ...     value_type=schema.TextLine(title=u"Value"))
     Traceback (most recent call last):
     ...
     ValueError: The property `value_type` may only contain objects providing `plone.registry.interfaces.IPersistentField`.
-    
+
     >>> f.value_type = schema.TextLine(title=u"Value")
     Traceback (most recent call last):
     ...
@@ -544,7 +544,7 @@ The list field describes a tuple.
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields does not support setting the `constraint` property
-    
+
     >>> f.constraint = lambda x: False
     Traceback (most recent call last):
     ...
@@ -558,20 +558,20 @@ Set
 
 The set field describes a set.
 
-    >>> f = field.Set(title=u"Test", min_length=0, max_length=10, 
+    >>> f = field.Set(title=u"Test", min_length=0, max_length=10,
     ...     value_type=field.TextLine(title=u"Value"))
     >>> isinstance(f, schema.Set)
     True
-    
+
     >>> f.order
     -1
 
-    >>> field.Set(title=u"Test", min_length=0, max_length=10, 
+    >>> field.Set(title=u"Test", min_length=0, max_length=10,
     ...     value_type=schema.TextLine(title=u"Value"))
     Traceback (most recent call last):
     ...
     ValueError: The property `value_type` may only contain objects providing `plone.registry.interfaces.IPersistentField`.
-    
+
     >>> f.value_type = schema.TextLine(title=u"Value")
     Traceback (most recent call last):
     ...
@@ -581,7 +581,7 @@ The set field describes a set.
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields does not support setting the `constraint` property
-    
+
     >>> f.constraint = lambda x: False
     Traceback (most recent call last):
     ...
@@ -595,20 +595,20 @@ Frozenset
 
 The set field describes a frozenset.
 
-    >>> f = field.FrozenSet(title=u"Test", min_length=0, max_length=10, 
+    >>> f = field.FrozenSet(title=u"Test", min_length=0, max_length=10,
     ...     value_type=field.TextLine(title=u"Value"))
     >>> isinstance(f, schema.FrozenSet)
     True
-    
+
     >>> f.order
     -1
 
-    >>> field.FrozenSet(title=u"Test", min_length=0, max_length=10, 
+    >>> field.FrozenSet(title=u"Test", min_length=0, max_length=10,
     ...     value_type=schema.TextLine(title=u"Value"))
     Traceback (most recent call last):
     ...
     ValueError: The property `value_type` may only contain objects providing `plone.registry.interfaces.IPersistentField`.
-    
+
     >>> f.value_type = schema.TextLine(title=u"Value")
     Traceback (most recent call last):
     ...
@@ -618,7 +618,7 @@ The set field describes a frozenset.
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields does not support setting the `constraint` property
-    
+
     >>> f.constraint = lambda x: False
     Traceback (most recent call last):
     ...
@@ -632,34 +632,34 @@ Dict
 
 The set field describes a dict.
 
-    >>> f = field.Dict(title=u"Test", min_length=0, max_length=10, 
+    >>> f = field.Dict(title=u"Test", min_length=0, max_length=10,
     ...     key_type=field.ASCII(title=u"Key"),
     ...     value_type=field.TextLine(title=u"Value"))
     >>> isinstance(f, schema.Dict)
     True
-    
+
     >>> f.order
     -1
 
-    >>> field.Dict(title=u"Test", min_length=0, max_length=10, 
+    >>> field.Dict(title=u"Test", min_length=0, max_length=10,
     ...     key_type=schema.ASCII(title=u"Key"),
     ...     value_type=field.TextLine(title=u"Value"))
     Traceback (most recent call last):
     ...
     ValueError: The property `key_type` may only contain objects providing `plone.registry.interfaces.IPersistentField`.
-    
+
     >>> f.key_type = schema.ASCII(title=u"Key")
     Traceback (most recent call last):
     ...
     ValueError: The property `key_type` may only contain objects providing `plone.registry.interfaces.IPersistentField`.
 
-    >>> field.Dict(title=u"Test", min_length=0, max_length=10, 
+    >>> field.Dict(title=u"Test", min_length=0, max_length=10,
     ...     key_type=field.ASCII(title=u"Key"),
     ...     value_type=schema.TextLine(title=u"Value"))
     Traceback (most recent call last):
     ...
     ValueError: The property `value_type` may only contain objects providing `plone.registry.interfaces.IPersistentField`.
-    
+
     >>> f.value_type = schema.TextLine(title=u"Value")
     Traceback (most recent call last):
     ...
@@ -669,7 +669,7 @@ The set field describes a dict.
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields does not support setting the `constraint` property
-    
+
     >>> f.constraint = lambda x: False
     Traceback (most recent call last):
     ...
@@ -688,7 +688,7 @@ either be a list of primitives, or a named vocabulary.
     >>> f = field.Choice(title=u"Test", values=[1,2,3])
     >>> isinstance(f, schema.Choice)
     True
-    
+
     >>> f.order
     -1
 
@@ -724,14 +724,14 @@ Other combinations are now allowed, such as specifying no vocabulary:
     Traceback (most recent call last):
     ...
     AssertionError: You must specify either values or vocabulary.
-    
+
 Or specifying both types:
 
     >>> field.Choice(title=u"Test", values=[1,2,3], vocabulary='my.vocab')
     Traceback (most recent call last):
     ...
     AssertionError: You cannot specify both values and vocabulary.
-    
+
 Or specifying an object source:
 
     >>> from zope.schema.vocabulary import SimpleVocabulary
@@ -740,21 +740,21 @@ Or specifying an object source:
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields do not support sources, only named vocabularies or vocabularies based on simple value sets.
-    
+
 Or specifying an object vocabulary:
 
     >>> field.Choice(title=u"Test", vocabulary=dummy_vocabulary)
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields only support named vocabularies or vocabularies based on simple value sets.
-    
+
 As with other fields, you also cannot set a constraint:
 
     >>> field.Choice(title=u"Test", values=[1,2,3], constraint=lambda x: True)
     Traceback (most recent call last):
     ...
     ValueError: Persistent fields does not support setting the `constraint` property
-    
+
     >>> f.constraint = lambda x: False
     Traceback (most recent call last):
     ...
@@ -776,20 +776,20 @@ setup in tests.py. Custom adapters are of course also possible.
     >>> f = schema.TextLine(title=u"Test")
     >>> IPersistentField.providedBy(f)
     False
-    
+
     >>> p = IPersistentField(f)
     >>> IPersistentField.providedBy(p)
     True
-    
+
     >>> isinstance(p, field.TextLine)
     True
-    
+
 Unsupported field types will not be adaptable by default.
 
     >>> f = schema.Object(title=u"Object", schema=IPersistentField)
     >>> IPersistentField(f, None) is None
     True
-    
+
     >>> f = schema.InterfaceField(title=u"Interface")
     >>> IPersistentField(f, None) is None
     True
@@ -814,25 +814,25 @@ The order property is similarly ignored:
 
     >>> f.order > 0
     True
-    
+
     >>> p.order
     -1
 
 Key/value types will be adapted if possible.
 
-    >>> f = schema.Dict(title=u"Test", 
+    >>> f = schema.Dict(title=u"Test",
     ...     key_type=schema.Id(title=u"Id"),
     ...     value_type=schema.TextLine(title=u"Value"))
     >>> p = IPersistentField(f)
     >>> p.key_type
     <plone.registry.field.Id object at ...>
-    
+
     >>> p.value_type
     <plone.registry.field.TextLine object at ...>
-    
+
 However, if they cannot be adapted, there will be an error.
 
-    >>> f = schema.Dict(title=u"Test", 
+    >>> f = schema.Dict(title=u"Test",
     ...     key_type=schema.Id(title=u"Id"),
     ...     value_type=schema.Object(title=u"Value", schema=IPersistentField))
     >>> p = IPersistentField(f)
@@ -840,7 +840,7 @@ However, if they cannot be adapted, there will be an error.
     ...
     TypeError: ('Could not adapt', <zope.schema._field.Dict object at ...>, <InterfaceClass plone.registry.interfaces.IPersistentField>)
 
-    >>> f = schema.Dict(title=u"Test", 
+    >>> f = schema.Dict(title=u"Test",
     ...     key_type=schema.InterfaceField(title=u"Id"),
     ...     value_type=schema.TextLine(title=u"Value"))
     >>> p = IPersistentField(f)

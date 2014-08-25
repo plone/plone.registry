@@ -26,7 +26,7 @@ class RecordRemovedEvent(RecordEvent):
 
 class RecordModifiedEvent(RecordEvent):
     implements(IRecordModifiedEvent)
-    
+
     def __init__(self, record, oldValue, newValue):
         super(RecordModifiedEvent, self).__init__(record)
         self.oldValue = oldValue
@@ -36,22 +36,22 @@ class RecordModifiedEvent(RecordEvent):
 def redispatchInterfaceAwareRecordEvents(event):
     """When an interface-aware record received a record event,
     redispatch the event in a simlar manner to the IObjectEvent redispatcher.
-    
+
     Note that this means one IRecordModifiedEvent will be fired for each
     change to a record.
     """
-    
+
     record = event.record
-    
+
     if not IInterfaceAwareRecord.providedBy(record):
         return
-    
+
     schema = record.interface
     if schema is None:
         return
-    
+
     proxy = RecordsProxy(record.__parent__, schema)
-    
+
     adapters = subscribers((proxy, event), None)
     for adapter in adapters:
         pass # getting them does the work

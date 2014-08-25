@@ -11,23 +11,23 @@ _marker = object()
 class RecordsProxy(object):
     """A proxy that maps an interface to a number of records
     """
-    
+
     implements(IRecordsProxy)
-    
+
     def __init__(self, registry, schema, omitted=(), prefix=None):
         if prefix is None:
             prefix = schema.__identifier__ + '.'
         elif not prefix.endswith("."):
              prefix += '.'
-        
+
         # skip __setattr__
         self.__dict__['__schema__'] = schema
         self.__dict__['__registry__'] = registry
         self.__dict__['__omitted__'] = omitted
         self.__dict__['__prefix__'] = prefix
-        
+
         alsoProvides(self, schema)
-        
+
     def __getattr__(self, name):
         if name not in self.__schema__:
             raise AttributeError(name)
@@ -35,7 +35,7 @@ class RecordsProxy(object):
         if value is _marker:
             value = self.__schema__[name].missing_value
         return value
-        
+
     def __setattr__(self, name, value):
         if name in self.__schema__:
             full_name = self.__prefix__ + name
@@ -44,7 +44,7 @@ class RecordsProxy(object):
             self.__registry__[full_name] = value
         else:
             self.__dict__[name] = value
-    
+
     def __repr__(self):
         return "<%s for %s>" % (self.__class__.__name__, self.__schema__.__identifier__)
 
@@ -141,9 +141,8 @@ class RecordsProxyCollection(DictMixin):
 
     def __delitem__(self, key):
         if not self.has_key(key):
-            raise KeyError(key) 
+            raise KeyError(key)
         prefix = self.prefix + key
         names = list(self.registry.records.keys(prefix+'.', prefix+'/'))
         for name in names:
             del self.registry.records[name]
-            

@@ -9,7 +9,7 @@ The registry fires certain events. These are:
 
  * `plone.registry.interfaces.IRecordRemovedEvent`, when a record has been
     removed from the registry.
-    
+
  * `plone.registry.interfaces.IRecordModifiedEvent`, when a record's value is
     modified.
 
@@ -61,7 +61,7 @@ change.
     >>> [(repr(e), e.oldValue, e.newValue,) for e in getEvents(IRecordModifiedEvent)]
     [('<RecordModifiedEvent for plone.registry.tests.age>', 18, 25),
      ('<RecordModifiedEvent for plone.registry.tests.age>', 25, 24)]
-     
+
 IObjectEvent-style redispatchers
 ================================
 
@@ -71,7 +71,7 @@ events based on the schema interface prescribed by the record.
 Let's re-set the event testing framework and register the re-dispatching event
 subscriber. Normally, this would happen automatically by including this
 package's ZCML.
-    
+
     >>> from zope.component.eventtesting import clearEvents
     >>> from zope.component import provideHandler
     >>> from plone.registry.events import redispatchInterfaceAwareRecordEvents

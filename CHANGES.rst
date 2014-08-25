@@ -88,7 +88,7 @@ Changelog
   apologies, but it's now or never. :-/
 
   If you find that you get import errors or unknown keyword arguments in your
-  code, please change names from foo_bar too fooBar, e.g. for_interface() 
+  code, please change names from foo_bar too fooBar, e.g. for_interface()
   becomes forInterface().
   [optilude]
 

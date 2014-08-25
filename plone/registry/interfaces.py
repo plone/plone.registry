@@ -12,10 +12,10 @@ class InvalidRegistryKey(InvalidDottedName):
 
 class IPersistentField(IField):
     """A field that can be persistent along with a record.
-    
+
     We provide our own implementation of the basic field types that are
     supported by the registry.
-    
+
     A persistent field may track which interface and field it originally
     was constructed from. This is done by the registerInterface() method
     on the IRegistry, for example. Only the interface/field names are stored,
@@ -27,38 +27,38 @@ class IPersistentField(IField):
 
 class IFieldRef(Interface):
     """A reference to another field.
-    
+
     This allows a record to use a field that belongs to another record. Field
     refs are allowed in the Record() constructor.
-    
+
     Note that all attributes are read-only.
     """
-    
+
     recordName = schema.DottedName(title=u"Name of the record containing the reference field")
     originalField = schema.Object(title=u"Referenced field", schema=IField)
 
 class IRecord(Interface):
     """A record stored in the registry.
-    
+
     A record may be "bound" or "unbound". If bound, it will have a
     __parent__ attribute giving the IRegistry it belongs to. It will then
     get and set its field and value attributes from the internal storage in
     the registry. If unbound, it will store its own values.
-    
+
     A record becomes bound when added to the registry. Records retrieved from
     the registry are always bound.
     """
-    
+
     field = schema.Object(title=u"A field describing this record",
                           schema=IPersistentField)
-    
+
     value = schema.Field(title=u"The value of this record",
                          description=u"Must be valid according to the record's field")
 
 class IRecordEvent(Interface):
     """Base interface for record level events
     """
-    
+
     record = schema.Object(title=u"The record that was added.",
                            description=u"Both __name__ and __parent__ will be set before the event is fired",
                            schema=IRecord)
@@ -66,11 +66,11 @@ class IRecordEvent(Interface):
 class IRecordAddedEvent(IRecordEvent):
     """Event fired when a record is added to a registry.
     """
-    
+
 class IRecordRemovedEvent(IRecordEvent):
     """Event fired when a record is removed from a registry.
     """
-    
+
 class IRecordModifiedEvent(IRecordEvent):
     """Event fired when a record's value is modified.
     """
@@ -82,20 +82,20 @@ class IInterfaceAwareRecord(Interface):
     """A record will be marked with this interface if it knows which
     interface its field came from.
     """
-    
+
     interfaceName = schema.DottedName(title=u"Dotted name to interface")
-    
+
     interface = schema.Object(title=u"Interface that provided the record",
                               description=u"May be None if the interface is no longer available",
                               schema=IInterface,
                               readonly=True)
-    
+
     fieldName = schema.ASCIILine(title=u"Name of the field in the original interface")
 
 class IRegistry(Interface):
     """The configuration registry
     """
-    
+
     def __getitem__(key):
         """Get the value under the given key. A record must have been
         installed for this key for this to be valid. Otherwise, a KeyError is
@@ -107,18 +107,18 @@ class IRegistry(Interface):
         exist, return the given default.
         """
 
-        
+
     def __setitem__(key, value):
         """Set the value under the given key. A record must have been
         installed for this key for this to be valid. Otherwise, a KeyError is
         raised. If value is not of a type that's allowed by the record, a
         ValidationError is raised.
         """
-        
+
     def __contains__(key):
         """Determine if the registry contains a record for the given key.
         """
-        
+
     records = schema.Dict(
             title=u"The records of the registry",
             key_type=schema.DottedName(
@@ -135,7 +135,7 @@ class IRegistry(Interface):
                     schema=IRecord,
                 ),
         )
-        
+
     def forInterface(interface, check=True, omit=(), prefix=None):
         """Get an IRecordsProxy for the given interface. If `check` is True,
         an error will be raised if one or more fields in the interface does

@@ -3,7 +3,7 @@ Using registries
 ================
 
 You can create a new registry simply by instantiating the Registry class. The
-class and its data structures are persistent, so you can store them in the 
+class and its data structures are persistent, so you can store them in the
 ZODB. You may want to provide the registry object as local utility for easy
 access as well, though we won't do that here.
 
@@ -31,14 +31,14 @@ Before we can create the record, we must create the field that describes it.
 Fields are based on the venerable zope.schema package, but plone.registry
 only supports certain fields, and disallows use of a few properties even
 of those. As a rule of thumb, so long as a field stores a Python primitive,
-it is supported; the same goes for attributes of fields. 
+it is supported; the same goes for attributes of fields.
 
 Thus:
 
  * Fields like `Object`, `InterfaceField` and so on are not supported
  * A custom `constraint` method is not supported.
  * The `order` attribute will always be set to -1
- * For Choice fields, only named vocabularies are supported: you cannot 
+ * For Choice fields, only named vocabularies are supported: you cannot
    reference a particular source or source binder
  * The key_type and value_type properties of Dict, List, Tuple, Set and
    Frozenset may only contain persistent fields.
@@ -60,7 +60,7 @@ constructors. You must use one of these fields when creating records directly.
 
 Note that in this case, we did not supply a value. The value will therefore
 be the field default.
-    
+
     >>> age_record.value
     18
 
@@ -70,7 +70,7 @@ We can set a different value, either in the `Record` constructor or via the
     >>> age_record.value = 2
     >>> age_record.value
     2
-    
+
 Note that the value is validated against the field:
 
     >>> age_record.value = -1
@@ -110,7 +110,7 @@ debugging.
 
     >>> registry.records['plone.registry.tests.cms']
     <Record plone.registry.tests.cms>
-    
+
 Accessing and manipulating record values
 ----------------------------------------
 
@@ -166,7 +166,7 @@ Note that this contains standard fields.
 
     >>> IMailSettings['sender']
     <zope.schema._bootstrapfields.TextLine object at ...>
-    
+
     >>> IMailSettings['smtp_host']
     <zope.schema._field.URI object at ...>
 
@@ -185,7 +185,7 @@ the fields from the original interface.
 
     >>> sender_record.field
     <plone.registry.field.TextLine object at ...>
-    
+
     >>> smtp_host_record.field
     <plone.registry.field.URI object at ...>
 
@@ -221,7 +221,7 @@ values as normal:
 
     >>> registry['plone.registry.tests.IMailSettings.sender']
     u'root@localhost'
-    
+
     >>> registry['plone.registry.tests.IMailSettings.sender'] = u"webmaster@localhost"
     >>> registry['plone.registry.tests.IMailSettings.sender']
     u'webmaster@localhost'
@@ -243,7 +243,7 @@ test that, let's sneakily modify the field for a while.
     >>> registry.registerInterface(IMailSettings)
     >>> registry['plone.registry.tests.IMailSettings.sender']
     2
-    
+
 But let's put it back the way it was.
 
     >>> IMailSettings._InterfaceClass__attrs['sender'] = old_field
@@ -283,13 +283,13 @@ have two additional properties: `interface` and `fieldName`.
     False
     >>> IInterfaceAwareRecord.providedBy(sender_record)
     True
-    
+
     >>> sender_record.interfaceName
     'plone.registry.tests.IMailSettings'
-    
+
     >>> sender_record.interface is IMailSettings
     True
-    
+
 Using the records proxy
 -----------------------
 
@@ -317,13 +317,13 @@ will raise KeyError on this kind of situations::
        # when GenericSetup installer has not been run or rerun
        # e.g. by returning or using some default values
        pass
-       
+
 The proxy is not a persistent object on its own.
 
     >>> from persistent.interfaces import IPersistent
     >>> IPersistent.providedBy(proxy)
     False
-    
+
 It does, however, provide the requisite interface.
 
     >>> IMailSettings.providedBy(proxy)
@@ -352,7 +352,7 @@ Values not in the interface will raise an AttributeError:
     Traceback (most recent call last):
     ...
     AttributeError: age
-    
+
 Note that by default, the forInterface() method will check that the necessary
 records have been registered. For example, we cannot use any old interface:
 
@@ -360,7 +360,7 @@ records have been registered. For example, we cannot use any old interface:
     Traceback (most recent call last):
     ...
     KeyError: 'Interface `plone.registry.interfaces.IInterfaceAwareRecord` defines a field `interface`, for which there is no record.'
-    
+
 By default, we also cannot use an interface for which only some records exist:
 
     >>> registry.forInterface(IMailPreferences)
@@ -382,7 +382,7 @@ In this case, the omitted fields will default to their 'missing' value:
 
     >>> pref_proxy.settings ==  IMailPreferences['settings'].missing_value
     True
-    
+
 However, trying to set the value will result in a AttributeError:
 
     >>> pref_proxy.settings = None
@@ -456,16 +456,16 @@ Let us first create the base record and set its value:
 
     >>> timeout_field = field.Int(title=u"Timeout", min=0)
     >>> registry.records['plone.registry.tests.timeout'] = Record(timeout_field, 10)
-    
+
     >>> timeout_record = registry.records['plone.registry.tests.timeout']
     >>> timeout_record.value
     10
-    
+
 Next, we create a field reference for this record:
-    
+
     >>> from plone.registry import FieldRef
     >>> timeout_override_field = FieldRef(timeout_record.__name__, timeout_record.field)
-    
+
 We can use this to create a new record:
 
     >>> registry.records['plone.registry.tests.timeout.override'] = Record(timeout_override_field, 20)
@@ -477,7 +477,7 @@ The two values are separate:
     10
     >>> timeout_override_record.value
     20
-    
+
     >>> registry['plone.registry.tests.timeout']
     10
     >>> registry['plone.registry.tests.timeout.override']
@@ -496,9 +496,9 @@ The reference field exposes the standard field properties, e.g.:
     u'Timeout'
     >>> timeout_override_record.field.min
     0
-    
+
 To look up the underlying record name, we can use the ``recordName`` property:
-    
+
     >>> timeout_override_record.field.recordName
     'plone.registry.tests.timeout'
 
