@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0.2 (unreleased)
+1.0.2 (2014-09-11)
 ------------------
 
 - Choice field construction compatible with a simple vocabulary of
