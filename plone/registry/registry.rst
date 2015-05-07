@@ -43,7 +43,7 @@ Thus:
  * The key_type and value_type properties of Dict, List, Tuple, Set and
    Frozenset may only contain persistent fields.
 
-See field.text for more details.
+See field.rst for more details.
 
 Creating a record
 -----------------
