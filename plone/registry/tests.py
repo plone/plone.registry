@@ -1,14 +1,15 @@
-import unittest
-import doctest
-
-from zope.testing import doctestunit
-from zope.component import provideAdapter, testing, eventtesting
-
-from plone.registry.fieldfactory import persistentFieldAdapter
+# -*- coding: utf-8 -*-
 from plone.registry.fieldfactory import choicePersistentFieldAdapter
-
-from zope.interface import Interface
+from plone.registry.fieldfactory import persistentFieldAdapter
 from zope import schema
+from zope.component import eventtesting
+from zope.component import provideAdapter
+from zope.component import testing
+from zope.interface import Interface
+from zope.testing import doctestunit
+import doctest
+import unittest
+
 
 class IMailSettings(Interface):
     """Settings for email
@@ -17,12 +18,20 @@ class IMailSettings(Interface):
     sender = schema.TextLine(title=u"Mail sender", default=u"root@localhost")
     smtp_host = schema.URI(title=u"SMTP host server")
 
+
 class IMailPreferences(Interface):
     """Settings for email
     """
+    max_daily = schema.Int(
+        title=u"Maximum number of emails per day",
+        min=0,
+        default=3
+    )
+    settings = schema.Object(
+        title=u"Mail setings to use",
+        schema=IMailSettings
+    )
 
-    max_daily = schema.Int(title=u"Maximum number of emails per day", min=0, default=3)
-    settings = schema.Object(title=u"Mail setings to use", schema=IMailSettings)
 
 def setUp(test=None):
     testing.setUp()
@@ -30,6 +39,7 @@ def setUp(test=None):
 
     provideAdapter(persistentFieldAdapter)
     provideAdapter(choicePersistentFieldAdapter)
+
 
 class TestBugs(unittest.TestCase):
     """Regression tests for bugs that have been fixed
@@ -74,6 +84,7 @@ class TestBugs(unittest.TestCase):
         self.assertTrue(ICollection.providedBy(ref))
         self.assertTrue(IFieldRef.providedBy(ref))
 
+
 class TestMigration(unittest.TestCase):
 
     def setUp(self):
@@ -117,20 +128,30 @@ class TestMigration(unittest.TestCase):
         self.assertFalse(isinstance(registry._records, Records))
         self.assertTrue(isinstance(registry._records, _Records))
 
+
 def test_suite():
     return unittest.TestSuite([
         doctestunit.DocFileSuite(
-            'registry.rst', package='plone.registry',
-            optionflags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
-            setUp=setUp, tearDown=testing.tearDown),
+            'registry.rst',
+            package='plone.registry',
+            optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
+            setUp=setUp,
+            tearDown=testing.tearDown
+        ),
         doctestunit.DocFileSuite(
-            'events.rst', package='plone.registry',
-            optionflags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
-            setUp=setUp, tearDown=testing.tearDown),
+            'events.rst',
+            package='plone.registry',
+            optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
+            setUp=setUp,
+            tearDown=testing.tearDown
+        ),
         doctestunit.DocFileSuite(
-            'field.rst', package='plone.registry',
-            optionflags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
-            setUp=setUp, tearDown=testing.tearDown),
+            'field.rst',
+            package='plone.registry',
+            optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
+            setUp=setUp,
+            tearDown=testing.tearDown
+        ),
         unittest.makeSuite(TestBugs),
         unittest.makeSuite(TestMigration),
-        ])
+    ])

@@ -1,24 +1,25 @@
-from zope.interface import implements, alsoProvides
+# -*- coding: utf-8 -*-
+from plone.registry.interfaces import IRecordsProxy
+from UserDict import DictMixin
+from zope.interface import alsoProvides
+from zope.interface import implementer
 from zope.schema import getFieldsInOrder
 from zope.schema.interfaces import RequiredMissing
-from plone.registry.interfaces import IRecordsProxy
-
-from UserDict import DictMixin
 import re
 
 _marker = object()
 
+
+@implementer(IRecordsProxy)
 class RecordsProxy(object):
     """A proxy that maps an interface to a number of records
     """
-
-    implements(IRecordsProxy)
 
     def __init__(self, registry, schema, omitted=(), prefix=None):
         if prefix is None:
             prefix = schema.__identifier__ + '.'
         elif not prefix.endswith("."):
-             prefix += '.'
+            prefix += '.'
 
         # skip __setattr__
         self.__dict__['__schema__'] = schema
@@ -46,7 +47,10 @@ class RecordsProxy(object):
             self.__dict__[name] = value
 
     def __repr__(self):
-        return "<%s for %s>" % (self.__class__.__name__, self.__schema__.__identifier__)
+        return "<{0} for {1}>".format(
+            self.__class__.__name__,
+            self.__schema__.__identifier__
+        )
 
 
 class RecordsProxyCollection(DictMixin):
@@ -57,12 +61,13 @@ class RecordsProxyCollection(DictMixin):
 
     # ord('.') == ord('/') - 1
 
-    def __init__(self, registry, schema, check=True, omitted=(), prefix=None, factory=None):
+    def __init__(self, registry, schema, check=True, omitted=(), prefix=None,
+                 factory=None):
         if prefix is None:
             prefix = schema.__identifier__
 
         if not prefix.endswith("/"):
-             prefix += '/'
+            prefix += '/'
 
         self.registry = registry
         self.schema = schema
@@ -72,9 +77,15 @@ class RecordsProxyCollection(DictMixin):
         self.factory = factory
 
     def __getitem__(self, key):
-        if self.has_key(key):
+        if key in self:
             prefix = self.prefix + key
-            proxy = self.registry.forInterface(self.schema, self.check, self.omitted, prefix, self.factory)
+            proxy = self.registry.forInterface(
+                self.schema,
+                self.check,
+                self.omitted,
+                prefix,
+                self.factory
+            )
             return proxy
         raise KeyError(key)
 
@@ -99,7 +110,10 @@ class RecordsProxyCollection(DictMixin):
 
     def _validate(self, key):
         if not isinstance(key, basestring) or not self._validkey(key):
-            raise TypeError('expected a valid key (alphanumeric or underscore, starting with alpha)')
+            raise TypeError(
+                'expected a valid key (alphanumeric or underscore, starting '
+                'with alpha)'
+            )
         return str(key)
 
     def has_key(self, key):
@@ -112,7 +126,12 @@ class RecordsProxyCollection(DictMixin):
         key = self._validate(key)
         prefix = self.prefix + key
         self.registry.registerInterface(self.schema, self.omitted, prefix)
-        proxy = self.registry.forInterface(self.schema, False, self.omitted, prefix)
+        proxy = self.registry.forInterface(
+            self.schema,
+            False,
+            self.omitted,
+            prefix
+        )
         return proxy
 
     def __setitem__(self, key, value):
@@ -132,7 +151,7 @@ class RecordsProxyCollection(DictMixin):
             setattr(proxy, name, attr)
 
     def setdefault(self, key, failobj=None):
-        if not self.has_key(key):
+        if key not in self:
             if failobj is None:
                 self.add(key)
             else:
@@ -140,7 +159,7 @@ class RecordsProxyCollection(DictMixin):
         return self[key]
 
     def __delitem__(self, key):
-        if not self.has_key(key):
+        if key not in self:
             raise KeyError(key)
         prefix = self.prefix + key
         names = list(self.registry.records.keys(prefix+'.', prefix+'/'))

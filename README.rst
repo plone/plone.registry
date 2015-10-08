@@ -9,8 +9,5 @@ well as a ``field`` that describes the record in more detail. At a minimum, the
 field contains information about the type of value allowed, as well as a short
 title describing the record's purpose.
 
-See the following doctests for more details:
+.. contents:: Table of Contents
 
-* ``registry.rst``, which demonstrates how registries and records work
-* ``events.rst``, which shows the events that are fired from the registry
-* ``field.rst``, which describes the behaviour of persistent fields
