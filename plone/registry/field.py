@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """This module defines persistent versions of various fields.
 
 The idea is that when a record is created, we copy relevant field properties
@@ -5,30 +6,30 @@ from the transient schema field from zope.schema, into the corresponding
 persistent field. Not all field types are supported, but the common types
 are.
 """
-
-import zope.interface
-
+from persistent import Persistent
+from plone.registry.interfaces import IPersistentField
+from zope.interface import implementer
+from zope.schema.interfaces import IContextSourceBinder
+from zope.schema.vocabulary import SimpleVocabulary
 import zope.schema
 import zope.schema._field
-import zope.schema.vocabulary
-import zope.schema.interfaces
-
-from persistent import Persistent
-
-from plone.registry.interfaces import IPersistentField
 
 _missing_value_marker = object()
 
+
 def is_primitive(value):
     return value is None or \
-            isinstance(value, (int, long, bool, str, unicode, tuple, list,
-                                set, frozenset, dict, float))
+            isinstance(
+                value,
+                (int, long, bool, str, unicode, tuple,
+                 list, set, frozenset, dict, float)
+            )
+
 
 class DisallowedProperty(object):
     """A property that may not be set on an instance. It may still be set
     defined in a base class.
     """
-
     uses = []
 
     def __init__(self, name):
@@ -46,12 +47,15 @@ class DisallowedProperty(object):
         raise AttributeError(self._name)
 
     def __set__(self, inst, value):
-        raise ValueError(u"Persistent fields does not support setting the `%s` property" % self._name)
+        raise ValueError(
+            u"Persistent fields does not support setting the `{0}` "
+            u"property".format(self._name)
+        )
+
 
 class StubbornProperty(object):
     """A property that stays stubbornly at a single, pre-defined value.
     """
-
     uses = []
 
     def __init__(self, name, value):
@@ -65,10 +69,10 @@ class StubbornProperty(object):
     def __get__(self, inst, type_=None):
         return self._value
 
+
 class InterfaceConstrainedProperty(object):
     """A property that may only contain values providing a certain interface.
     """
-
     uses = []
 
     def __init__(self, name, interface):
@@ -77,18 +81,24 @@ class InterfaceConstrainedProperty(object):
         self._interface = interface
 
     def __set__(self, inst, value):
-        if value != inst.missing_value:
-            if not self._interface.providedBy(value):
-                raise ValueError(u"The property `%s` may only contain objects providing `%s`." %
-                                    (self._name, self._interface.__identifier__,))
+        if (
+            value != inst.missing_value
+            and not self._interface.providedBy(value)
+        ):
+            raise ValueError(
+                u"The property `{0}` may only contain objects "
+                "providing `{1}`.".format(
+                    self._name,
+                    self._interface.__identifier__,
+                )
+            )
         inst.__dict__[self._name] = value
 
+
+@implementer(IPersistentField)
 class PersistentField(Persistent):
     """Base class for persistent field definitions.
     """
-
-    zope.interface.implements(IPersistentField)
-
     # Persistent fields do not have an order
     order = StubbornProperty('order', -1)
 
@@ -100,87 +110,112 @@ class PersistentField(Persistent):
     interfaceName = None
     fieldName = None
 
-class PersistentCollectionField(PersistentField, zope.schema._field.AbstractCollection):
+
+class PersistentCollectionField(
+    PersistentField,
+    zope.schema._field.AbstractCollection
+):
     """Ensure that value_type is a persistent field
     """
-
     value_type = InterfaceConstrainedProperty('value_type', IPersistentField)
+
 
 class Bytes(PersistentField, zope.schema.Bytes):
     pass
 
+
 class BytesLine(PersistentField, zope.schema.BytesLine):
     pass
+
 
 class ASCII(PersistentField, zope.schema.ASCII):
     pass
 
+
 class ASCIILine(PersistentField, zope.schema.ASCIILine):
     pass
+
 
 class Text(PersistentField, zope.schema.Text):
     pass
 
+
 class TextLine(PersistentField, zope.schema.TextLine):
     pass
+
 
 class Bool(PersistentField, zope.schema.Bool):
     pass
 
+
 class Int(PersistentField, zope.schema.Int):
     pass
+
 
 class Float(PersistentField, zope.schema.Float):
     pass
 
+
 class Decimal(PersistentField, zope.schema.Decimal):
     pass
+
 
 class Tuple(PersistentCollectionField, zope.schema.Tuple):
     pass
 
+
 class List(PersistentCollectionField, zope.schema.List):
     pass
+
 
 class Set(PersistentCollectionField, zope.schema.Set):
     pass
 
+
 class FrozenSet(PersistentCollectionField, zope.schema.FrozenSet):
     pass
 
+
 class Password(PersistentField, zope.schema.Password):
     pass
+
 
 class Dict(PersistentField, zope.schema.Dict):
 
     key_type = InterfaceConstrainedProperty('key_type', IPersistentField)
     value_type = InterfaceConstrainedProperty('value_type', IPersistentField)
 
+
 class Datetime(PersistentField, zope.schema.Datetime):
     pass
+
 
 class Date(PersistentField, zope.schema.Date):
     pass
 
+
 class Timedelta(PersistentField, zope.schema.Timedelta):
     pass
+
 
 class SourceText(PersistentField, zope.schema.SourceText):
     pass
 
+
 class URI(PersistentField, zope.schema.URI):
     pass
+
 
 class Id(PersistentField, zope.schema.Id):
     pass
 
+
 class DottedName(PersistentField, zope.schema.DottedName):
     pass
 
+
 class Choice(PersistentField, zope.schema.Choice):
-
     # We can only support string name or primitive=list vocabularies
-
     _values = None
     _vocabulary = None
 
@@ -195,8 +230,10 @@ class Choice(PersistentField, zope.schema.Choice):
                     )
             vocabulary = None
         elif source is not None:
-            raise ValueError("Persistent fields do not support sources, only named "
-                             "vocabularies or vocabularies based on simple value sets.")
+            raise ValueError(
+                "Persistent fields do not support sources, only named "
+                "vocabularies or vocabularies based on simple value sets."
+            )
 
         assert not (values is None and vocabulary is None), (
                "You must specify either values or vocabulary.")
@@ -206,11 +243,11 @@ class Choice(PersistentField, zope.schema.Choice):
         self.vocabularyName = None
 
         if values is not None:
-
             for value in values:
                 if not is_primitive(value):
-                    raise ValueError("Vocabulary values may only contain primitive values.")
-
+                    raise ValueError(
+                        "Vocabulary values may only contain primitive values."
+                    )
             self._values = values
         else:
             self.vocabularyName = vocabulary
@@ -231,7 +268,7 @@ class Choice(PersistentField, zope.schema.Choice):
         if self._vocabulary is not None:
             return self._vocabulary
         if self._values is not None:
-            return zope.schema.vocabulary.SimpleVocabulary.fromValues(self._values)
+            return SimpleVocabulary.fromValues(self._values)
     DisallowedProperty.uses.append('vocabulary')
 
     # override bind to allow us to keep constraints on the 'vocabulary'
@@ -239,7 +276,7 @@ class Choice(PersistentField, zope.schema.Choice):
     def bind(self, object):
         clone = zope.schema.Field.bind(self, object)
         # get registered vocabulary if needed:
-        if zope.schema.interfaces.IContextSourceBinder.providedBy(self.vocabulary):
+        if IContextSourceBinder.providedBy(self.vocabulary):
             clone._vocabulary = self.vocabulary(object)
             assert zope.schema.interfaces.ISource.providedBy(clone.vocabulary)
         elif clone.vocabulary is None and self.vocabularyName is not None:

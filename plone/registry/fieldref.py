@@ -1,13 +1,13 @@
-from zope.interface import implementedBy
-from zope.interface import implements
-
+# -*- coding: utf-8 -*-
 from plone.registry.interfaces import IFieldRef
+from zope.interface import implementedBy
+from zope.interface import implementer
 
+
+@implementer(IFieldRef)
 class FieldRef(object):
     """Default field reference.
     """
-
-    implements(IFieldRef)
 
     def __init__(self, name, originalField):
         self.recordName = name

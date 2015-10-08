@@ -1,18 +1,18 @@
+# -*- coding: utf-8 -*-
 from persistent import Persistent
-
-from zope.interface import implements, alsoProvides
-from zope.event import notify
-
-from zope.dottedname.resolve import resolve
-
+from plone.registry.events import RecordModifiedEvent
+from plone.registry.interfaces import IInterfaceAwareRecord
 from plone.registry.interfaces import IPersistentField
 from plone.registry.interfaces import IRecord
-from plone.registry.interfaces import IInterfaceAwareRecord
-
-from plone.registry.events import RecordModifiedEvent
+from zope.dottedname.resolve import resolve
+from zope.event import notify
+from zope.interface import implementer
+from zope.interface import alsoProvides
 
 _marker = object()
 
+
+@implementer(IRecord)
 class Record(Persistent):
     """A record that is stored in the registry.
 
@@ -23,8 +23,6 @@ class Record(Persistent):
     objects directly. However, we keep the Persistent base class so that old
     values may be loaded during automated migration.
     """
-
-    implements(IRecord)
 
     __name__ = u""
     __parent__ = None
