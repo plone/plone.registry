@@ -4,6 +4,8 @@ Changelog
 1.0.3 (unreleased)
 ------------------
 
+Fixes:
+
 - Cleanup: Pep8, utf8 headers, whitespace fixes, readability, ReST-fixes,
   doc-style, etc.
   [jensens]
