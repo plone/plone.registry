@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from plone.registry.fieldfactory import choicePersistentFieldAdapter
 from plone.registry.fieldfactory import persistentFieldAdapter
+from plone.registry.recordsproxy import ComplexRecordsProxy
+from plone.registry.registry import Registry
 from zope import schema
 from zope.component import eventtesting
 from zope.component import provideAdapter
@@ -53,14 +55,16 @@ class IComplexPreferences(Interface):
 @implementer(IMailSettings)
 class MailSettings(object):
 
-    sender = 'foo@example.org'
-    smtp_host = 'example.org'
+    def __init__(self, sender, smtp_host):
+        self.sender = sender
+        self.smtp_host = smtp_host
 
 
 @implementer(ISimpleSettings)
 class SimpleSettings(object):
 
-    number = 9
+    def __init__(self, number):
+        self.number = number
 
 
 def setUp(test=None):
@@ -158,26 +162,32 @@ class TestMigration(unittest.TestCase):
         self.assertFalse(isinstance(registry._records, Records))
         self.assertTrue(isinstance(registry._records, _Records))
 
+
 class TestProxy(unittest.TestCase):
 
+    def setUp(self):
+        setUp(self)
+        self.registry = Registry()
+        self.cfp = ComplexRecordsProxy(self.registry, IComplexPreferences)
+
     def test_complexrecordsproxy(self):
-        from BTrees.OOBTree import OOBTree
+        self.cfp.complex_type = SimpleSettings(9)
+        self.assertEqual(
+             repr(self.cfp.complex_type),
+             '<ComplexRecordsProxy for plone.registry.tests.ISimpleSettings>')
+        self.assertEqual(self.cfp.complex_type.number, 9)
 
-        from plone.registry.registry import Registry, Records, _Records
-        from plone.registry.record import Record
-        from plone.registry import field
-        from plone.registry.recordsproxy import ComplexRecordsProxy
-
-
-        registry = Registry()
-        registry.registerInterface(IComplexPreferences, omit=('sender', 'complex_type', 'complex_collection'))
-        cfp = ComplexRecordsProxy(registry, IComplexPreferences)
-#        import pdb; pdb.set_trace()
-#        cfp.complex_collection = (MailSettings(), MailSettings())
-#        print cfp.complex_collection
-        cfp.complex_type = SimpleSettings()
-        print cfp.complex_type
-
+    def test_complexrecordsproxy_collection(self):
+        self.cfp.complex_collection = (
+            MailSettings(u'test@example.org', 'http://www.example.org'),
+            MailSettings(u'info@example.com', 'http://www.example.com'))
+        self.assertEqual(
+            repr(self.cfp.complex_collection),
+            ('[<ComplexRecordsProxy for plone.registry.tests.IMailSettings>, '
+             '<ComplexRecordsProxy for plone.registry.tests.IMailSettings>]'))
+        self.assertEqual(self.cfp.complex_collection[0].smtp_host,
+                         'http://www.example.org')
+        self.assertRaises(AttributeError, getattr, self.cfp, 'bogusattr')
 
 
 def test_suite():
