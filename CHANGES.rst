@@ -8,7 +8,7 @@ Changelog
   doc-style, etc.
   [jensens]
 
-- Add complexrecordsproxy for collective.complexrecordsproxy.
+- Add complexrecordsproxy from collective.complexrecordsproxy.
   [tomgross]
 
 1.0.2 (2014-09-11)
