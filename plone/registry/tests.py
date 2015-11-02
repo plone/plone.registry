@@ -6,6 +6,7 @@ from zope.component import eventtesting
 from zope.component import provideAdapter
 from zope.component import testing
 from zope.interface import Interface
+from zope.interface import implementer
 from zope.testing import doctestunit
 import doctest
 import unittest
@@ -31,6 +32,35 @@ class IMailPreferences(Interface):
         title=u"Mail setings to use",
         schema=IMailSettings
     )
+
+class ISimpleSettings(Interface):
+    """ A very simple schmema for testing purposes
+    """
+
+    number = schema.Int(title=u"A number")
+
+
+class IComplexPreferences(Interface):
+    """ Complex settings with an object and a collection of objects
+    """
+    complex_collection = schema.Tuple(
+        value_type=schema.Object(
+            schema=IMailSettings))
+
+    complex_type = schema.Object(schema=ISimpleSettings)
+
+
+@implementer(IMailSettings)
+class MailSettings(object):
+
+    sender = 'foo@example.org'
+    smtp_host = 'example.org'
+
+
+@implementer(ISimpleSettings)
+class SimpleSettings(object):
+
+    number = 9
 
 
 def setUp(test=None):
@@ -128,6 +158,27 @@ class TestMigration(unittest.TestCase):
         self.assertFalse(isinstance(registry._records, Records))
         self.assertTrue(isinstance(registry._records, _Records))
 
+class TestProxy(unittest.TestCase):
+
+    def test_complexrecordsproxy(self):
+        from BTrees.OOBTree import OOBTree
+
+        from plone.registry.registry import Registry, Records, _Records
+        from plone.registry.record import Record
+        from plone.registry import field
+        from plone.registry.recordsproxy import ComplexRecordsProxy
+
+
+        registry = Registry()
+        registry.registerInterface(IComplexPreferences, omit=('sender', 'complex_type', 'complex_collection'))
+        cfp = ComplexRecordsProxy(registry, IComplexPreferences)
+#        import pdb; pdb.set_trace()
+#        cfp.complex_collection = (MailSettings(), MailSettings())
+#        print cfp.complex_collection
+        cfp.complex_type = SimpleSettings()
+        print cfp.complex_type
+
+
 
 def test_suite():
     return unittest.TestSuite([
@@ -154,4 +205,5 @@ def test_suite():
         ),
         unittest.makeSuite(TestBugs),
         unittest.makeSuite(TestMigration),
+        unittest.makeSuite(TestProxy),
     ])

@@ -1,13 +1,15 @@
 Changelog
 =========
 
-1.0.3 (unreleased)
+1.1 (unreleased)
 ------------------
 
 - Cleanup: Pep8, utf8 headers, whitespace fixes, readability, ReST-fixes,
   doc-style, etc.
   [jensens]
 
+- Add complexrecordsproxy for collective.complexrecordsproxy.
+  [tomgross]
 
 1.0.2 (2014-09-11)
 ------------------
