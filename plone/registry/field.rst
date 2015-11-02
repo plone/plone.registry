@@ -885,3 +885,4 @@ Complex vocabularies or sources are not allowed::
     Traceback (most recent call last):
     ...
     TypeError: ('Could not adapt', <zope.schema._field.Choice object at ...>, <InterfaceClass plone.registry.interfaces.IPersistentField>)
+

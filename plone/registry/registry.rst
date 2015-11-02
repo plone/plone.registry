@@ -437,6 +437,19 @@ And may be deleted::
     [<Record plone.registry.tests.IMailSettings/example.sender>,
      <Record plone.registry.tests.IMailSettings/example.smtp_host>]
 
+Complex Records
+---------------
+
+For storing complex elements in the registry there is a special 
+*ComplexRecordsProxy* factory. It allows storing objects providing IObject
+or even collections (ICollection) of objects and other entries in
+registries. It used like this ::
+
+    >>> from plone.registry.recordsproxy import ComplexRecordsProxy
+    >>> registry.forInterface(IMailPreferences, factory=ComplexRecordsProxy,
+    ...   check=False)
+    <ComplexRecordsProxy for plone.registry.tests.IMailPreferences>
+
 Using field references
 ======================
 
