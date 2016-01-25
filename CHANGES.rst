@@ -6,6 +6,10 @@ Changelog
 
 Fixes:
 
+- Replace deprecated ``zope.testing.doctestunit`` import with ``doctest``
+  module from stdlib.
+  [thet]
+
 - Cleanup: Pep8, utf8 headers, whitespace fixes, readability, ReST-fixes,
   doc-style, etc.
   [jensens]
