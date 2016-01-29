@@ -50,7 +50,6 @@ setup(
         'zope.event',
         'zope.interface',
         'zope.schema',
-        'zope.testing',
     ],
     entry_points="""
     # -*- Entry points: -*-

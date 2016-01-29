@@ -6,7 +6,6 @@ from zope.component import eventtesting
 from zope.component import provideAdapter
 from zope.component import testing
 from zope.interface import Interface
-from zope.testing import doctestunit
 import doctest
 import unittest
 
@@ -131,21 +130,21 @@ class TestMigration(unittest.TestCase):
 
 def test_suite():
     return unittest.TestSuite([
-        doctestunit.DocFileSuite(
+        doctest.DocFileSuite(
             'registry.rst',
             package='plone.registry',
             optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
             setUp=setUp,
             tearDown=testing.tearDown
         ),
-        doctestunit.DocFileSuite(
+        doctest.DocFileSuite(
             'events.rst',
             package='plone.registry',
             optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
             setUp=setUp,
             tearDown=testing.tearDown
         ),
-        doctestunit.DocFileSuite(
+        doctest.DocFileSuite(
             'field.rst',
             package='plone.registry',
             optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
