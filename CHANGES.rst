@@ -4,7 +4,17 @@ Changelog
 1.0.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Incompatibilities:
+
+- *add item here*
+
+New:
+
+- *add item here*
+
+Fixes:
+
+- *add item here*
 
 
 1.0.3 (2016-02-26)
