@@ -15,6 +15,8 @@ The registry fires certain events. These are:
 
 To test these events, we will create, modify and remove a few records::
 
+    >>> from zope.component.eventtesting import clearEvents
+    >>> clearEvents()
     >>> from plone.registry import Registry, Record, field
     >>> registry = Registry()
 
@@ -71,10 +73,9 @@ Normally, this would happen automatically by including this package's ZCML.
 
 ::
 
-    >>> from zope.component.eventtesting import clearEvents
+    >>> clearEvents()
     >>> from zope.component import provideHandler
     >>> from plone.registry.events import redispatchInterfaceAwareRecordEvents
-    >>> clearEvents()
     >>> provideHandler(redispatchInterfaceAwareRecordEvents)
 
 We'll then register a schema interface::
@@ -89,7 +90,7 @@ Note that it is not possible to re-dispatch ``IRecordAddedEvents``, so these are
     >>> from zope.component import adapter
     >>> @adapter(IMailSettings, IRecordEvent)
     ... def print_mail_settings_events(proxy, event):
-    ...     print "Got", event, "for", proxy
+    ...     print("Got %s for %s" % (event, proxy))
     >>> provideHandler(print_mail_settings_events)
 
 Let's now modify one of the records for this interface.

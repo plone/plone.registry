@@ -74,10 +74,15 @@ We can set a different value, either in the ``Record`` constructor or via the ``
 
 Note that the value is validated against the field::
 
-    >>> age_record.value = -1
+    >>> age_record.value = -1  # doctest: +SKIP_PYTHON_3
     Traceback (most recent call last):
     ...
     TooSmall: (-1, 0)
+
+    >>> age_record.value = -1  # doctest: +SKIP_PYTHON_2
+    Traceback (most recent call last):
+    ...
+    zope.schema._bootstrapinterfaces.TooSmall: (-1, 0)
 
     >>> age_record.value
     2
@@ -126,21 +131,26 @@ you can access its value through dict-like operations on the registry itself::
     >>> 'plone.registry.tests.cms' in registry
     True
 
-    >>> registry['plone.registry.tests.cms']
+    >>> registry['plone.registry.tests.cms']  # doctest: +IGNORE_U
     u'Plone'
 
     >>> registry['plone.registry.tests.cms'] = u"Plone 3.x"
 
 Again, values are validated::
 
-    >>> registry['plone.registry.tests.cms'] = 'Joomla'
+    >>> registry['plone.registry.tests.cms'] = b'Joomla'  # doctest: +SKIP_PYTHON_3
     Traceback (most recent call last):
     ...
     WrongType: ('Joomla', <type 'unicode'>...)
+    
+    >>> registry['plone.registry.tests.cms'] = b'Joomla'  # doctest: +SKIP_PYTHON_2
+    Traceback (most recent call last):
+    ...
+    zope.schema._bootstrapinterfaces.WrongType: (b'Joomla', <class 'str'>, 'value')
 
 There is also a ``get()`` method::
 
-    >>> registry.get('plone.registry.tests.cms')
+    >>> registry.get('plone.registry.tests.cms')  # doctest: +IGNORE_U
     u'Plone 3.x'
     >>> registry.get('non-existent-key') is None
     True
@@ -219,17 +229,17 @@ We can, however, tell ``registerInterface()`` to ignore one or more fields::
 
 Once an interface's records have been registered, we can get and set their values as normal::
 
-    >>> registry['plone.registry.tests.IMailSettings.sender']
+    >>> registry['plone.registry.tests.IMailSettings.sender']  # doctest: +IGNORE_U
     u'root@localhost'
 
     >>> registry['plone.registry.tests.IMailSettings.sender'] = u"webmaster@localhost"
-    >>> registry['plone.registry.tests.IMailSettings.sender']
+    >>> registry['plone.registry.tests.IMailSettings.sender']  # doctest: +IGNORE_U
     u'webmaster@localhost'
 
 If we sub-sequently re-register the same interface, the value will be retained if possible::
 
     >>> registry.registerInterface(IMailSettings)
-    >>> registry['plone.registry.tests.IMailSettings.sender']
+    >>> registry['plone.registry.tests.IMailSettings.sender']  # doctest: +IGNORE_U
     u'webmaster@localhost'
 
 However, if the value is no longer valid, we will revert to the default.
@@ -249,7 +259,7 @@ But let's put it back the way it was::
     >>> if hasattr(IMailSettings, '_v_attrs'):
     ...     del IMailSettings._v_attrs['sender']
     >>> registry.registerInterface(IMailSettings)
-    >>> registry['plone.registry.tests.IMailSettings.sender']
+    >>> registry['plone.registry.tests.IMailSettings.sender']  # doctest: +IGNORE_U
     u'root@localhost'
 
 Sometimes, you may want to use an interface as a template for multiple instances of a set of fields, rather than defining them all by hand.
@@ -352,7 +362,7 @@ For example, we cannot use any old interface::
     >>> registry.forInterface(IInterfaceAwareRecord)
     Traceback (most recent call last):
     ...
-    KeyError: 'Interface `plone.registry.interfaces.IInterfaceAwareRecord` defines a field `interface`, for which there is no record.'
+    KeyError: 'Interface `plone.registry.interfaces.IInterfaceAwareRecord` defines a field `...`, for which there is no record.'
 
 By default, we also cannot use an interface for which only some records exist::
 
@@ -387,7 +397,7 @@ To access another instance of the field, supply the prefix::
 
     >>> alt_proxy = registry.forInterface(IMailSettings,
     ...     prefix="plone.registry.tests.alternativesettings")
-    >>> alt_proxy.sender
+    >>> alt_proxy.sender  # doctest: +IGNORE_U
     u'alt@example.org'
 
 Collections of records proxies
@@ -409,7 +419,7 @@ Record sets are stored based under the prefix::
     >>> registry.records.values(prefix+'/', prefix+'0')
     [<Record plone.registry.tests.IMailSettings/example.sender>,
      <Record plone.registry.tests.IMailSettings/example.smtp_host>]
-    >>> registry['plone.registry.tests.IMailSettings/example.sender']
+    >>> registry['plone.registry.tests.IMailSettings/example.sender']  # doctest: +IGNORE_U
     u'collection@example.org'
 
 Records may be set from an existing object::
@@ -426,7 +436,7 @@ Records may be set from an existing object::
 
 The collection may be iterated over::
 
-    >>> for name in collection: print name
+    >>> for name in collection: print(name)
     example
     example_com
 
@@ -478,14 +488,19 @@ The two values are separate::
 
 Validation uses the underlying field::
 
-    >>> registry['plone.registry.tests.timeout.override'] = -1
+    >>> registry['plone.registry.tests.timeout.override'] = -1  # doctest: +SKIP_PYTHON_3
     Traceback (most recent call last):
     ...
     TooSmall: (-1, 0)
 
+    >>> registry['plone.registry.tests.timeout.override'] = -1  # doctest: +SKIP_PYTHON_2
+    Traceback (most recent call last):
+    ...
+    zope.schema._bootstrapinterfaces.TooSmall: (-1, 0)
+
 The reference field exposes the standard field properties, e.g.::
 
-    >>> timeout_override_record.field.title
+    >>> timeout_override_record.field.title  # doctest: +SKIP_PYTHON_3
     u'Timeout'
     >>> timeout_override_record.field.min
     0
