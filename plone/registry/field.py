@@ -11,8 +11,10 @@ from plone.registry.interfaces import IPersistentField
 from zope.interface import implementer
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary
+
 import zope.schema
 import zope.schema._field
+
 
 _missing_value_marker = object()
 

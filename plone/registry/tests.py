@@ -6,6 +6,7 @@ from zope.component import eventtesting
 from zope.component import provideAdapter
 from zope.component import testing
 from zope.interface import Interface
+
 import doctest
 import unittest
 

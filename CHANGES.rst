@@ -14,7 +14,8 @@ New:
 
 Fixes:
 
-- *add item here*
+- More cleanup: PEP8, isort, readability.
+  [jensens]
 
 
 1.0.3 (2016-02-26)
