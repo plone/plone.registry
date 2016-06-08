@@ -11,17 +11,17 @@ version = '1.0.4.dev0'
 
 description = "Registry for application settings (like debconf/ about:config)"
 long_description = (
-    read('README.rst')
-    + '\n' +
-    read('plone', 'registry', 'registry.rst')
-    + '\n' +
-    read('plone', 'registry', 'events.rst')
-    + '\n' +
-    read('plone', 'registry', 'field.rst')
-    + '\n' +
-    read('CHANGES.rst')
-    + '\n'
-    )
+    read('README.rst') +
+    '\n' +
+    read('plone', 'registry', 'registry.rst') +
+    '\n' +
+    read('plone', 'registry', 'events.rst') +
+    '\n' +
+    read('plone', 'registry', 'field.rst') +
+    '\n' +
+    read('CHANGES.rst') +
+    '\n'
+)
 
 setup(
     name='plone.registry',

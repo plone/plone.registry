@@ -119,7 +119,7 @@ class RecordsProxyCollection(DictMixin):
     def has_key(self, key):
         key = self._validate(key)
         prefix = self.prefix + key
-        names = self.registry.records.keys(prefix+'.', prefix+'/')
+        names = self.registry.records.keys(prefix + '.', prefix + '/')
         return bool(names)
 
     def add(self, key):
@@ -162,6 +162,6 @@ class RecordsProxyCollection(DictMixin):
         if key not in self:
             raise KeyError(key)
         prefix = self.prefix + key
-        names = list(self.registry.records.keys(prefix+'.', prefix+'/'))
+        names = list(self.registry.records.keys(prefix + '.', prefix + '/'))
         for name in names:
             del self.registry.records[name]
