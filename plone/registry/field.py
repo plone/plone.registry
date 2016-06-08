@@ -11,19 +11,21 @@ from plone.registry.interfaces import IPersistentField
 from zope.interface import implementer
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary
+
 import zope.schema
 import zope.schema._field
+
 
 _missing_value_marker = object()
 
 
 def is_primitive(value):
     return value is None or \
-            isinstance(
-                value,
-                (int, long, bool, str, unicode, tuple,
-                 list, set, frozenset, dict, float)
-            )
+        isinstance(
+            value,
+            (int, long, bool, str, unicode, tuple,
+             list, set, frozenset, dict, float)
+        )
 
 
 class DisallowedProperty(object):
@@ -227,7 +229,7 @@ class Choice(PersistentField, zope.schema.Choice):
                 raise ValueError(
                     "Persistent fields only support named vocabularies or "
                     "vocabularies based on simple value sets."
-                    )
+                )
             vocabulary = None
         elif source is not None:
             raise ValueError(
@@ -236,9 +238,9 @@ class Choice(PersistentField, zope.schema.Choice):
             )
 
         assert not (values is None and vocabulary is None), (
-               "You must specify either values or vocabulary.")
+            "You must specify either values or vocabulary.")
         assert values is None or vocabulary is None, (
-               "You cannot specify both values and vocabulary.")
+            "You cannot specify both values and vocabulary.")
 
         self.vocabularyName = None
 

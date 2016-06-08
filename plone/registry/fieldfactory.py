@@ -11,6 +11,7 @@ from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.interfaces import IField
 from zope.schema.interfaces import ISource
 from zope.schema.vocabulary import SimpleVocabulary
+
 import plone.registry.field
 
 
