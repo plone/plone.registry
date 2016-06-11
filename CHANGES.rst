@@ -4,14 +4,6 @@ Changelog
 1.0.4 (unreleased)
 ------------------
 
-Incompatibilities:
-
-- *add item here*
-
-New:
-
-- *add item here*
-
 Fixes:
 
 - More cleanup: PEP8, isort, readability.
