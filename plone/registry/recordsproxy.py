@@ -28,6 +28,7 @@ class RecordsProxy(object):
         self.__dict__['__registry__'] = registry
         self.__dict__['__omitted__'] = omitted
         self.__dict__['__prefix__'] = prefix
+        self.__dict__['__parent__'] = registry
 
         alsoProvides(self, schema)
 
