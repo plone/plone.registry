@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0.5 (unreleased)
+1.1.0 (unreleased)
 ------------------
 
 Breaking changes:
@@ -10,7 +10,10 @@ Breaking changes:
 
 New features:
 
-- *add item here*
+- Give ``RecordsProxy`` a ``__parent__`` (the registry) in order to make it a good Zope citizen.
+  This helps in context of z3cform binders and other similar situations,
+  where a records proxy is used as context.
+  [jensens]
 
 Bug fixes:
 
