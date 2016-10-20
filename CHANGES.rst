@@ -14,7 +14,8 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Fix recursion on getting values from records proxy
+  [tomgross]
 
 
 1.1.0 (2016-07-05)
