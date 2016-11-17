@@ -32,7 +32,7 @@ class RecordsProxy(object):
         alsoProvides(self, schema)
 
     def __getattr__(self, name):
-        if name in self.__dict__.keys():
+        if not self.__dict__ or name in self.__dict__.keys():
            return super(RecordsProxy, self).__getattr__(name)
         if name not in self.__schema__:
             raise AttributeError(name)

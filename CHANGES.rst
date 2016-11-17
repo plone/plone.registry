@@ -14,7 +14,7 @@ New features:
 
 Bug fixes:
 
-- Fix recursion on getting values from records proxy
+- Fix endless recursion on getting values from broken records proxy objects
   [tomgross]
 
 
