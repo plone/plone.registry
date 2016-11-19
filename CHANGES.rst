@@ -4,14 +4,6 @@ Changelog
 1.1.1 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
 - Fix endless recursion on getting values from broken records proxy objects
