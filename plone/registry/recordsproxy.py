@@ -1,13 +1,23 @@
 # -*- coding: utf-8 -*-
 from plone.registry.interfaces import IRecordsProxy
-from UserDict import DictMixin
 from zope.interface import alsoProvides
 from zope.interface import implementer
 from zope.schema import getFieldsInOrder
 from zope.schema.interfaces import RequiredMissing
 
 import re
+import sys
 
+
+try:
+    from UserDict import UserDict
+    from UserDict import DictMixin
+except ImportError:
+    from collections import UserDict
+    from collections import MutableMapping as DictMixin
+
+if sys.version_info >= (3,):
+    basestring = str
 
 _marker = object()
 
@@ -82,7 +92,7 @@ class RecordsProxyCollection(DictMixin):
         self.factory = factory
 
     def __getitem__(self, key):
-        if key in self:
+        if key in iter(self):
             prefix = self.prefix + key
             proxy = self.registry.forInterface(
                 self.schema,
@@ -109,6 +119,9 @@ class RecordsProxyCollection(DictMixin):
                 if key != last:
                     yield key
                     last = key
+
+    def __len__(self):
+        return len(tuple(iter(self)))
 
     def keys(self):
         return list(iter(self))

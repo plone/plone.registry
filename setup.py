@@ -47,13 +47,15 @@ setup(
     zip_safe=False,
     install_requires=[
         'setuptools',
-        'ZODB3',
         'zope.component',
         'zope.dottedname',
         'zope.event',
         'zope.interface',
         'zope.schema',
     ],
+    extras_require={
+        'test': 'BTrees'
+    },
     entry_points="""
     # -*- Entry points: -*-
     """,
