@@ -15,7 +15,8 @@ New features:
 Bug fixes:
 
 - Fix endless recursion on getting values from broken records proxy objects
-  [tomgross]
+  This fixes https://github.com/plone/plone.registry/issues/13.
+  [tomgross, maurits]
 
 
 1.0.4 (2016-06-12)
