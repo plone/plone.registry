@@ -32,6 +32,8 @@ class RecordsProxy(object):
         alsoProvides(self, schema)
 
     def __getattr__(self, name):
+        if not self.__dict__ or name in self.__dict__.keys():
+           return super(RecordsProxy, self).__getattr__(name)
         if name not in self.__schema__:
             raise AttributeError(name)
         value = self.__registry__.get(self.__prefix__ + name, _marker)
