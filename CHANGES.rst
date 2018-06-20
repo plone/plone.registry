@@ -14,7 +14,9 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Improve performance of RecordsProxy.__iter__ which is now invoked more in
+  core Plone as part of the requireJS configuration
+  [MatthewWilkes]
 
 
 1.1.2 (2016-12-06)

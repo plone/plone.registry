@@ -115,7 +115,7 @@ class RecordsProxyCollection(DictMixin):
             if '.' not in name:
                 yield name
             else:
-                key = '.'.join(name.split('.')[:-1])
+                key = name.rsplit('.', 1)[0]
                 if key != last:
                     yield key
                     last = key
