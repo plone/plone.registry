@@ -6,8 +6,9 @@ from plone.registry.interfaces import IPersistentField
 from plone.registry.interfaces import IRecord
 from zope.dottedname.resolve import resolve
 from zope.event import notify
-from zope.interface import implementer
 from zope.interface import alsoProvides
+from zope.interface import implementer
+
 
 _marker = object()
 

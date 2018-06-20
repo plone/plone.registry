@@ -1,8 +1,70 @@
 Changelog
 =========
 
-1.1 (unreleased)
+1.1.3 (unreleased)
 ------------------
+
+Breaking changes:
+
+- *add item here*
+
+New features:
+
+- *add item here*
+
+Bug fixes:
+
+- Improve performance of RecordsProxy.__iter__ which is now invoked more in
+  core Plone as part of the requireJS configuration
+  [MatthewWilkes]
+
+
+1.1.2 (2016-12-06)
+------------------
+
+Bug fixes:
+
+- Fix tests to pass on Python 3.5
+  [datakurre]
+
+
+1.1.1 (2016-11-19)
+------------------
+
+Bug fixes:
+
+- Fix endless recursion on getting values from broken records proxy objects
+  [tomgross]
+
+
+1.1.0 (2016-07-05)
+------------------
+
+New features:
+
+- Give ``RecordsProxy`` a ``__parent__`` (the registry) in order to make it a good Zope citizen.
+  This helps in context of z3cform binders and other similar situations,
+  where a records proxy is used as context.
+  [jensens]
+
+
+1.0.4 (2016-06-12)
+------------------
+
+Fixes:
+
+- More cleanup: PEP8, isort, readability.
+  [jensens]
+
+
+1.0.3 (2016-02-26)
+------------------
+
+Fixes:
+
+- Replace deprecated ``zope.testing.doctestunit`` import with ``doctest``
+  module from stdlib.
+  [thet]
 
 - Cleanup: Pep8, utf8 headers, whitespace fixes, readability, ReST-fixes,
   doc-style, etc.

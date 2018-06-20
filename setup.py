@@ -1,27 +1,28 @@
 # -*- coding: utf-8 -*-
 from setuptools import find_packages
 from setuptools import setup
+
 import os
 
 
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
-version = '1.0.3.dev0'
+version = '1.1.3.dev0'
 
 description = "Registry for application settings (like debconf/ about:config)"
 long_description = (
-    read('README.rst')
-    + '\n' +
-    read('plone', 'registry', 'registry.rst')
-    + '\n' +
-    read('plone', 'registry', 'events.rst')
-    + '\n' +
-    read('plone', 'registry', 'field.rst')
-    + '\n' +
-    read('CHANGES.rst')
-    + '\n'
-    )
+    read('README.rst') +
+    '\n' +
+    read('plone', 'registry', 'registry.rst') +
+    '\n' +
+    read('plone', 'registry', 'events.rst') +
+    '\n' +
+    read('plone', 'registry', 'field.rst') +
+    '\n' +
+    read('CHANGES.rst') +
+    '\n'
+)
 
 setup(
     name='plone.registry',
@@ -30,13 +31,18 @@ setup(
     long_description=long_description,
     classifiers=[
         "Framework :: Plone",
-        "Programming Language :: Python",
+        "Framework :: Plone :: 5.1",
+        "License :: OSI Approved :: GNU General Public License (GPL)",
+        "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.5",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     keywords='configuration registry',
     author='Martin Aspeli, Wichert Akkerman, Hanno Schlichting',
     author_email='plone-developers@lists.sourceforge.net',
-    url='http://pypi.python.org/pypi/plone.registry',
+    url='https://pypi.python.org/pypi/plone.registry',
     license='GPL',
     packages=find_packages(exclude=['ez_setup']),
     namespace_packages=['plone'],
@@ -44,14 +50,15 @@ setup(
     zip_safe=False,
     install_requires=[
         'setuptools',
-        'ZODB3',
         'zope.component',
         'zope.dottedname',
         'zope.event',
         'zope.interface',
         'zope.schema',
-        'zope.testing',
     ],
+    extras_require={
+        'test': 'BTrees'
+    },
     entry_points="""
     # -*- Entry points: -*-
     """,

@@ -7,11 +7,45 @@ from zope import schema
 from zope.component import eventtesting
 from zope.component import provideAdapter
 from zope.component import testing
-from zope.interface import Interface
 from zope.interface import implementer
+from zope.interface import Interface
 from zope.testing import doctestunit
+
 import doctest
+import re
+import sys
 import unittest
+
+
+SKIP_PYTHON_2 = doctest.register_optionflag('SKIP_PYTHON_2')
+SKIP_PYTHON_3 = doctest.register_optionflag('SKIP_PYTHON_3')
+IGNORE_B = doctest.register_optionflag('IGNORE_B')
+IGNORE_U = doctest.register_optionflag('IGNORE_U')
+
+
+class PolyglotOutputChecker(doctest.OutputChecker):
+    def check_output(self, want, got, optionflags):
+        if optionflags & SKIP_PYTHON_3 and sys.version_info >= (3,):
+            return True
+        elif optionflags & SKIP_PYTHON_2:
+            return True
+
+        if hasattr(self, '_toAscii'):
+            got = self._toAscii(got)
+            want = self._toAscii(want)
+
+        # Naive fix for comparing byte strings
+        if got != want and optionflags & IGNORE_B:
+            got = re.sub(r'^b([\'"])', r'\1', got)
+            want = re.sub(r'^b([\'"])', r'\1', want)
+
+        # Naive fix for comparing byte strings
+        if got != want and optionflags & IGNORE_U:
+            got = re.sub(r'^u([\'"])', r'\1', got)
+            want = re.sub(r'^u([\'"])', r'\1', want)
+
+        return doctest.OutputChecker.check_output(
+            self, want, got, optionflags)
 
 
 class IMailSettings(Interface):
@@ -192,26 +226,29 @@ class TestProxy(unittest.TestCase):
 
 def test_suite():
     return unittest.TestSuite([
-        doctestunit.DocFileSuite(
+        doctest.DocFileSuite(
             'registry.rst',
             package='plone.registry',
             optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
             setUp=setUp,
-            tearDown=testing.tearDown
+            tearDown=testing.tearDown,
+            checker=PolyglotOutputChecker()
         ),
-        doctestunit.DocFileSuite(
+        doctest.DocFileSuite(
             'events.rst',
             package='plone.registry',
             optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
             setUp=setUp,
-            tearDown=testing.tearDown
+            tearDown=testing.tearDown,
+            checker=PolyglotOutputChecker()
         ),
-        doctestunit.DocFileSuite(
+        doctest.DocFileSuite(
             'field.rst',
             package='plone.registry',
             optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
             setUp=setUp,
-            tearDown=testing.tearDown
+            tearDown=testing.tearDown,
+            checker=PolyglotOutputChecker()
         ),
         unittest.makeSuite(TestBugs),
         unittest.makeSuite(TestMigration),

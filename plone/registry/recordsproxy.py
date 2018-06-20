@@ -1,12 +1,24 @@
 # -*- coding: utf-8 -*-
 from plone.registry.interfaces import IRecordsProxy
-from UserDict import DictMixin
 from zope.interface import alsoProvides
 from zope.interface import implementer
 from zope.schema import getFieldsInOrder
 from zope.schema.interfaces import IObject, ICollection
 from zope.schema.interfaces import RequiredMissing
+
 import re
+import sys
+
+
+try:
+    from UserDict import UserDict
+    from UserDict import DictMixin
+except ImportError:
+    from collections import UserDict
+    from collections import MutableMapping as DictMixin
+
+if sys.version_info >= (3,):
+    basestring = str
 
 _marker = object()
 
@@ -27,10 +39,13 @@ class RecordsProxy(object):
         self.__dict__['__registry__'] = registry
         self.__dict__['__omitted__'] = omitted
         self.__dict__['__prefix__'] = prefix
+        self.__dict__['__parent__'] = registry
 
         alsoProvides(self, schema)
 
     def __getattr__(self, name):
+        if not self.__dict__ or name in self.__dict__.keys():
+           return super(RecordsProxy, self).__getattr__(name)
         if name not in self.__schema__:
             raise AttributeError(name)
         value = self.__registry__.get(self.__prefix__ + name, _marker)
@@ -78,7 +93,7 @@ class RecordsProxyCollection(DictMixin):
         self.factory = factory
 
     def __getitem__(self, key):
-        if key in self:
+        if key in iter(self):
             prefix = self.prefix + key
             proxy = self.registry.forInterface(
                 self.schema,
@@ -101,10 +116,13 @@ class RecordsProxyCollection(DictMixin):
             if '.' not in name:
                 yield name
             else:
-                key = '.'.join(name.split('.')[:-1])
+                key = name.rsplit('.', 1)[0]
                 if key != last:
                     yield key
                     last = key
+
+    def __len__(self):
+        return len(tuple(iter(self)))
 
     def keys(self):
         return list(iter(self))
@@ -120,7 +138,7 @@ class RecordsProxyCollection(DictMixin):
     def has_key(self, key):
         key = self._validate(key)
         prefix = self.prefix + key
-        names = self.registry.records.keys(prefix+'.', prefix+'/')
+        names = self.registry.records.keys(prefix + '.', prefix + '/')
         return bool(names)
 
     def add(self, key):
@@ -163,7 +181,7 @@ class RecordsProxyCollection(DictMixin):
         if key not in self:
             raise KeyError(key)
         prefix = self.prefix + key
-        names = list(self.registry.records.keys(prefix+'.', prefix+'/'))
+        names = list(self.registry.records.keys(prefix + '.', prefix + '/'))
         for name in names:
             del self.registry.records[name]
 

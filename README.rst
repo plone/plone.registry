@@ -1,7 +1,6 @@
 ============
 Introduction
 ============
-
 This package provides debconf-like (or about:config-like) settings registries
 for Zope applications. A ``registry``, with a dict-like API, is used to get and
 set values stored in ``records``. Each record contains the actual value, as

@@ -9,7 +9,7 @@ we purposefully limit the number of fields supported.
 We also disallow some properties, and add some additional checks on others.
 
 The standard fields
-====================
+===================
 
 We will show each supported field in turn. For all fields, note that:
 
@@ -71,7 +71,7 @@ The bytes field describes a string of bytes, disallowing newlines::
     ...
     ValueError: Persistent fields does not support setting the `constraint` property
 
-    >>> f.constraint('AB\nC')
+    >>> f.constraint(b'AB\nC')
     False
 
 ASCII
