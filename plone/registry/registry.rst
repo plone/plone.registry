@@ -142,7 +142,7 @@ Again, values are validated::
     Traceback (most recent call last):
     ...
     WrongType: ('Joomla', <type 'unicode'>...)
-    
+
     >>> registry['plone.registry.tests.cms'] = b'Joomla'  # doctest: +SKIP_PYTHON_2
     Traceback (most recent call last):
     ...
@@ -215,7 +215,7 @@ If we have a field for which there is no ``IPersistentField`` adapter, we will g
 
     >>> from plone.registry.tests import IMailPreferences
     >>> IMailPreferences['settings']
-    <zope.schema._field.Object object at ...>
+    <zope.schema._bootstrapfields.Object object at ...>
 
     >>> registry.registerInterface(IMailPreferences)
     Traceback (most recent call last):
