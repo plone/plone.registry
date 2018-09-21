@@ -21,6 +21,11 @@ IGNORE_U = doctest.register_optionflag('IGNORE_U')
 
 class PolyglotOutputChecker(doctest.OutputChecker):
     def check_output(self, want, got, optionflags):
+        # fix changed objectfield class in zope4
+        got = re.sub(
+            'zope.schema._field.Object',
+            'zope.schema._bootstrapfields.Object', got)
+
         if optionflags & SKIP_PYTHON_3 and sys.version_info >= (3,):
             return True
         elif optionflags & SKIP_PYTHON_2:

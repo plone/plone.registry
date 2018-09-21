@@ -14,7 +14,8 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Adapt test to changed object field in zope4
+  [pbauer]
 
 
 1.1.3 (2018-06-22)
