@@ -45,7 +45,7 @@ setup(
     keywords='configuration registry',
     author='Martin Aspeli, Wichert Akkerman, Hanno Schlichting',
     author_email='plone-developers@lists.sourceforge.net',
-    url='https://pypi.python.org/pypi/plone.registry',
+    url='https://pypi.org/project/plone.registry',
     license='GPL',
     packages=find_packages(exclude=['ez_setup']),
     namespace_packages=['plone'],
