@@ -25,6 +25,8 @@ Bug fixes:
 - Adapt test to changed object field in zope4
   [pbauer]
 
+- Avoid a deprecation warning that would turn into an error on Python 3.8.
+  [gforcada]
 
 1.1.3 (2018-06-22)
 ------------------

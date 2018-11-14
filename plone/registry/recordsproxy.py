@@ -14,7 +14,7 @@ try:
     from UserDict import DictMixin
 except ImportError:
     from collections import UserDict
-    from collections import MutableMapping as DictMixin
+    from collections.abc import MutableMapping as DictMixin
 
 if sys.version_info >= (3,):
     basestring = str
