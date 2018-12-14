@@ -4,14 +4,6 @@ Changelog
 1.1.5 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
 - Avoid a deprecation warning that would turn into an error on Python 3.8.
