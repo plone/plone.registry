@@ -61,6 +61,7 @@ setup(
         'zope.event',
         'zope.interface',
         'zope.schema',
+        'plone.schema'
     ],
     extras_require={
         'test': 'BTrees'

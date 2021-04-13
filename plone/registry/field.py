@@ -12,6 +12,7 @@ from zope.interface import implementer
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary
 
+import plone.schema
 import zope.schema
 import zope.schema._field
 import sys
@@ -292,3 +293,9 @@ class Choice(PersistentField, zope.schema.Choice):
             clone._vocabulary = vr.get(object, self.vocabularyName)
             assert zope.schema.interfaces.ISource.providedBy(clone.vocabulary)
         return clone
+
+
+class JSONField(PersistentField, plone.schema.JSONField):
+
+    key_type = InterfaceConstrainedProperty("key_type", IPersistentField)
+    value_type = InterfaceConstrainedProperty("value_type", IPersistentField)
