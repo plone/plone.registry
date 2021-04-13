@@ -767,9 +767,7 @@ JSONField
 The set field describes a JSONField::
 
     >>> import plone.schema
-    >>> f = field.JSONField(title=u"Test",
-    ...     key_type=field.ASCII(title=u"Key"),
-    ...     value_type=field.TextLine(title=u"Value"))
+    >>> f = field.JSONField(title=u"Test")
     >>> isinstance(f, plone.schema.JSONField)
     True
 
