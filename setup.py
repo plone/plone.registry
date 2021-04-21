@@ -60,8 +60,7 @@ setup(
         'zope.dottedname',
         'zope.event',
         'zope.interface',
-        'zope.schema',
-        'plone.schema'
+        'zope.schema'
     ],
     extras_require={
         'test': 'BTrees'

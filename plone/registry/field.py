@@ -12,11 +12,15 @@ from zope.interface import implementer
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary
 
-import plone.schema
 import zope.schema
 import zope.schema._field
 import sys
 
+try:
+    import plone.schema
+    HASPLONESCHEMA = True
+except ImportError:
+    HASPLONESCHEMA = False
 
 if sys.version_info >= (3,):
     basestring = str
@@ -295,7 +299,8 @@ class Choice(PersistentField, zope.schema.Choice):
         return clone
 
 
-class JSONField(PersistentField, plone.schema.JSONField):
+if HASPLONESCHEMA:
+    class JSONField(PersistentField, plone.schema.JSONField):
 
-    key_type = InterfaceConstrainedProperty("key_type", IPersistentField)
-    value_type = InterfaceConstrainedProperty("value_type", IPersistentField)
+        key_type = InterfaceConstrainedProperty("key_type", IPersistentField)
+        value_type = InterfaceConstrainedProperty("value_type", IPersistentField)
