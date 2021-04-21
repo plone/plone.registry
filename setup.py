@@ -60,10 +60,10 @@ setup(
         'zope.dottedname',
         'zope.event',
         'zope.interface',
-        'zope.schema'
+        'zope.schema',
     ],
     extras_require={
-        'test': 'BTrees'
+        'test': ['BTrees', 'plone.schema']
     },
     entry_points="""
     # -*- Entry points: -*-
