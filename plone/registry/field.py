@@ -16,6 +16,11 @@ import zope.schema
 import zope.schema._field
 import sys
 
+try:
+    import plone.schema
+    HASPLONESCHEMA = True
+except ImportError:
+    HASPLONESCHEMA = False
 
 if sys.version_info >= (3,):
     basestring = str
@@ -292,3 +297,10 @@ class Choice(PersistentField, zope.schema.Choice):
             clone._vocabulary = vr.get(object, self.vocabularyName)
             assert zope.schema.interfaces.ISource.providedBy(clone.vocabulary)
         return clone
+
+
+if HASPLONESCHEMA:
+    class JSONField(PersistentField, plone.schema.JSONField):
+
+        key_type = InterfaceConstrainedProperty("key_type", IPersistentField)
+        value_type = InterfaceConstrainedProperty("value_type", IPersistentField)

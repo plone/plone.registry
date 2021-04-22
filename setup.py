@@ -63,7 +63,7 @@ setup(
         'zope.schema',
     ],
     extras_require={
-        'test': 'BTrees'
+        'test': ['BTrees', 'plone.schema']
     },
     entry_points="""
     # -*- Entry points: -*-

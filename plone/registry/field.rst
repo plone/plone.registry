@@ -761,6 +761,19 @@ As with other fields, you also cannot set a constraint::
     >>> f.constraint('ABC')
     True
 
+JSONField
+---------
+
+The set field describes a JSONField::
+
+    >>> import plone.schema
+    >>> f = field.JSONField(title=u"Test")
+    >>> isinstance(f, plone.schema.JSONField)
+    True
+
+    >>> f.order
+    -1
+
 ``IPersistentField`` adapters
 =============================
 
