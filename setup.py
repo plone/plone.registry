@@ -8,7 +8,7 @@ import os
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
-version = '1.1.7.dev0'
+version = '1.2.0'
 
 description = "Registry for application settings (like debconf/ about:config)"
 long_description = (

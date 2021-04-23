@@ -8,6 +8,16 @@ Changelog
 
 .. towncrier release notes start
 
+1.2.0 (2021-04-23)
+------------------
+
+New features:
+
+
+- Allow plone.schema.JSONField be stored in registry (as dict-like)
+   [sneridagh] (#719)
+
+
 1.1.6 (2020-04-22)
 ------------------
 
