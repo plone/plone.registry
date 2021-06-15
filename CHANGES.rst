@@ -8,6 +8,16 @@ Changelog
 
 .. towncrier release notes start
 
+1.2.1 (2021-06-14)
+------------------
+
+Bug fixes:
+
+
+- Fix registry key validation regexp.
+  [jensens] (#23)
+
+
 1.2.0 (2021-04-23)
 ------------------
 
