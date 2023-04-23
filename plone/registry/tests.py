@@ -58,7 +58,7 @@ class IMailPreferences(Interface):
     """Settings for email"""
 
     max_daily = schema.Int(title="Maximum number of emails per day", min=0, default=3)
-    settings = schema.Object(title="Mail setings to use", schema=IMailSettings)
+    settings = schema.Object(title="Mail settings to use", schema=IMailSettings)
 
 
 def setUp(test=None):

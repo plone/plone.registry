@@ -102,7 +102,7 @@ class Registry(Persistent):
 
             value = persistent_field.default
 
-            # Attempt to retain the exisiting value
+            # Attempt to retain the existing value
             if record_name in self.records:
                 existing_record = self.records[record_name]
                 value = existing_record.value

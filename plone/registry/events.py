@@ -39,7 +39,7 @@ class RecordModifiedEvent(RecordEvent):
 @adapter(IRecordEvent)
 def redispatchInterfaceAwareRecordEvents(event):
     """When an interface-aware record received a record event,
-    redispatch the event in a simlar manner to the IObjectEvent redispatcher.
+    redispatch the event in a similar manner to the IObjectEvent redispatcher.
 
     Note that this means one IRecordModifiedEvent will be fired for each
     change to a record.
