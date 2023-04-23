@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.registry.interfaces import IRecordsProxy
 from zope.interface import alsoProvides
 from zope.interface import implementer
@@ -16,14 +15,13 @@ except ImportError:
     from collections import UserDict
     from collections.abc import MutableMapping as DictMixin
 
-if sys.version_info >= (3,):
-    basestring = str
+basestring = str
 
 _marker = object()
 
 
 @implementer(IRecordsProxy)
-class RecordsProxy(object):
+class RecordsProxy:
     """A proxy that maps an interface to a number of records
     """
 
@@ -44,7 +42,7 @@ class RecordsProxy(object):
 
     def __getattr__(self, name):
         if not self.__dict__ or name in self.__dict__.keys():
-           return super(RecordsProxy, self).__getattr__(name)
+           return super().__getattr__(name)
         if name not in self.__schema__:
             raise AttributeError(name)
         value = self.__registry__.get(self.__prefix__ + name, _marker)
@@ -62,7 +60,7 @@ class RecordsProxy(object):
             self.__dict__[name] = value
 
     def __repr__(self):
-        return "<{0} for {1}>".format(
+        return "<{} for {}>".format(
             self.__class__.__name__,
             self.__schema__.__identifier__
         )

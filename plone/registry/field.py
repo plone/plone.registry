@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """This module defines persistent versions of various fields.
 
 The idea is that when a record is created, we copy relevant field properties
@@ -22,15 +21,10 @@ try:
 except ImportError:
     HASPLONESCHEMA = False
 
-if sys.version_info >= (3,):
-    basestring = str
-    text_type = str
-    _primitives = (int, bool, str, bytes, tuple,
-                   list, set, frozenset, dict, float)
-else:
-    text_type = unicode
-    _primitives = (int, long, bool, str, unicode, tuple,
-                   list, set, frozenset, dict, float)
+basestring = str
+text_type = str
+_primitives = (int, bool, str, bytes, tuple,
+               list, set, frozenset, dict, float)
 
 _missing_value_marker = object()
 
@@ -39,7 +33,7 @@ def is_primitive(value):
     return value is None or isinstance(value, _primitives)
 
 
-class DisallowedProperty(object):
+class DisallowedProperty:
     """A property that may not be set on an instance. It may still be set
     defined in a base class.
     """
@@ -61,12 +55,12 @@ class DisallowedProperty(object):
 
     def __set__(self, inst, value):
         raise ValueError(
-            u"Persistent fields does not support setting the `{0}` "
-            u"property".format(self._name)
+            "Persistent fields does not support setting the `{}` "
+            "property".format(self._name)
         )
 
 
-class StubbornProperty(object):
+class StubbornProperty:
     """A property that stays stubbornly at a single, pre-defined value.
     """
     uses = []
@@ -83,7 +77,7 @@ class StubbornProperty(object):
         return self._value
 
 
-class InterfaceConstrainedProperty(object):
+class InterfaceConstrainedProperty:
     """A property that may only contain values providing a certain interface.
     """
     uses = []
@@ -99,8 +93,8 @@ class InterfaceConstrainedProperty(object):
             and not self._interface.providedBy(value)
         ):
             raise ValueError(
-                u"The property `{0}` may only contain objects "
-                "providing `{1}`.".format(
+                "The property `{}` may only contain objects "
+                "providing `{}`.".format(
                     self._name,
                     self._interface.__identifier__,
                 )

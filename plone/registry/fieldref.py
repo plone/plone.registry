@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 from plone.registry.interfaces import IFieldRef
 from zope.interface import implementedBy
 from zope.interface import implementer
 
 
 @implementer(IFieldRef)
-class FieldRef(object):
+class FieldRef:
     """Default field reference.
     """
 

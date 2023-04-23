@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.registry.field import DisallowedProperty
 from plone.registry.field import InterfaceConstrainedProperty
 from plone.registry.field import is_primitive
@@ -40,9 +39,9 @@ def persistentFieldAdapter(context):
 
     instance = persistent_class.__new__(persistent_class)
 
-    context_dict = dict(
-        [(k, v) for k, v in context.__dict__.items() if k not in ignored]
-    )
+    context_dict = {
+        k: v for k, v in context.__dict__.items() if k not in ignored
+    }
 
     for key, iface in constrained:
         value = context_dict.get(key, None)
@@ -51,8 +50,8 @@ def persistentFieldAdapter(context):
         value = iface(value, None)
         if value is None:
             __traceback_info__ = (
-                "The property `{0}` cannot be adapted to "
-                "`{1}`.".format(key, iface.__identifier__,)
+                "The property `{}` cannot be adapted to "
+                "`{}`.".format(key, iface.__identifier__,)
             )
             return None
         context_dict[key] = value

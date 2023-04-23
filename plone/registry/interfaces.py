@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from zope import schema
 from zope.interface import Interface
 from zope.interface.interfaces import IInterface
@@ -24,11 +23,11 @@ class IPersistentField(IField):
     """
 
     interfaceName = schema.DottedName(
-        title=u'Dotted name to an interface the field was constructed from',
+        title='Dotted name to an interface the field was constructed from',
         required=False
     )
     fieldName = schema.ASCIILine(
-        title=u'Name of the field in the original interface, if any',
+        title='Name of the field in the original interface, if any',
         required=False
     )
 
@@ -43,10 +42,10 @@ class IFieldRef(Interface):
     """
 
     recordName = schema.DottedName(
-        title=u'Name of the record containing the reference field'
+        title='Name of the record containing the reference field'
     )
     originalField = schema.Object(
-        title=u'Referenced field',
+        title='Referenced field',
         schema=IField
     )
 
@@ -64,13 +63,13 @@ class IRecord(Interface):
     """
 
     field = schema.Object(
-        title=u'A field describing this record',
+        title='A field describing this record',
         schema=IPersistentField
     )
 
     value = schema.Field(
-        title=u'The value of this record',
-        description=u'Must be valid according to the record\'s field'
+        title='The value of this record',
+        description='Must be valid according to the record\'s field'
     )
 
 
@@ -79,9 +78,9 @@ class IRecordEvent(Interface):
     """
 
     record = schema.Object(
-        title=u'The record that was added.',
-        description=u'Both __name__ and __parent__ will be set before the '
-                    u'event is fired',
+        title='The record that was added.',
+        description='Both __name__ and __parent__ will be set before the '
+                    'event is fired',
         schema=IRecord
     )
 
@@ -100,8 +99,8 @@ class IRecordModifiedEvent(IRecordEvent):
     """Event fired when a record's value is modified.
     """
 
-    oldValue = schema.Field(title=u'The record\'s previous value')
-    newValue = schema.Field(title=u'The record\'s new value')
+    oldValue = schema.Field(title='The record\'s previous value')
+    newValue = schema.Field(title='The record\'s new value')
 
 
 class IInterfaceAwareRecord(Interface):
@@ -109,17 +108,17 @@ class IInterfaceAwareRecord(Interface):
     interface its field came from.
     """
 
-    interfaceName = schema.DottedName(title=u"Dotted name to interface")
+    interfaceName = schema.DottedName(title="Dotted name to interface")
 
     interface = schema.Object(
-        title=u'Interface that provided the record',
-        description=u'May be None if the interface is no longer available',
+        title='Interface that provided the record',
+        description='May be None if the interface is no longer available',
         schema=IInterface,
         readonly=True
     )
 
     fieldName = schema.ASCIILine(
-        title=u'Name of the field in the original interface'
+        title='Name of the field in the original interface'
     )
 
 
@@ -128,18 +127,18 @@ class IRegistry(Interface):
     """
 
     records = schema.Dict(
-        title=u'The records of the registry',
+        title='The records of the registry',
         key_type=schema.DottedName(
-            title=u'Name of the record',
-            description=u'By convention, this should include the '
-                        u'package name and optionally an interface '
-                        u'named, if the record can be described by a '
-                        u'field in an interface (see also '
-                        u'registerInterface() below), e.g. '
-                        u'my.package.interfaces.IMySettings.somefield.',
+            title='Name of the record',
+            description='By convention, this should include the '
+                        'package name and optionally an interface '
+                        'named, if the record can be described by a '
+                        'field in an interface (see also '
+                        'registerInterface() below), e.g. '
+                        'my.package.interfaces.IMySettings.somefield.',
         ),
         value_type=schema.Object(
-            title=u'The record for this name',
+            title='The record for this name',
             schema=IRecord,
         ),
     )
@@ -190,20 +189,20 @@ class IRecordsProxy(Interface):
     """
 
     __schema__ = schema.Object(
-        title=u'Interface providing records',
+        title='Interface providing records',
         schema=IInterface,
         readonly=True
     )
 
     __registry__ = schema.Object(
-        title=u'Registry where records will be looked up',
+        title='Registry where records will be looked up',
         schema=IRegistry,
         readonly=True)
 
     __omitted__ = schema.Tuple(
-        title=u'Fields that are not stored in the registry',
-        description=u'If any of these are accessed, you will get an '
-                    u'AttributeError',
-        value_type=schema.ASCIILine(title=u'Fieldname'),
+        title='Fields that are not stored in the registry',
+        description='If any of these are accessed, you will get an '
+                    'AttributeError',
+        value_type=schema.ASCIILine(title='Fieldname'),
         readonly=True
     )

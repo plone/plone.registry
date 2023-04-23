@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.registry.fieldfactory import choicePersistentFieldAdapter
 from plone.registry.fieldfactory import persistentFieldAdapter
 from zope.component import eventtesting
@@ -53,20 +52,20 @@ class IMailSettings(Interface):
     """Settings for email
     """
 
-    sender = schema.TextLine(title=u"Mail sender", default=u"root@localhost")
-    smtp_host = schema.URI(title=u"SMTP host server")
+    sender = schema.TextLine(title="Mail sender", default="root@localhost")
+    smtp_host = schema.URI(title="SMTP host server")
 
 
 class IMailPreferences(Interface):
     """Settings for email
     """
     max_daily = schema.Int(
-        title=u"Maximum number of emails per day",
+        title="Maximum number of emails per day",
         min=0,
         default=3
     )
     settings = schema.Object(
-        title=u"Mail setings to use",
+        title="Mail setings to use",
         schema=IMailSettings
     )
 
@@ -101,10 +100,10 @@ class TestBugs(unittest.TestCase):
         reg = getVocabularyRegistry()
         reg.register('my.vocab', vocabFactory)
 
-        class T(object):
+        class T:
             f = None
 
-        f = Choice(__name__='f', title=u"Test", vocabulary="my.vocab")
+        f = Choice(__name__='f', title="Test", vocabulary="my.vocab")
         t = T()
 
         # Bug: this would give "AttributeError: can't set attribute" on
@@ -145,11 +144,11 @@ class TestMigration(unittest.TestCase):
         registry._records = Records(registry)
         registry._records.data = OOBTree()
 
-        f = field.TextLine(title=u"Foo")
+        f = field.TextLine(title="Foo")
 
-        record = Record(f, u"Bar")
+        record = Record(f, "Bar")
         record.__dict__['field'] = f
-        record.__dict__['value'] = u"Bar"
+        record.__dict__['value'] = "Bar"
 
         registry._records.data['foo.bar'] = record
 
@@ -159,9 +158,9 @@ class TestMigration(unittest.TestCase):
 
         # Migration should have happened
 
-        self.assertEqual(value, u"Bar")
-        self.assertEqual(registry.records['foo.bar'].field.title, u"Foo")
-        self.assertEqual(registry.records['foo.bar'].value, u"Bar")
+        self.assertEqual(value, "Bar")
+        self.assertEqual(registry.records['foo.bar'].field.title, "Foo")
+        self.assertEqual(registry.records['foo.bar'].value, "Bar")
 
         self.assertFalse(isinstance(registry._records, Records))
         self.assertTrue(isinstance(registry._records, _Records))
@@ -193,6 +192,6 @@ def test_suite():
             tearDown=testing.tearDown,
             checker=PolyglotOutputChecker()
         ),
-        unittest.makeSuite(TestBugs),
-        unittest.makeSuite(TestMigration),
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestBugs),
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestMigration),
     ])

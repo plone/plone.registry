@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from BTrees.OOBTree import OOBTree
 from persistent import Persistent
 from plone.registry.events import RecordAddedEvent
@@ -22,8 +21,7 @@ import re
 import warnings
 
 import sys
-if sys.version_info >= (3,):
-    basestring = str
+basestring = str
 
 
 @implementer(IRegistry)
@@ -76,7 +74,7 @@ class Registry(Persistent):
             for name in getFieldNames(interface):
                 if name not in omit and prefix + name not in self:
                     raise KeyError(
-                        "Interface `{0}` defines a field `{1}`, for which "
+                        "Interface `{}` defines a field `{}`, for which "
                         "there is no record.".format(
                             interface.__identifier__,
                             name
@@ -103,7 +101,7 @@ class Registry(Persistent):
             if persistent_field is None:
                 raise TypeError(
                     "There is no persistent field equivalent for the field "
-                    "`{0}` of type `{1}`.".format(
+                    "`{}` of type `{}`.".format(
                         name,
                         field.__class__.__name__
                     )
@@ -163,7 +161,7 @@ class Registry(Persistent):
         self._records = records
 
 
-class _Records(object):
+class _Records:
     """The records stored in the registry. This implements dict-like access
     to records, where as the Registry object implements dict-like read-only
     access to values.
@@ -306,4 +304,4 @@ class Records(_Records, Persistent):
             "used.",
             DeprecationWarning
         )
-        super(Records, self).__init__(parent)
+        super().__init__(parent)
