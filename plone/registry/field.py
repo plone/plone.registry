@@ -21,8 +21,6 @@ try:
 except ImportError:
     HASPLONESCHEMA = False
 
-basestring = str
-text_type = str
 _primitives = (int, bool, str, bytes, tuple,
                list, set, frozenset, dict, float)
 
@@ -228,7 +226,7 @@ class Choice(PersistentField, zope.schema.Choice):
 
     def __init__(self, values=None, vocabulary=None, source=None, **kw):
 
-        if vocabulary is not None and not isinstance(vocabulary, basestring):
+        if vocabulary is not None and not isinstance(vocabulary, str):
             values = self._normalized_values(vocabulary)
             if values is None:
                 raise ValueError(
@@ -265,7 +263,7 @@ class Choice(PersistentField, zope.schema.Choice):
 
     def _normalized_values(self, vocabulary):
         if getattr(vocabulary, '__iter__', None):
-            if all([isinstance(term.value, text_type) for term in vocabulary]):
+            if all([isinstance(term.value, str) for term in vocabulary]):
                 return [term.value for term in vocabulary]
         return None
 

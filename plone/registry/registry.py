@@ -21,7 +21,6 @@ import re
 import warnings
 
 import sys
-basestring = str
 
 
 @implementer(IRegistry)
@@ -268,9 +267,9 @@ class _Records:
         field = self._fields[name]
 
         # Handle field reference pointers
-        if isinstance(field, basestring):
+        if isinstance(field, str):
             recordName = field
-            while isinstance(field, basestring):
+            while isinstance(field, str):
                 recordName = field
                 field = self._fields[recordName]
             field = FieldRef(recordName, field)

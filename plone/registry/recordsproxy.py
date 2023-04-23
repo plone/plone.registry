@@ -15,8 +15,6 @@ except ImportError:
     from collections import UserDict
     from collections.abc import MutableMapping as DictMixin
 
-basestring = str
-
 _marker = object()
 
 
@@ -125,7 +123,7 @@ class RecordsProxyCollection(DictMixin):
         return list(iter(self))
 
     def _validate(self, key):
-        if not isinstance(key, basestring) or not self._validkey(key):
+        if not isinstance(key, str) or not self._validkey(key):
             raise TypeError(
                 'expected a valid key (alphanumeric or underscore, starting '
                 'with alpha)'
