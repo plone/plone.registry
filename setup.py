@@ -7,24 +7,25 @@ import os
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
-version = '1.2.2.dev0'
+
+version = "1.2.2.dev0"
 
 description = "Registry for application settings (like debconf/ about:config)"
 long_description = (
-    read('README.rst') +
-    '\n' +
-    read('plone', 'registry', 'registry.rst') +
-    '\n' +
-    read('plone', 'registry', 'events.rst') +
-    '\n' +
-    read('plone', 'registry', 'field.rst') +
-    '\n' +
-    read('CHANGES.rst') +
-    '\n'
+    read("README.rst")
+    + "\n"
+    + read("plone", "registry", "registry.rst")
+    + "\n"
+    + read("plone", "registry", "events.rst")
+    + "\n"
+    + read("plone", "registry", "field.rst")
+    + "\n"
+    + read("CHANGES.rst")
+    + "\n"
 )
 
 setup(
-    name='plone.registry',
+    name="plone.registry",
     version=version,
     description=description,
     long_description=long_description,
@@ -44,26 +45,24 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    keywords='configuration registry',
-    author='Martin Aspeli, Wichert Akkerman, Hanno Schlichting',
-    author_email='plone-developers@lists.sourceforge.net',
-    url='https://pypi.org/project/plone.registry',
-    license='GPL',
+    keywords="configuration registry",
+    author="Martin Aspeli, Wichert Akkerman, Hanno Schlichting",
+    author_email="plone-developers@lists.sourceforge.net",
+    url="https://pypi.org/project/plone.registry",
+    license="GPL",
     packages=find_packages(),
-    namespace_packages=['plone'],
+    namespace_packages=["plone"],
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'setuptools',
-        'zope.component',
-        'zope.dottedname',
-        'zope.event',
-        'zope.interface',
-        'zope.schema',
+        "setuptools",
+        "zope.component",
+        "zope.dottedname",
+        "zope.event",
+        "zope.interface",
+        "zope.schema",
     ],
-    extras_require={
-        'test': ['BTrees', 'plone.schema']
-    },
+    extras_require={"test": ["BTrees", "plone.schema"]},
     entry_points="""
     # -*- Entry points: -*-
     """,

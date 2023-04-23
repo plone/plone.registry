@@ -28,7 +28,6 @@ class Record(Persistent):
     __parent__ = None
 
     def __init__(self, field, value=_marker, _validate=True):
-
         if _validate and not IPersistentField.providedBy(field):
             raise ValueError("Field is not persistent")
 
@@ -70,7 +69,6 @@ class Record(Persistent):
         return self._value
 
     def _set_value(self, value):
-
         field = self.field
 
         if field is None:

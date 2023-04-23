@@ -20,27 +20,26 @@ _marker = object()
 
 @implementer(IRecordsProxy)
 class RecordsProxy:
-    """A proxy that maps an interface to a number of records
-    """
+    """A proxy that maps an interface to a number of records"""
 
     def __init__(self, registry, schema, omitted=(), prefix=None):
         if prefix is None:
-            prefix = schema.__identifier__ + '.'
+            prefix = schema.__identifier__ + "."
         elif not prefix.endswith("."):
-            prefix += '.'
+            prefix += "."
 
         # skip __setattr__
-        self.__dict__['__schema__'] = schema
-        self.__dict__['__registry__'] = registry
-        self.__dict__['__omitted__'] = omitted
-        self.__dict__['__prefix__'] = prefix
-        self.__dict__['__parent__'] = registry
+        self.__dict__["__schema__"] = schema
+        self.__dict__["__registry__"] = registry
+        self.__dict__["__omitted__"] = omitted
+        self.__dict__["__prefix__"] = prefix
+        self.__dict__["__parent__"] = registry
 
         alsoProvides(self, schema)
 
     def __getattr__(self, name):
         if not self.__dict__ or name in self.__dict__.keys():
-           return super().__getattr__(name)
+            return super().__getattr__(name)
         if name not in self.__schema__:
             raise AttributeError(name)
         value = self.__registry__.get(self.__prefix__ + name, _marker)
@@ -59,26 +58,25 @@ class RecordsProxy:
 
     def __repr__(self):
         return "<{} for {}>".format(
-            self.__class__.__name__,
-            self.__schema__.__identifier__
+            self.__class__.__name__, self.__schema__.__identifier__
         )
 
 
 class RecordsProxyCollection(DictMixin):
-    """A proxy that maps a collection of RecordsProxy objects
-    """
+    """A proxy that maps a collection of RecordsProxy objects"""
 
     _validkey = re.compile(r"([a-zA-Z][a-zA-Z0-9_.-]*)$").match
 
     # ord('.') == ord('/') - 1
 
-    def __init__(self, registry, schema, check=True, omitted=(), prefix=None,
-                 factory=None):
+    def __init__(
+        self, registry, schema, check=True, omitted=(), prefix=None, factory=None
+    ):
         if prefix is None:
             prefix = schema.__identifier__
 
         if not prefix.endswith("/"):
-            prefix += '/'
+            prefix += "/"
 
         self.registry = registry
         self.schema = schema
@@ -91,27 +89,23 @@ class RecordsProxyCollection(DictMixin):
         if key in iter(self):
             prefix = self.prefix + key
             proxy = self.registry.forInterface(
-                self.schema,
-                self.check,
-                self.omitted,
-                prefix,
-                self.factory
+                self.schema, self.check, self.omitted, prefix, self.factory
             )
             return proxy
         raise KeyError(key)
 
     def __iter__(self):
         min = self.prefix
-        max = self.prefix[:-1] + '0'
+        max = self.prefix[:-1] + "0"
         keys = self.registry.records.keys(min, max)
         len_prefix = len(self.prefix)
         last = None
         for name in keys:
             name = name[len_prefix:]
-            if '.' not in name:
+            if "." not in name:
                 yield name
             else:
-                key = name.rsplit('.', 1)[0]
+                key = name.rsplit(".", 1)[0]
                 if key != last:
                     yield key
                     last = key
@@ -125,27 +119,22 @@ class RecordsProxyCollection(DictMixin):
     def _validate(self, key):
         if not isinstance(key, str) or not self._validkey(key):
             raise TypeError(
-                'expected a valid key (alphanumeric or underscore, starting '
-                'with alpha)'
+                "expected a valid key (alphanumeric or underscore, starting "
+                "with alpha)"
             )
         return str(key)
 
     def has_key(self, key):
         key = self._validate(key)
         prefix = self.prefix + key
-        names = self.registry.records.keys(prefix + '.', prefix + '/')
+        names = self.registry.records.keys(prefix + ".", prefix + "/")
         return bool(names)
 
     def add(self, key):
         key = self._validate(key)
         prefix = self.prefix + key
         self.registry.registerInterface(self.schema, self.omitted, prefix)
-        proxy = self.registry.forInterface(
-            self.schema,
-            False,
-            self.omitted,
-            prefix
-        )
+        proxy = self.registry.forInterface(self.schema, False, self.omitted, prefix)
         return proxy
 
     def __setitem__(self, key, value):
@@ -176,6 +165,6 @@ class RecordsProxyCollection(DictMixin):
         if key not in self:
             raise KeyError(key)
         prefix = self.prefix + key
-        names = list(self.registry.records.keys(prefix + '.', prefix + '/'))
+        names = list(self.registry.records.keys(prefix + ".", prefix + "/"))
         for name in names:
             del self.registry.records[name]

@@ -11,7 +11,6 @@ from zope.interface import implementer
 
 @implementer(IRecordEvent)
 class RecordEvent:
-
     def __init__(self, record):
         self.record = record
 
@@ -31,7 +30,6 @@ class RecordRemovedEvent(RecordEvent):
 
 @implementer(IRecordModifiedEvent)
 class RecordModifiedEvent(RecordEvent):
-
     def __init__(self, record, oldValue, newValue):
         super().__init__(record)
         self.oldValue = oldValue

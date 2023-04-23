@@ -6,8 +6,7 @@ from zope.schema.interfaces import InvalidDottedName
 
 
 class InvalidRegistryKey(InvalidDottedName):
-    """A registry key is a dotted name with up to one '/'.
-    """
+    """A registry key is a dotted name with up to one '/'."""
 
 
 class IPersistentField(IField):
@@ -23,12 +22,11 @@ class IPersistentField(IField):
     """
 
     interfaceName = schema.DottedName(
-        title='Dotted name to an interface the field was constructed from',
-        required=False
+        title="Dotted name to an interface the field was constructed from",
+        required=False,
     )
     fieldName = schema.ASCIILine(
-        title='Name of the field in the original interface, if any',
-        required=False
+        title="Name of the field in the original interface, if any", required=False
     )
 
 
@@ -42,12 +40,9 @@ class IFieldRef(Interface):
     """
 
     recordName = schema.DottedName(
-        title='Name of the record containing the reference field'
+        title="Name of the record containing the reference field"
     )
-    originalField = schema.Object(
-        title='Referenced field',
-        schema=IField
-    )
+    originalField = schema.Object(title="Referenced field", schema=IField)
 
 
 class IRecord(Interface):
@@ -63,44 +58,39 @@ class IRecord(Interface):
     """
 
     field = schema.Object(
-        title='A field describing this record',
-        schema=IPersistentField
+        title="A field describing this record", schema=IPersistentField
     )
 
     value = schema.Field(
-        title='The value of this record',
-        description='Must be valid according to the record\'s field'
+        title="The value of this record",
+        description="Must be valid according to the record's field",
     )
 
 
 class IRecordEvent(Interface):
-    """Base interface for record level events
-    """
+    """Base interface for record level events"""
 
     record = schema.Object(
-        title='The record that was added.',
-        description='Both __name__ and __parent__ will be set before the '
-                    'event is fired',
-        schema=IRecord
+        title="The record that was added.",
+        description="Both __name__ and __parent__ will be set before the "
+        "event is fired",
+        schema=IRecord,
     )
 
 
 class IRecordAddedEvent(IRecordEvent):
-    """Event fired when a record is added to a registry.
-    """
+    """Event fired when a record is added to a registry."""
 
 
 class IRecordRemovedEvent(IRecordEvent):
-    """Event fired when a record is removed from a registry.
-    """
+    """Event fired when a record is removed from a registry."""
 
 
 class IRecordModifiedEvent(IRecordEvent):
-    """Event fired when a record's value is modified.
-    """
+    """Event fired when a record's value is modified."""
 
-    oldValue = schema.Field(title='The record\'s previous value')
-    newValue = schema.Field(title='The record\'s new value')
+    oldValue = schema.Field(title="The record's previous value")
+    newValue = schema.Field(title="The record's new value")
 
 
 class IInterfaceAwareRecord(Interface):
@@ -111,34 +101,31 @@ class IInterfaceAwareRecord(Interface):
     interfaceName = schema.DottedName(title="Dotted name to interface")
 
     interface = schema.Object(
-        title='Interface that provided the record',
-        description='May be None if the interface is no longer available',
+        title="Interface that provided the record",
+        description="May be None if the interface is no longer available",
         schema=IInterface,
-        readonly=True
+        readonly=True,
     )
 
-    fieldName = schema.ASCIILine(
-        title='Name of the field in the original interface'
-    )
+    fieldName = schema.ASCIILine(title="Name of the field in the original interface")
 
 
 class IRegistry(Interface):
-    """The configuration registry
-    """
+    """The configuration registry"""
 
     records = schema.Dict(
-        title='The records of the registry',
+        title="The records of the registry",
         key_type=schema.DottedName(
-            title='Name of the record',
-            description='By convention, this should include the '
-                        'package name and optionally an interface '
-                        'named, if the record can be described by a '
-                        'field in an interface (see also '
-                        'registerInterface() below), e.g. '
-                        'my.package.interfaces.IMySettings.somefield.',
+            title="Name of the record",
+            description="By convention, this should include the "
+            "package name and optionally an interface "
+            "named, if the record can be described by a "
+            "field in an interface (see also "
+            "registerInterface() below), e.g. "
+            "my.package.interfaces.IMySettings.somefield.",
         ),
         value_type=schema.Object(
-            title='The record for this name',
+            title="The record for this name",
             schema=IRecord,
         ),
     )
@@ -162,8 +149,7 @@ class IRegistry(Interface):
         """
 
     def __contains__(key):
-        """Determine if the registry contains a record for the given key.
-        """
+        """Determine if the registry contains a record for the given key."""
 
     def forInterface(interface, check=True, omit=(), prefix=None):
         """Get an IRecordsProxy for the given interface. If `check` is True,
@@ -189,20 +175,18 @@ class IRecordsProxy(Interface):
     """
 
     __schema__ = schema.Object(
-        title='Interface providing records',
-        schema=IInterface,
-        readonly=True
+        title="Interface providing records", schema=IInterface, readonly=True
     )
 
     __registry__ = schema.Object(
-        title='Registry where records will be looked up',
+        title="Registry where records will be looked up",
         schema=IRegistry,
-        readonly=True)
+        readonly=True,
+    )
 
     __omitted__ = schema.Tuple(
-        title='Fields that are not stored in the registry',
-        description='If any of these are accessed, you will get an '
-                    'AttributeError',
-        value_type=schema.ASCIILine(title='Fieldname'),
-        readonly=True
+        title="Fields that are not stored in the registry",
+        description="If any of these are accessed, you will get an " "AttributeError",
+        value_type=schema.ASCIILine(title="Fieldname"),
+        readonly=True,
     )

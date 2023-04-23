@@ -5,8 +5,7 @@ from zope.interface import implementer
 
 @implementer(IFieldRef)
 class FieldRef:
-    """Default field reference.
-    """
+    """Default field reference."""
 
     def __init__(self, name, originalField):
         self.recordName = name
@@ -14,7 +13,7 @@ class FieldRef:
 
     @property
     def __providedBy__(self):
-        provided = getattr(self, '__provides__', None)
+        provided = getattr(self, "__provides__", None)
         if provided is None:
             provided = implementedBy(self.__class__)
 
