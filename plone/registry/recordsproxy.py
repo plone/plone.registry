@@ -1,3 +1,4 @@
+from collections.abc import MutableMapping
 from plone.registry.interfaces import IRecordsProxy
 from zope.interface import alsoProvides
 from zope.interface import implementer
@@ -6,11 +7,6 @@ from zope.schema.interfaces import RequiredMissing
 
 import re
 
-
-try:
-    from UserDict import DictMixin
-except ImportError:
-    from collections.abc import MutableMapping as DictMixin
 
 _marker = object()
 
@@ -59,7 +55,7 @@ class RecordsProxy:
         )
 
 
-class RecordsProxyCollection(DictMixin):
+class RecordsProxyCollection(MutableMapping):
     """A proxy that maps a collection of RecordsProxy objects"""
 
     _validkey = re.compile(r"([a-zA-Z][a-zA-Z0-9_.-]*)$").match
