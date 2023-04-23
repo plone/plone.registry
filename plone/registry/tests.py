@@ -1,9 +1,9 @@
 from plone.registry.fieldfactory import choicePersistentFieldAdapter
 from plone.registry.fieldfactory import persistentFieldAdapter
+from zope import schema
 from zope.component import eventtesting
 from zope.component import provideAdapter
 from zope.component import testing
-from zope import schema
 from zope.interface import Interface
 
 import doctest
@@ -90,7 +90,6 @@ class TestBugs(unittest.TestCase):
 
     def test_bind_choice(self):
         from plone.registry.field import Choice
-
         from zope.schema.vocabulary import getVocabularyRegistry
         from zope.schema.vocabulary import SimpleVocabulary
 
@@ -111,7 +110,8 @@ class TestBugs(unittest.TestCase):
         f.bind(t)
 
     def test_fieldref_interfaces(self):
-        from plone.registry import field, FieldRef
+        from plone.registry import field
+        from plone.registry import FieldRef
         from plone.registry.interfaces import IFieldRef
         from zope.schema.interfaces import ICollection
 
@@ -133,10 +133,11 @@ class TestMigration(unittest.TestCase):
     def test_auto_migration(self):
 
         from BTrees.OOBTree import OOBTree
-
-        from plone.registry.registry import Registry, Records, _Records
-        from plone.registry.record import Record
         from plone.registry import field
+        from plone.registry.record import Record
+        from plone.registry.registry import _Records
+        from plone.registry.registry import Records
+        from plone.registry.registry import Registry
 
         # Create an "old-looking registry"
 

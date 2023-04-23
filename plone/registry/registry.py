@@ -18,9 +18,8 @@ from zope.schema import getFieldNames
 from zope.schema import getFieldsInOrder
 
 import re
-import warnings
-
 import sys
+import warnings
 
 
 @implementer(IRegistry)

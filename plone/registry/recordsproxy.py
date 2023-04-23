@@ -9,8 +9,8 @@ import sys
 
 
 try:
-    from UserDict import UserDict
     from UserDict import DictMixin
+    from UserDict import UserDict
 except ImportError:
     from collections import UserDict
     from collections.abc import MutableMapping as DictMixin
