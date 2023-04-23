@@ -18,7 +18,6 @@ from zope.schema import getFieldNames
 from zope.schema import getFieldsInOrder
 
 import re
-import sys
 import warnings
 
 
@@ -109,7 +108,7 @@ class Registry(Persistent):
                 bound_field = persistent_field.bind(existing_record)
                 try:
                     bound_field.validate(value)
-                except:
+                except Exception:
                     value = persistent_field.default
 
             self.records[record_name] = Record(persistent_field, value, _validate=False)

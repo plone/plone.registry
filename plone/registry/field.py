@@ -11,7 +11,6 @@ from zope.interface import implementer
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary
 
-import sys
 import zope.schema
 import zope.schema._field
 

@@ -5,14 +5,11 @@ from zope.schema import getFieldsInOrder
 from zope.schema.interfaces import RequiredMissing
 
 import re
-import sys
 
 
 try:
     from UserDict import DictMixin
-    from UserDict import UserDict
 except ImportError:
-    from collections import UserDict
     from collections.abc import MutableMapping as DictMixin
 
 _marker = object()
