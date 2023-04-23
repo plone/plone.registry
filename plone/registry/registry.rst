@@ -74,12 +74,7 @@ We can set a different value, either in the ``Record`` constructor or via the ``
 
 Note that the value is validated against the field::
 
-    >>> age_record.value = -1  # doctest: +SKIP_PYTHON_3
-    Traceback (most recent call last):
-    ...
-    TooSmall: (-1, 0)
-
-    >>> age_record.value = -1  # doctest: +SKIP_PYTHON_2
+    >>> age_record.value = -1
     Traceback (most recent call last):
     ...
     zope.schema._bootstrapinterfaces.TooSmall: (-1, 0)
@@ -138,12 +133,7 @@ you can access its value through dict-like operations on the registry itself::
 
 Again, values are validated::
 
-    >>> registry['plone.registry.tests.cms'] = b'Joomla'  # doctest: +SKIP_PYTHON_3
-    Traceback (most recent call last):
-    ...
-    WrongType: ('Joomla', <type 'unicode'>...)
-
-    >>> registry['plone.registry.tests.cms'] = b'Joomla'  # doctest: +SKIP_PYTHON_2
+    >>> registry['plone.registry.tests.cms'] = b'Joomla'
     Traceback (most recent call last):
     ...
     zope.schema._bootstrapinterfaces.WrongType: (b'Joomla', <class 'str'>, 'value')
@@ -488,20 +478,15 @@ The two values are separate::
 
 Validation uses the underlying field::
 
-    >>> registry['plone.registry.tests.timeout.override'] = -1  # doctest: +SKIP_PYTHON_3
-    Traceback (most recent call last):
-    ...
-    TooSmall: (-1, 0)
-
-    >>> registry['plone.registry.tests.timeout.override'] = -1  # doctest: +SKIP_PYTHON_2
+    >>> registry['plone.registry.tests.timeout.override'] = -1
     Traceback (most recent call last):
     ...
     zope.schema._bootstrapinterfaces.TooSmall: (-1, 0)
 
 The reference field exposes the standard field properties, e.g.::
 
-    >>> timeout_override_record.field.title  # doctest: +SKIP_PYTHON_3
-    u'Timeout'
+    >>> timeout_override_record.field.title
+    'Timeout'
     >>> timeout_override_record.field.min
     0
 

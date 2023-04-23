@@ -8,13 +8,9 @@ from zope.interface import Interface
 
 import doctest
 import re
-import sys
 import unittest
 
 
-SKIP_PYTHON_2 = doctest.register_optionflag("SKIP_PYTHON_2")
-SKIP_PYTHON_3 = doctest.register_optionflag("SKIP_PYTHON_3")
-IGNORE_B = doctest.register_optionflag("IGNORE_B")
 IGNORE_U = doctest.register_optionflag("IGNORE_U")
 
 
@@ -25,19 +21,9 @@ class PolyglotOutputChecker(doctest.OutputChecker):
             "zope.schema._field.Object", "zope.schema._bootstrapfields.Object", got
         )
 
-        if optionflags & SKIP_PYTHON_3 and sys.version_info >= (3,):
-            return True
-        elif optionflags & SKIP_PYTHON_2:
-            return True
-
         if hasattr(self, "_toAscii"):
             got = self._toAscii(got)
             want = self._toAscii(want)
-
-        # Naive fix for comparing byte strings
-        if got != want and optionflags & IGNORE_B:
-            got = re.sub(r'^b([\'"])', r"\1", got)
-            want = re.sub(r'^b([\'"])', r"\1", want)
 
         # Naive fix for comparing byte strings
         if got != want and optionflags & IGNORE_U:
