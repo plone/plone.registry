@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.registry.interfaces import IInterfaceAwareRecord
 from plone.registry.interfaces import IRecordAddedEvent
 from plone.registry.interfaces import IRecordEvent
@@ -11,13 +10,12 @@ from zope.interface import implementer
 
 
 @implementer(IRecordEvent)
-class RecordEvent(object):
-
+class RecordEvent:
     def __init__(self, record):
         self.record = record
 
     def __repr__(self):
-        return "<%s for %s>" % (self.__class__.__name__, self.record.__name__)
+        return f"<{self.__class__.__name__} for {self.record.__name__}>"
 
 
 @implementer(IRecordAddedEvent)
@@ -32,9 +30,8 @@ class RecordRemovedEvent(RecordEvent):
 
 @implementer(IRecordModifiedEvent)
 class RecordModifiedEvent(RecordEvent):
-
     def __init__(self, record, oldValue, newValue):
-        super(RecordModifiedEvent, self).__init__(record)
+        super().__init__(record)
         self.oldValue = oldValue
         self.newValue = newValue
 
@@ -42,7 +39,7 @@ class RecordModifiedEvent(RecordEvent):
 @adapter(IRecordEvent)
 def redispatchInterfaceAwareRecordEvents(event):
     """When an interface-aware record received a record event,
-    redispatch the event in a simlar manner to the IObjectEvent redispatcher.
+    redispatch the event in a similar manner to the IObjectEvent redispatcher.
 
     Note that this means one IRecordModifiedEvent will be fired for each
     change to a record.

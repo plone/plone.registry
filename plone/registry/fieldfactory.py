@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.registry.field import DisallowedProperty
 from plone.registry.field import InterfaceConstrainedProperty
 from plone.registry.field import is_primitive
@@ -18,8 +17,7 @@ import plone.registry.field
 @implementer(IPersistentField)
 @adapter(IField)
 def persistentFieldAdapter(context):
-    """Turn a non-persistent field into a persistent one
-    """
+    """Turn a non-persistent field into a persistent one"""
 
     if IPersistentField.providedBy(context):
         return context
@@ -40,9 +38,7 @@ def persistentFieldAdapter(context):
 
     instance = persistent_class.__new__(persistent_class)
 
-    context_dict = dict(
-        [(k, v) for k, v in context.__dict__.items() if k not in ignored]
-    )
+    context_dict = {k: v for k, v in context.__dict__.items() if k not in ignored}
 
     for key, iface in constrained:
         value = context_dict.get(key, None)
@@ -51,8 +47,11 @@ def persistentFieldAdapter(context):
         value = iface(value, None)
         if value is None:
             __traceback_info__ = (
-                "The property `{0}` cannot be adapted to "
-                "`{1}`.".format(key, iface.__identifier__,)
+                "The property `{}` cannot be adapted to "
+                "`{}`.".format(
+                    key,
+                    iface.__identifier__,
+                )
             )
             return None
         context_dict[key] = value
@@ -64,14 +63,14 @@ def persistentFieldAdapter(context):
 @implementer(IPersistentField)
 @adapter(IChoice)
 def choicePersistentFieldAdapter(context):
-    """Special handling for Choice fields.
-    """
+    """Special handling for Choice fields."""
     instance = persistentFieldAdapter(context)
     if instance is None:
         return None
 
-    if ISource.providedBy(context.vocabulary) or \
-            IContextSourceBinder.providedBy(context.vocabulary):
+    if ISource.providedBy(context.vocabulary) or IContextSourceBinder.providedBy(
+        context.vocabulary
+    ):
         safe = False
 
         # Attempt to reverse engineer a 'values' argument

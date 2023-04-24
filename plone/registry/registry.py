@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from BTrees.OOBTree import OOBTree
 from persistent import Persistent
 from plone.registry.events import RecordAddedEvent
@@ -21,15 +20,10 @@ from zope.schema import getFieldsInOrder
 import re
 import warnings
 
-import sys
-if sys.version_info >= (3,):
-    basestring = str
-
 
 @implementer(IRegistry)
 class Registry(Persistent):
-    """The persistent registry
-    """
+    """The persistent registry"""
 
     def __init__(self):
         self._records = _Records(self)
@@ -64,23 +58,19 @@ class Registry(Persistent):
 
     # Schema interface API
 
-    def forInterface(self, interface, check=True, omit=(), prefix=None,
-                     factory=None):
+    def forInterface(self, interface, check=True, omit=(), prefix=None, factory=None):
         if prefix is None:
             prefix = interface.__identifier__
 
         if not prefix.endswith("."):
-            prefix += '.'
+            prefix += "."
 
         if check:
             for name in getFieldNames(interface):
                 if name not in omit and prefix + name not in self:
                     raise KeyError(
-                        "Interface `{0}` defines a field `{1}`, for which "
-                        "there is no record.".format(
-                            interface.__identifier__,
-                            name
-                        )
+                        "Interface `{}` defines a field `{}`, for which "
+                        "there is no record.".format(interface.__identifier__, name)
                     )
 
         if factory is None:
@@ -93,7 +83,7 @@ class Registry(Persistent):
             prefix = interface.__identifier__
 
         if not prefix.endswith("."):
-            prefix += '.'
+            prefix += "."
 
         for name, field in getFieldsInOrder(interface):
             if name in omit or field.readonly:
@@ -103,10 +93,7 @@ class Registry(Persistent):
             if persistent_field is None:
                 raise TypeError(
                     "There is no persistent field equivalent for the field "
-                    "`{0}` of type `{1}`.".format(
-                        name,
-                        field.__class__.__name__
-                    )
+                    "`{}` of type `{}`.".format(name, field.__class__.__name__)
                 )
 
             persistent_field.interfaceName = interface.__identifier__
@@ -114,32 +101,22 @@ class Registry(Persistent):
 
             value = persistent_field.default
 
-            # Attempt to retain the exisiting value
+            # Attempt to retain the existing value
             if record_name in self.records:
                 existing_record = self.records[record_name]
                 value = existing_record.value
                 bound_field = persistent_field.bind(existing_record)
                 try:
                     bound_field.validate(value)
-                except:
+                except Exception:
                     value = persistent_field.default
 
-            self.records[record_name] = Record(
-                persistent_field,
-                value,
-                _validate=False
-            )
+            self.records[record_name] = Record(persistent_field, value, _validate=False)
 
-    def collectionOfInterface(self, interface, check=True, omit=(),
-                              prefix=None, factory=None):
-        return RecordsProxyCollection(
-            self,
-            interface,
-            check,
-            omit,
-            prefix,
-            factory
-        )
+    def collectionOfInterface(
+        self, interface, check=True, omit=(), prefix=None, factory=None
+    ):
+        return RecordsProxyCollection(self, interface, check, omit, prefix, factory)
 
     # BBB
 
@@ -149,25 +126,23 @@ class Registry(Persistent):
         """
         records = _Records(self)
 
-        oldData = getattr(self._records, 'data', None)
+        oldData = getattr(self._records, "data", None)
         if oldData is not None:
             for name, oldRecord in oldData.iteritems():
                 oldRecord._p_activate()
-                if (
-                    'field' in oldRecord.__dict__
-                    and 'value' in oldRecord.__dict__
-                ):
-                    records._fields[name] = oldRecord.__dict__['field']
-                    records._values[name] = oldRecord.__dict__['value']
+                if "field" in oldRecord.__dict__ and "value" in oldRecord.__dict__:
+                    records._fields[name] = oldRecord.__dict__["field"]
+                    records._values[name] = oldRecord.__dict__["value"]
 
         self._records = records
 
 
-class _Records(object):
+class _Records:
     """The records stored in the registry. This implements dict-like access
     to records, where as the Registry object implements dict-like read-only
     access to values.
     """
+
     __parent__ = None
 
     # Similar to zope.schema._field._isdotted, but allows up to one '/'
@@ -209,7 +184,6 @@ class _Records(object):
         notify(RecordRemovedEvent(record))
 
     def __getitem__(self, name):
-
         field = self._getField(name)
         value = self._values[name]
 
@@ -253,7 +227,7 @@ class _Records(object):
         return [self[name] for name in self.keys(min, max)]
 
     def items(self, min=None, max=None):
-        return [(name, self[name],) for name in self.keys(min, max)]
+        return [(name, self[name]) for name in self.keys(min, max)]
 
     def setdefault(self, key, value):
         if key not in self:
@@ -270,9 +244,9 @@ class _Records(object):
         field = self._fields[name]
 
         # Handle field reference pointers
-        if isinstance(field, basestring):
+        if isinstance(field, str):
             recordName = field
-            while isinstance(field, basestring):
+            while isinstance(field, str):
                 recordName = field
                 field = self._fields[recordName]
             field = FieldRef(recordName, field)
@@ -284,12 +258,10 @@ class _Records(object):
             raise ValueError("The record's field must be an IPersistentField.")
         if IFieldRef.providedBy(field):
             if field.recordName not in self._fields:
-                raise ValueError(
-                    "Field reference points to non-existent record"
-                )
+                raise ValueError("Field reference points to non-existent record")
             self._fields[name] = field.recordName  # a pointer, of sorts
         else:
-            field.__name__ = 'value'
+            field.__name__ = "value"
             self._fields[name] = field
 
 
@@ -302,8 +274,7 @@ class Records(_Records, Persistent):
 
     def __init__(self, parent):
         warnings.warn(
-            "The Records persistent class is deprecated and should not be "
-            "used.",
-            DeprecationWarning
+            "The Records persistent class is deprecated and should not be " "used.",
+            DeprecationWarning,
         )
-        super(Records, self).__init__(parent)
+        super().__init__(parent)
