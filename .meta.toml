@@ -10,3 +10,6 @@ extra_lines = """
 per-file-ignores =
     plone/registry/__init__.py:F401
 """
+
+[pyproject]
+dependencies_ignores = "['plone.schema', ]"
