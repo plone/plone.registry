@@ -55,13 +55,9 @@ setup(
     python_requires=">=3.8",
     install_requires=[
         "setuptools",
-        "zope.component",
-        "zope.dottedname",
-        "zope.event",
-        "zope.interface",
-        "zope.schema",
+        "Zope",
     ],
-    extras_require={"test": ["BTrees", "plone.schema"]},
+    extras_require={"test": ["plone.schema"]},
     entry_points="""
     # -*- Entry points: -*-
     """,
