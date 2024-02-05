@@ -5,6 +5,7 @@ from the transient schema field from zope.schema, into the corresponding
 persistent field. Not all field types are supported, but the common types
 are.
 """
+
 from persistent import Persistent
 from plone.registry.interfaces import IPersistentField
 from zope.interface import implementer
