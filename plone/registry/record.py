@@ -102,7 +102,7 @@ class Record(Persistent):
     @property
     def interface(self):
         try:
-            return resolve(self.interfaceName)
+            return resolve(self.interfaceName) if self.interfaceName else None
         except ImportError:
             return None
 
