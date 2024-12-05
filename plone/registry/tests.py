@@ -97,6 +97,29 @@ class TestBugs(unittest.TestCase):
         self.assertTrue(ICollection.providedBy(ref))
         self.assertTrue(IFieldRef.providedBy(ref))
 
+    def test_record_no_interface(self):
+        from plone.registry.registry import Registry
+        from plone.registry import field
+        from plone.registry.record import Record
+
+        registry = Registry()
+        f = field.TextLine(title="Foo")
+        registry.records["foo.bar"] = Record(f, "Bar")
+
+        self.assertIsNone(registry.records["foo.bar"].interfaceName)
+        self.assertIsNone(registry.records["foo.bar"].interface)
+
+    def test_record_interface(self):
+        from plone.registry.registry import Registry
+
+        registry = Registry()
+        registry.registerInterface(IMailSettings)
+        ifacename = IMailSettings.__identifier__
+        recordname = ifacename + '.sender'
+
+        self.assertEquals(registry.records[recordname].interfaceName, ifacename)
+        self.assertEquals(registry.records[recordname].interface, IMailSettings)
+
 
 class TestMigration(unittest.TestCase):
     def setUp(self):
