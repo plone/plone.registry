@@ -1,27 +1,17 @@
+from pathlib import Path
 from setuptools import find_packages
 from setuptools import setup
-
-import os
-
-
-def read(*rnames):
-    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
 
 version = "2.0.2.dev0"
 
 description = "Registry for application settings (like debconf/ about:config)"
 long_description = (
-    read("README.rst")
-    + "\n"
-    + read("plone", "registry", "registry.rst")
-    + "\n"
-    + read("plone", "registry", "events.rst")
-    + "\n"
-    + read("plone", "registry", "field.rst")
-    + "\n"
-    + read("CHANGES.rst")
-    + "\n"
+    f"{Path('README.rst').read_text()}\n"
+    f"{(Path('src') / 'plone' / 'registry' / 'registry.rst').read_text()}\n"
+    f"{(Path('src') / 'plone' / 'registry' / 'events.rst').read_text()}\n"
+    f"{(Path('src') / 'plone' / 'registry' / 'field.rst').read_text()}\n"
+    f"{Path('CHANGES.rst').read_text()}"
 )
 
 setup(
@@ -48,8 +38,9 @@ setup(
     author_email="plone-developers@lists.sourceforge.net",
     url="https://pypi.org/project/plone.registry",
     license="GPL",
-    packages=find_packages(),
+    packages=find_packages("src"),
     namespace_packages=["plone"],
+    package_dir={"": "src"},
     include_package_data=True,
     zip_safe=False,
     python_requires=">=3.8",
