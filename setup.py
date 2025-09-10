@@ -3,7 +3,7 @@ from setuptools import find_packages
 from setuptools import setup
 
 
-version = "2.0.2.dev0"
+version = "2.0.2"
 
 description = "Registry for application settings (like debconf/ about:config)"
 long_description = (
