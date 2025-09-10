@@ -3,12 +3,12 @@
 # See the inline comments on how to expand/tweak this configuration file
 [meta]
 template = "default"
-commit-id = "4decb24c"
+commit-id = "2.0.1.dev0"
 
 [flake8]
 extra_lines = """
 per-file-ignores =
-    plone/registry/__init__.py:F401
+    src/plone/registry/__init__.py:F401
 """
 
 [pyproject]
