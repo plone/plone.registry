@@ -39,7 +39,6 @@ setup(
     zip_safe=False,
     python_requires=">=3.10",
     install_requires=[
-        "setuptools",
         "Zope",
     ],
     extras_require={"test": ["plone.schema"]},
