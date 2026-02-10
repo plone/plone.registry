@@ -1,3 +1,4 @@
+from Acquisition import aq_base
 from BTrees.OOBTree import OOBTree
 from persistent import Persistent
 from plone.registry.events import RecordAddedEvent
@@ -13,12 +14,35 @@ from plone.registry.recordsproxy import RecordsProxy
 from plone.registry.recordsproxy import RecordsProxyCollection
 from zope.component import queryAdapter
 from zope.event import notify
+from zope.globalrequest import getRequest
 from zope.interface import implementer
 from zope.schema import getFieldNames
 from zope.schema import getFieldsInOrder
 
 import re
 import warnings
+
+
+_CACHE_MARKER = object()
+
+
+def _get_request_cache(context):
+    """Return the per-request, per-registry value cache dict, or None."""
+    request = getRequest()
+    if request is None:
+        return None
+    try:
+        all_caches = request._plone_registry_cache
+    except AttributeError:
+        all_caches = {}
+        request._plone_registry_cache = all_caches
+    registry_id = id(aq_base(context))
+    try:
+        return all_caches[registry_id]
+    except KeyError:
+        cache = {}
+        all_caches[registry_id] = cache
+        return cache
 
 
 @implementer(IRegistry)
@@ -31,20 +55,40 @@ class Registry(Persistent):
     # Basic value access API
 
     def __getitem__(self, name):
-        # Fetch straight from records._values to avoid loading the field
-        # as a separate persistent object
-        return self.records._values[name]
+        cache = _get_request_cache(self)
+        if cache is not None:
+            value = cache.get(name, _CACHE_MARKER)
+            if value is not _CACHE_MARKER:
+                return value
+        value = self.records._values[name]
+        if cache is not None:
+            cache[name] = value
+        return value
 
     def get(self, name, default=None):
-        # Fetch straight from records._values to avoid loading the field
-        # as a separate persistent object
-        return self.records._values.get(name, default)
+        cache = _get_request_cache(self)
+        if cache is not None:
+            value = cache.get(name, _CACHE_MARKER)
+            if value is not _CACHE_MARKER:
+                return value
+        value = self.records._values.get(name, _CACHE_MARKER)
+        if value is _CACHE_MARKER:
+            return default
+        if cache is not None:
+            cache[name] = value
+        return value
 
     def __setitem__(self, name, value):
         # make sure we get the Record class' validation
         self.records[name].value = value
+        cache = _get_request_cache(self)
+        if cache is not None:
+            cache[name] = value
 
     def __contains__(self, name):
+        cache = _get_request_cache(self)
+        if cache is not None and name in cache:
+            return True
         return name in self.records._values
 
     # Records - make this a property so that it's readonly
@@ -65,6 +109,13 @@ class Registry(Persistent):
         if not prefix.endswith("."):
             prefix += "."
 
+        cache = _get_request_cache(self)
+        cache_key = ("__proxy__", interface.__identifier__, prefix, omit)
+        if cache is not None:
+            proxy = cache.get(cache_key)
+            if proxy is not None:
+                return proxy
+
         if check:
             for name in getFieldNames(interface):
                 if name not in omit and prefix + name not in self:
@@ -76,7 +127,12 @@ class Registry(Persistent):
         if factory is None:
             factory = RecordsProxy
 
-        return factory(self, interface, omitted=omit, prefix=prefix)
+        proxy = factory(self, interface, omitted=omit, prefix=prefix)
+
+        if cache is not None:
+            cache[cache_key] = proxy
+
+        return proxy
 
     def registerInterface(self, interface, omit=(), prefix=None):
         if prefix is None:
@@ -157,6 +213,11 @@ class _Records:
         self._fields = OOBTree()
         self._values = OOBTree()
 
+    def _invalidate_cache(self):
+        cache = _get_request_cache(self.__parent__)
+        if cache is not None:
+            cache.clear()
+
     def __setitem__(self, name, record):
         if not self._validkey(name):
             raise InvalidRegistryKey(record)
@@ -165,6 +226,7 @@ class _Records:
 
         self._setField(name, record.field)
         self._values[name] = record.value
+        self._invalidate_cache()
 
         record.__name__ = name
         record.__parent__ = self.__parent__
@@ -180,6 +242,7 @@ class _Records:
 
         del self._fields[name]
         del self._values[name]
+        self._invalidate_cache()
 
         notify(RecordRemovedEvent(record))
 
@@ -237,6 +300,7 @@ class _Records:
     def clear(self):
         self._fields.clear()
         self._values.clear()
+        self._invalidate_cache()
 
     # Helper methods
 
