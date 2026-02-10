@@ -34,7 +34,11 @@ def _get_request_cache(context):
     all_caches = request.get("_plone_registry_cache")
     if all_caches is None:
         all_caches = {}
-        request["_plone_registry_cache"] = all_caches
+        try:
+            request["_plone_registry_cache"] = all_caches
+        except TypeError:
+            # Request doesn't support item assignment (e.g. TestRequest)
+            return None
     registry_id = id(aq_base(context))
     try:
         return all_caches[registry_id]
