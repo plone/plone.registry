@@ -142,10 +142,27 @@ class TestMigration(unittest.TestCase):
 
 
 class FakeRequest:
-    """Minimal request-like object for testing request-level caching."""
+    """Minimal request-like object for testing request-level caching.
+
+    Uses a dict (``other``) for item access, mirroring Zope's
+    ``HTTPRequest.other`` which is cleared at end-of-request.
+    """
 
     def __init__(self):
         self.environ = {}
+        self.other = {}
+
+    def get(self, key, default=None):
+        return self.other.get(key, default)
+
+    def __getitem__(self, key):
+        return self.other[key]
+
+    def __setitem__(self, key, value):
+        self.other[key] = value
+
+    def __contains__(self, key):
+        return key in self.other
 
 
 class TestRequestValueCache(unittest.TestCase):
@@ -184,19 +201,19 @@ class TestRequestValueCache(unittest.TestCase):
         """Return the per-registry cache dict from the given request."""
         if request is None:
             request = self.request
-        all_caches = getattr(request, "_plone_registry_cache", {})
+        all_caches = request.get("_plone_registry_cache", {})
         return all_caches.get(id(self.registry), {})
 
     def _setCache(self, data):
         """Inject values into the per-registry cache on the request."""
-        self.request._plone_registry_cache = {id(self.registry): data}
+        self.request["_plone_registry_cache"] = {id(self.registry): data}
 
     # --- __getitem__ tests ---
 
     def test_getitem_no_request(self):
         """Without a request, values are fetched directly from OOBTree."""
         self.assertEqual(self.registry["test.key1"], "value1")
-        self.assertFalse(hasattr(self.request, "_plone_registry_cache"))
+        self.assertNotIn("_plone_registry_cache", self.request)
 
     def test_getitem_populates_cache(self):
         """First read with a request populates the cache."""
@@ -295,7 +312,7 @@ class TestRequestValueCache(unittest.TestCase):
 
         new_request = FakeRequest()
         setRequest(new_request)
-        self.assertFalse(hasattr(new_request, "_plone_registry_cache"))
+        self.assertNotIn("_plone_registry_cache", new_request)
 
         self.assertEqual(self.registry["test.key1"], "value1")
         self.assertIn("test.key1", self._getCache(new_request))
@@ -304,9 +321,9 @@ class TestRequestValueCache(unittest.TestCase):
     def test_cache_lazily_created(self):
         """Cache dict is only created on first registry access."""
         self._setRequest()
-        self.assertFalse(hasattr(self.request, "_plone_registry_cache"))
+        self.assertNotIn("_plone_registry_cache", self.request)
         self.registry["test.key1"]
-        self.assertTrue(hasattr(self.request, "_plone_registry_cache"))
+        self.assertIn("_plone_registry_cache", self.request)
 
     # --- __contains__ tests ---
 

@@ -31,11 +31,10 @@ def _get_request_cache(context):
     request = getRequest()
     if request is None:
         return None
-    try:
-        all_caches = request._plone_registry_cache
-    except AttributeError:
+    all_caches = request.get("_plone_registry_cache")
+    if all_caches is None:
         all_caches = {}
-        request._plone_registry_cache = all_caches
+        request["_plone_registry_cache"] = all_caches
     registry_id = id(aq_base(context))
     try:
         return all_caches[registry_id]
