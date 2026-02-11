@@ -27,18 +27,22 @@ _CACHE_MARKER = object()
 
 
 def _get_request_cache(context):
-    """Return the per-request, per-registry value cache dict, or None."""
+    """Return the per-request, per-registry value cache dict, or None.
+
+    Uses ``request.other`` directly (the dict Zope's HTTPRequest clears
+    at end-of-request).  Returns None when ``other`` is not available
+    (e.g. zope.publisher TestRequest or dict-based test stubs).
+    """
     request = getRequest()
     if request is None:
         return None
-    all_caches = request.get("_plone_registry_cache")
+    other = getattr(request, "other", None)
+    if other is None:
+        return None
+    all_caches = other.get("_plone_registry_cache")
     if all_caches is None:
         all_caches = {}
-        try:
-            request["_plone_registry_cache"] = all_caches
-        except TypeError:
-            # Request doesn't support item assignment (e.g. TestRequest)
-            return None
+        other["_plone_registry_cache"] = all_caches
     registry_id = id(aq_base(context))
     try:
         return all_caches[registry_id]

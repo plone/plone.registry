@@ -201,12 +201,12 @@ class TestRequestValueCache(unittest.TestCase):
         """Return the per-registry cache dict from the given request."""
         if request is None:
             request = self.request
-        all_caches = request.get("_plone_registry_cache", {})
+        all_caches = request.other.get("_plone_registry_cache", {})
         return all_caches.get(id(self.registry), {})
 
     def _setCache(self, data):
         """Inject values into the per-registry cache on the request."""
-        self.request["_plone_registry_cache"] = {id(self.registry): data}
+        self.request.other["_plone_registry_cache"] = {id(self.registry): data}
 
     # --- __getitem__ tests ---
 
