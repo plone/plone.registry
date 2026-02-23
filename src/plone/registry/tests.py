@@ -141,6 +141,302 @@ class TestMigration(unittest.TestCase):
         self.assertTrue(isinstance(registry._records, _Records))
 
 
+class FakeRequest:
+    """Minimal request-like object for testing request-level caching.
+
+    Uses a dict (``other``) for item access, mirroring Zope's
+    ``HTTPRequest.other`` which is cleared at end-of-request.
+    """
+
+    def __init__(self):
+        self.environ = {}
+        self.other = {}
+
+    def get(self, key, default=None):
+        return self.other.get(key, default)
+
+    def __getitem__(self, key):
+        return self.other[key]
+
+    def __setitem__(self, key, value):
+        self.other[key] = value
+
+    def __contains__(self, key):
+        return key in self.other
+
+
+class TestRequestValueCache(unittest.TestCase):
+    """Tests for request-level value caching in Registry."""
+
+    def setUp(self):
+        setUp(self)
+        from plone.registry import field
+        from plone.registry.record import Record
+        from plone.registry.registry import Registry
+
+        self.registry = Registry()
+        self.registry.records["test.key1"] = Record(
+            field.TextLine(title="Key 1"), "value1"
+        )
+        self.registry.records["test.key2"] = Record(
+            field.TextLine(title="Key 2"), "value2"
+        )
+        self.registry.records["test.none"] = Record(
+            field.TextLine(title="None val", required=False), None
+        )
+        self.request = FakeRequest()
+
+    def tearDown(self):
+        from zope.globalrequest import clearRequest
+
+        clearRequest()
+        testing.tearDown(self)
+
+    def _setRequest(self):
+        from zope.globalrequest import setRequest
+
+        setRequest(self.request)
+
+    def _getCache(self, request=None):
+        """Return the per-registry cache dict from the given request."""
+        if request is None:
+            request = self.request
+        all_caches = request.other.get("_plone_registry_cache", {})
+        return all_caches.get(id(self.registry), {})
+
+    def _setCache(self, data):
+        """Inject values into the per-registry cache on the request."""
+        self.request.other["_plone_registry_cache"] = {id(self.registry): data}
+
+    # --- __getitem__ tests ---
+
+    def test_getitem_no_request(self):
+        """Without a request, values are fetched directly from OOBTree."""
+        self.assertEqual(self.registry["test.key1"], "value1")
+        self.assertNotIn("_plone_registry_cache", self.request)
+
+    def test_getitem_populates_cache(self):
+        """First read with a request populates the cache."""
+        self._setRequest()
+        self.assertEqual(self.registry["test.key1"], "value1")
+        cache = self._getCache()
+        self.assertIn("test.key1", cache)
+        self.assertEqual(cache["test.key1"], "value1")
+
+    def test_getitem_serves_from_cache(self):
+        """Subsequent reads return the cached value."""
+        self._setRequest()
+        self._setCache({"test.key1": "cached_value"})
+        self.assertEqual(self.registry["test.key1"], "cached_value")
+
+    def test_getitem_keyerror_not_cached(self):
+        """KeyError for missing keys propagates without caching."""
+        self._setRequest()
+        with self.assertRaises(KeyError):
+            self.registry["nonexistent.key"]
+        self.assertNotIn("nonexistent.key", self._getCache())
+
+    def test_getitem_multiple_keys(self):
+        """Multiple keys are independently cached."""
+        self._setRequest()
+        self.assertEqual(self.registry["test.key1"], "value1")
+        self.assertEqual(self.registry["test.key2"], "value2")
+        cache = self._getCache()
+        self.assertEqual(cache["test.key1"], "value1")
+        self.assertEqual(cache["test.key2"], "value2")
+
+    # --- get() tests ---
+
+    def test_get_no_request(self):
+        """Without a request, get() works normally."""
+        self.assertEqual(self.registry.get("test.key1"), "value1")
+        self.assertEqual(self.registry.get("nonexistent", "default"), "default")
+
+    def test_get_populates_cache(self):
+        """get() populates the cache on first access."""
+        self._setRequest()
+        self.assertEqual(self.registry.get("test.key1"), "value1")
+        self.assertIn("test.key1", self._getCache())
+
+    def test_get_serves_from_cache(self):
+        """get() returns cached value on subsequent access."""
+        self._setRequest()
+        self._setCache({"test.key1": "cached"})
+        self.assertEqual(self.registry.get("test.key1"), "cached")
+
+    def test_get_default_not_cached(self):
+        """get() with missing key returns default and does not cache it."""
+        self._setRequest()
+        result = self.registry.get("nonexistent", "default")
+        self.assertEqual(result, "default")
+        self.assertNotIn("nonexistent", self._getCache())
+
+    def test_get_none_value_cached(self):
+        """None values are correctly cached (not confused with sentinel)."""
+        self._setRequest()
+        result = self.registry.get("test.none")
+        self.assertIsNone(result)
+        self.assertIn("test.none", self._getCache())
+        self.assertIsNone(self.registry.get("test.none"))
+
+    def test_get_none_default(self):
+        """get() returns None default for missing keys without caching."""
+        self._setRequest()
+        result = self.registry.get("nonexistent")
+        self.assertIsNone(result)
+        self.assertNotIn("nonexistent", self._getCache())
+
+    # --- __setitem__ tests ---
+
+    def test_setitem_updates_cache(self):
+        """Writing a value updates the cache."""
+        self._setRequest()
+        self.assertEqual(self.registry["test.key1"], "value1")
+        self.registry["test.key1"] = "new_value"
+        self.assertEqual(self._getCache()["test.key1"], "new_value")
+        self.assertEqual(self.registry["test.key1"], "new_value")
+
+    def test_setitem_no_request(self):
+        """Writing without a request works normally."""
+        self.registry["test.key1"] = "new_value"
+        self.assertEqual(self.registry["test.key1"], "new_value")
+
+    # --- Cache isolation ---
+
+    def test_cache_isolation_between_requests(self):
+        """Different requests have independent caches."""
+        from zope.globalrequest import setRequest
+
+        self._setRequest()
+        self.registry["test.key1"]  # populate cache
+
+        new_request = FakeRequest()
+        setRequest(new_request)
+        self.assertNotIn("_plone_registry_cache", new_request)
+
+        self.assertEqual(self.registry["test.key1"], "value1")
+        self.assertIn("test.key1", self._getCache(new_request))
+        self.assertIn("test.key1", self._getCache(self.request))
+
+    def test_cache_lazily_created(self):
+        """Cache dict is only created on first registry access."""
+        self._setRequest()
+        self.assertNotIn("_plone_registry_cache", self.request)
+        self.registry["test.key1"]
+        self.assertIn("_plone_registry_cache", self.request)
+
+    # --- __contains__ tests ---
+
+    def test_contains_no_request(self):
+        """Without a request, __contains__ works normally."""
+        self.assertIn("test.key1", self.registry)
+        self.assertNotIn("nonexistent", self.registry)
+
+    def test_contains_uses_value_cache(self):
+        """__contains__ returns True if key is in the value cache."""
+        self._setRequest()
+        self.registry.get("test.key1")
+        self.assertIn("test.key1", self.registry)
+
+    def test_contains_falls_through_to_oobtree(self):
+        """__contains__ falls through to OOBTree for uncached keys."""
+        self._setRequest()
+        self.assertIn("test.key2", self.registry)
+        self.assertNotIn("nonexistent", self.registry)
+
+
+class TestForInterfaceCache(unittest.TestCase):
+    """Tests for forInterface() proxy caching."""
+
+    def setUp(self):
+        setUp(self)
+        from plone.registry.registry import Registry
+
+        self.registry = Registry()
+        self.registry.registerInterface(IMailSettings)
+        self.request = FakeRequest()
+
+    def tearDown(self):
+        from zope.globalrequest import clearRequest
+
+        clearRequest()
+        testing.tearDown(self)
+
+    def _setRequest(self):
+        from zope.globalrequest import setRequest
+
+        setRequest(self.request)
+
+    def test_forinterface_no_request(self):
+        """Without a request, forInterface works normally."""
+        proxy = self.registry.forInterface(IMailSettings)
+        self.assertTrue(IMailSettings.providedBy(proxy))
+
+    def test_forinterface_caches_proxy(self):
+        """With a request, forInterface caches the proxy."""
+        self._setRequest()
+        proxy1 = self.registry.forInterface(IMailSettings)
+        proxy2 = self.registry.forInterface(IMailSettings)
+        self.assertIs(proxy1, proxy2)
+
+    def test_forinterface_cache_hit_skips_check(self):
+        """Cached proxy avoids the field existence check."""
+        self._setRequest()
+        proxy1 = self.registry.forInterface(IMailSettings)
+        prefix = IMailSettings.__identifier__ + "."
+        key = prefix + "sender"
+        del self.registry.records._values[key]
+        del self.registry.records._fields[key]
+        proxy2 = self.registry.forInterface(IMailSettings)
+        self.assertIs(proxy1, proxy2)
+
+    def test_forinterface_same_prefix_different_interface_not_shared(self):
+        """Different interfaces with same prefix get separate proxies."""
+        self._setRequest()
+        proxy1 = self.registry.forInterface(
+            IMailSettings, check=False, prefix="shared.prefix"
+        )
+        proxy2 = self.registry.forInterface(
+            IMailPreferences, check=False, prefix="shared.prefix"
+        )
+        self.assertIsNot(proxy1, proxy2)
+        self.assertTrue(IMailSettings.providedBy(proxy1))
+        self.assertTrue(IMailPreferences.providedBy(proxy2))
+
+    def test_forinterface_different_prefix_not_shared(self):
+        """Different prefixes get separate cached proxies."""
+        self._setRequest()
+        self.registry.registerInterface(IMailSettings, prefix="alt.settings")
+        proxy1 = self.registry.forInterface(IMailSettings)
+        proxy2 = self.registry.forInterface(IMailSettings, prefix="alt.settings")
+        self.assertIsNot(proxy1, proxy2)
+
+    def test_forinterface_different_omit_not_shared(self):
+        """Different omit tuples get separate cached proxies."""
+        self._setRequest()
+        proxy1 = self.registry.forInterface(IMailSettings)
+        proxy2 = self.registry.forInterface(IMailSettings, omit=("sender",))
+        self.assertIsNot(proxy1, proxy2)
+
+    def test_forinterface_cache_isolation(self):
+        """Different requests have independent proxy caches."""
+        from zope.globalrequest import setRequest
+
+        self._setRequest()
+        proxy1 = self.registry.forInterface(IMailSettings)
+
+        new_request = FakeRequest()
+        setRequest(new_request)
+        proxy2 = self.registry.forInterface(IMailSettings)
+        self.assertIsNot(proxy1, proxy2)
+
+    def test_forinterface_no_request_returns_new_each_time(self):
+        """Without a request, each call returns a fresh proxy."""
+        proxy1 = self.registry.forInterface(IMailSettings)
+        proxy2 = self.registry.forInterface(IMailSettings)
+        self.assertIsNot(proxy1, proxy2)
+
+
 def test_suite():
     return unittest.TestSuite(
         [
@@ -170,5 +466,7 @@ def test_suite():
             ),
             unittest.defaultTestLoader.loadTestsFromTestCase(TestBugs),
             unittest.defaultTestLoader.loadTestsFromTestCase(TestMigration),
+            unittest.defaultTestLoader.loadTestsFromTestCase(TestRequestValueCache),
+            unittest.defaultTestLoader.loadTestsFromTestCase(TestForInterfaceCache),
         ]
     )
