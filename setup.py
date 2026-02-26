@@ -2,7 +2,7 @@ from pathlib import Path
 from setuptools import setup
 
 
-version = "3.0.0a2"
+version = "3.0.0a3.dev0"
 
 description = "Registry for application settings (like debconf/ about:config)"
 long_description = (
