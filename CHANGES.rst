@@ -9,6 +9,15 @@ Changelog
 
 .. towncrier release notes start
 
+3.0.0a2 (2026-02-26)
+--------------------
+
+New features:
+
+
+- Add per-request cache for registry value and forInterface proxy lookups, avoiding repeated OOBTree traversals within a single request. [@jensens] (#62)
+
+
 3.0.0a1 (2025-11-19)
 --------------------
 
