@@ -7,7 +7,6 @@ from zope.schema.interfaces import RequiredMissing
 
 import re
 
-
 _marker = object()
 
 
