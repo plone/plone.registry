@@ -10,7 +10,6 @@ import doctest
 import re
 import unittest
 
-
 IGNORE_U = doctest.register_optionflag("IGNORE_U")
 
 

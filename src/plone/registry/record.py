@@ -8,7 +8,6 @@ from zope.event import notify
 from zope.interface import alsoProvides
 from zope.interface import implementer
 
-
 _marker = object()
 
 

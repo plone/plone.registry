@@ -15,7 +15,6 @@ from zope.schema.vocabulary import SimpleVocabulary
 import zope.schema
 import zope.schema._field
 
-
 try:
     import plone.schema
 
