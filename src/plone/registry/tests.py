@@ -207,6 +207,33 @@ class TestRequestValueCache(unittest.TestCase):
         """Inject values into the per-registry cache on the request."""
         self.request.other["_plone_registry_cache"] = {id(self.registry): data}
 
+    def test_subscriber_sees_new_value(self):
+        """A subscriber should see the new value even if the request cache exists."""
+        from plone.registry.interfaces import IRecordModifiedEvent
+        from zope.component import provideHandler
+
+        self._setRequest()
+
+        # Populate cache
+        self.assertEqual(self.registry["test.key1"], "value1")
+
+        seen_values = []
+
+        def subscriber(event):
+            # Try to read the value from the registry
+            seen_values.append(self.registry["test.key1"])
+
+        provideHandler(subscriber, (IRecordModifiedEvent,))
+
+        # Update value
+        self.registry["test.key1"] = "new_value"
+
+        self.assertEqual(
+            seen_values,
+            ["new_value"],
+            "Subscriber saw the old cached value instead of the new one",
+        )
+
     # --- __getitem__ tests ---
 
     def test_getitem_no_request(self):
