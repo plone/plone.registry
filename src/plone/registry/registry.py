@@ -224,6 +224,11 @@ class _Records:
         if cache is not None:
             cache.clear()
 
+    def _invalidate_key_cache(self, name):
+        cache = _get_request_cache(self.__parent__)
+        if cache is not None and name in cache:
+            del cache[name]
+
     def __setitem__(self, name, record):
         if not self._validkey(name):
             raise InvalidRegistryKey(record)

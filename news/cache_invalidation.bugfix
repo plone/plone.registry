@@ -1,0 +1,2 @@
+Invalidate the request cache for a record before firing the IRecordModifiedEvent to ensure subscribers see the new value.
+[erral]
