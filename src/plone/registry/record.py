@@ -81,6 +81,8 @@ class Record(Persistent):
         self._value = value
 
         if self.__parent__ is not None:
+            if hasattr(self.__parent__.records, "_invalidate_key_cache"):
+                self.__parent__.records._invalidate_key_cache(self.__name__)
             self.__parent__.records._values[self.__name__] = value
 
         notify(RecordModifiedEvent(self, oldValue, value))
