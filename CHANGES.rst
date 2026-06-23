@@ -9,6 +9,16 @@ Changelog
 
 .. towncrier release notes start
 
+3.0.1 (2026-06-23)
+------------------
+
+Bug fixes:
+
+
+- Invalidate the request cache for a record before firing the IRecordModifiedEvent to ensure subscribers see the new value.
+  [erral] (cache_invalidation)
+
+
 3.0.0 (2026-05-16)
 ------------------
 
