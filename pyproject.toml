@@ -4,7 +4,51 @@
 [build-system]
 requires = ["setuptools>=68.2,<83", "wheel"]
 
+# START-MARKER-MANUAL-CONFIG
+# Anything from here until END-MARKER-MANUAL-CONFIG
+# will be kept by plone.meta
 
+[project]
+name = "plone.registry"
+version = "3.0.2.dev0"
+description = "Registry for application settings (like debconf/ about:config)"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Framework :: Plone",
+    "Framework :: Plone :: 6.2",
+    "Framework :: Plone :: Core",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+license = "GPL-2.0-only"
+dynamic = ["readme"]
+requires-python = ">=3.10"
+authors = [
+    {name = "Martin Aspeli, Wichert Akkerman, Hanno Schlichting",email = "plone-developers@lists.sourceforge.net"},
+]
+maintainers = [
+    {name = "Plone Foundation and contributors",email = "plone-developers@lists.sourceforge.net"},
+]
+dependencies = ["Zope"]
+keywords = ["configuration", "registry"]
+
+[project.optional-dependencies]
+test = ["plone.schema"]
+
+[project.urls]
+Source = "https://github.com/plone/plone.registry"
+Issues = "https://github.com/plone/Products.CMFPlone/issues"
+Changelog = "https://github.com/plone/plone.registry/blob/master/CHANGES.rst"
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.rst", "src/plone/registry/registry.rst", "src/plone/registry/events.rst", "src/plone/registry/field.rst", "CHANGES.rst"]}
+# END-MARKER-MANUAL-CONFIG
 
 [tool.towncrier]
 directory = "news/"
